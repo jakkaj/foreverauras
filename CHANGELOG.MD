@@ -1,6 +1,9 @@
 # Changelog
 
 ## Versions
+## 0.43.0-BETA
+- Add specific unit to Aura (Modern)
+
 ## 0.42.11
 - Fixed centered horizontal anchoring for Auras that are not the same size
 - Added Layout / Font settings to the top right, allowing you to change

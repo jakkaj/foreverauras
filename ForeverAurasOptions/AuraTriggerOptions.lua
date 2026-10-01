@@ -167,7 +167,7 @@ function Editor.AddOptions(options, data, triggernum)
     options.secretApproximate = {type = "toggle", name = "Approximate Match", order = 4.02, width = "full",
       desc = "Approximates the selected spell ID based on its duration and other learned information.",
       hidden = function()
-        return not (display.approximateUnits[trigger.unit] and trigger.debuffType == "HARMFUL"
+        return not (display.approximateUnits[display.UnitCategory(trigger)] and trigger.debuffType == "HARMFUL"
           and #display.GetSpellIDs(trigger, true) > 0)
       end,
       get = function() return trigger.secretApproximate or false end,
@@ -194,7 +194,7 @@ function Editor.AddOptions(options, data, triggernum)
       desc = "Keep this trigger active while there is no such unit. Otherwise it is inactive then, so other triggers can supply the display.",
       hidden = function()
         local unit = trigger.unit
-        return not (unit == "target" or unit == "focus" or unit == "pet" or unit == "targettarget" or unit == "focustarget")
+        return not (unit == "target" or unit == "focus" or unit == "pet" or unit == "targettarget" or unit == "focustarget" or unit == "member")
       end,
       get = function() return trigger.unitExists or false end,
       set = function(_, value) trigger.unitExists = value or nil; Save() end}
