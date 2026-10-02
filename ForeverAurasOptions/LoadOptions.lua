@@ -320,10 +320,12 @@ function OptionsPrivate.ConstructOptions(prototype, data, startorder, triggernum
           fontSize = "large",
         }
         order = order + 1;
+        -- A function text gets the trigger, so it can describe the current setup.
+        local text = arg.text
         options["description_"..name] = {
           type = "description",
           width = ForeverAuras.doubleWidth,
-          name = arg.text,
+          name = type(text) == "function" and function() return text(trigger) end or text,
           order = order,
           hidden = hidden,
         }
