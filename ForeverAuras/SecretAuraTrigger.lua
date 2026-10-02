@@ -8,8 +8,6 @@ local loaded = {}
 
 function Trigger.Add(data)
   Display.MigrateNativeConditions(data)
-  -- 0.38-0.40 kept "When Not Found, Show" on the trigger; it is now the
-  -- display's Trigger Combination fallback (SecretAuraSingle.lua).
   Display.MigrateFallback(data)
   displays[data.id] = nil
   for _, entry in ipairs(data.triggers) do
@@ -86,7 +84,6 @@ local unitChangeEvents = {
   UNIT_TARGET = {target = {targettarget = true}, focus = {focustarget = true}},
   UNIT_PET = {player = {pet = true}},
   PLAYER_ENTERING_WORLD = {target = true, focus = true, pet = true, targettarget = true, focustarget = true, member = true},
-  -- Specific Unit tokens (party1, boss1, ...) appear and go with these.
   GROUP_ROSTER_UPDATE = {member = true},
   INSTANCE_ENCOUNTER_ENGAGE_UNIT = {member = true},
   ARENA_OPPONENT_UPDATE = {member = true},
@@ -99,7 +96,6 @@ unitFrame:SetScript("OnEvent", function(_, event, unit)
   local affected = unitChangeEvents[event]
   if event == "UNIT_TARGET" then affected = unit and affected[unit] end
   if event == "UNIT_PET" then
-    -- A party or raid pet token comes and goes with its owner's pet.
     affected = unit == "player" and affected.player or (unit and {member = true})
   end
   if not affected then return end

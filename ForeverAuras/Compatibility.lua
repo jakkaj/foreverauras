@@ -160,17 +160,18 @@ Private.ExecEnv.CollapseFactionHeader = C_Reputation.CollapseFactionHeader or Co
 Private.ExecEnv.AreLegacyReputationsShown = C_Reputation.AreLegacyReputationsShown or function() return true end
 Private.ExecEnv.GetReputationSortType = C_Reputation.GetReputationSortType or function() return 0 end;
 
-
+local lastUnitIsUnit = {}
 function Private.ExecEnv.UnitIsUnit(unit1, unit2)
   if hasanysecretvalues(unit1, unit2) then
     return false
   end
   local res = UnitIsUnit(unit1, unit2)
+  local key = type(unit1) == "string" and type(unit2) == "string" and unit1 .. "\0" .. unit2
   if issecretvalue(res) then
-    return false
-  else
-    return res
+    return key and lastUnitIsUnit[key] or false
   end
+  if key then lastUnitIsUnit[key] = res end
+  return res
 end
 
 function Private.ExecEnv.UnitName(unit)

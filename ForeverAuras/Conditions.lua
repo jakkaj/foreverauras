@@ -229,7 +229,6 @@ local function formatValueForCall(type, property)
   return "nil";
 end
 
-
 function Private.ExecEnv.CancelConditionCheck(uid, cloneId)
   if conditionChecksTimers.recheckHandle[uid] and conditionChecksTimers.recheckHandle[uid][cloneId] then
     timer:CancelTimer(conditionChecksTimers.recheckHandle[uid][cloneId])
@@ -984,7 +983,6 @@ function Private.GetGlobalConditions(data)
   return Private.BlizzardAuraDisplay.FilterGlobalConditions(data, globalConditions);
 end
 
--- Picks yes or no by a readable condition result; yes/no may be restricted.
 function Private.ExecEnv.SelectDesaturationByBoolean(active, yes, no)
   if active then return yes end
   return no
@@ -997,17 +995,11 @@ local function SpellCooldownDesaturationExpression(data, templates)
   if data.regionType ~= "icon" or Private.BlizzardAuraDisplay.Enabled(data)
       or not C_CurveUtil or not C_CurveUtil.EvaluateColorValueFromBoolean then return end
   local hasCooldownCheck = false
-  -- Spell cooldown checks use the same appearance source as a lone onCooldown
-  -- condition (wand and restricted timers included).
   local function UsesAppearance(check)
     local entry = data.triggers[check.trigger]
     local trigger = entry and entry.trigger
-    -- CDM spell cooldowns share only the visual selector. Buffs/items retain their
-    -- existing condition path and never consume the wand snapshot.
     local spell = trigger and trigger.type == "spell" and trigger.event == "Cooldown Progress (Spell)"
     local cdm = trigger and trigger.type == "cdm" and (trigger.event == "Blizzard Cooldown Manager" or trigger.event == "Blizzard CDM Utility")
-    -- Custom states filled by ForeverAuras.SetSpellCooldownState; other custom
-    -- states fall back to their own onCooldown value in the same selector.
     local custom = trigger and trigger.type == "custom" and trigger.custom_type == "stateupdate"
     return (spell or cdm or custom) and check.variable == "onCooldown" and (check.value == 0 or check.value == 1)
   end
@@ -1019,7 +1011,6 @@ local function SpellCooldownDesaturationExpression(data, templates)
         if not Supported(child) then return false end
       end
     end
-    -- Other checks (resources, range, ...) are readable and keep their own test.
     return true
   end
   local function Select(check, yes, no)
@@ -1042,21 +1033,16 @@ local function SpellCooldownDesaturationExpression(data, templates)
       return "Private.ExecEnv.SelectDesaturationByBoolean(not not (" .. test .. "), " .. yes .. ", " .. no .. ")"
     end
     hasCooldownCheck = true
-    -- Readable states retain the existing timed/paused test, while restricted
-    -- states use only the appearance helper.
     local trigger = data.triggers[check.trigger].trigger
     local selector = trigger.type == "cdm" and "SelectCDMCooldownDesaturation" or "SelectSpellCooldownDesaturation"
     return "Private.ExecEnv." .. selector .. "(state[" .. check.trigger .. "], "
       .. check.value .. ", " .. yes .. ", " .. no .. ", not not (" .. test .. "))"
   end
 
-  -- Each desaturate change updates one local, so repeated references to the
-  -- previous value stay short.
   local steps = {"local desaturation = " .. (data.desaturate and "1" or "0")}
   local expression = "desaturation"
   for index, condition in ipairs(data.conditions) do
     for _, change in ipairs(condition.changes or {}) do
-      -- Preserve the separate boolean binding.
       if change.property == "desaturationFromBoolean" then return end
       if change.property == "desaturate" then
         if type(change.value) ~= "boolean" then return end
@@ -1065,8 +1051,6 @@ local function SpellCooldownDesaturationExpression(data, templates)
           steps[#steps + 1] = "desaturation = C_CurveUtil.EvaluateColorValueFromBoolean(not not newActiveConditions[" .. index .. "], " .. value .. ", " .. expression .. ")"
         else
           local selected = Select(condition.check, value, expression)
-          -- A linked condition applies only when no earlier condition of its
-          -- chain is active; those results are readable.
           local earlier = {}
           local first = index
           while first > 1 and data.conditions[first].linked do first = first - 1 end
@@ -1240,7 +1224,6 @@ function Private.RunConditions(region, uid, hideRegion)
     Private.ActivateAuraEnvironment()
   end
 end
-
 
 local dynamicConditionsFrame = nil;
 

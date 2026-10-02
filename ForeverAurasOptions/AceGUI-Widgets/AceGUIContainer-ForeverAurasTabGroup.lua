@@ -1,8 +1,3 @@
---[[-----------------------------------------------------------------------------
-ForeverAurasTabGroup Container
-The options editor's tab bar: AceGUI's TabGroup with the same methods and
-layout rules, drawn as flat tabs with an accent underline on the selected tab.
--------------------------------------------------------------------------------]]
 if not ForeverAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
@@ -16,15 +11,10 @@ if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 local pairs, ipairs, assert, type, wipe = pairs, ipairs, assert, type, wipe
 local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
 
--- Geometry of AceGUI's TabGroup, so tabs sit and wrap exactly where they always
--- did: 24px tabs with 20px side caps, overlapping 10px, rows 20px apart.
 local TAB_HEIGHT, SIDE_WIDTH, OVERLAP, ROW_STEP = 24, 20, 10, 20
 
 local function Theme() return OptionsPrivate.Theme end
 
---[[-----------------------------------------------------------------------------
-Support functions
--------------------------------------------------------------------------------]]
 local function UpdateTabLook(tab)
   local colors = Theme().colors
   local text = tab.text
@@ -62,12 +52,9 @@ local function BuildTabsOnUpdate(frame)
   frame:SetScript("OnUpdate", nil)
 end
 
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
 local function Tab_OnClick(tab)
   if not (tab.selected or tab.disabled) then
-    PlaySound(841) -- SOUNDKIT.IG_CHARACTER_INFO_TAB
+    PlaySound(841)
     tab.obj:SelectTab(tab.value)
   end
 end
@@ -86,9 +73,6 @@ local function Tab_OnLeave(tab)
   self:Fire("OnTabLeave", self.tabs[tab.id].value, tab)
 end
 
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
 local methods = {
   ["OnAcquire"] = function(self)
     self:SetTitle()
@@ -110,7 +94,6 @@ local methods = {
     local tab = CreateFrame("Button", nil, self.frame)
     tab:SetHeight(TAB_HEIGHT)
 
-    -- The flat look is inset by half the overlap so neighbours never touch.
     tab.bg = tab:CreateTexture(nil, "BACKGROUND")
     tab.bg:SetTexture(Theme().WHITE)
     tab.bg:SetPoint("TOPLEFT", OVERLAP / 2, -2)
@@ -178,8 +161,6 @@ local methods = {
     self:BuildTabs()
   end,
 
-  -- AceGUI TabGroup's layout: tab width is text plus padding plus both caps,
-  -- rows wrap on the same widths, and a mostly full row spreads its spare width.
   ["BuildTabs"] = function(self)
     local tablist = self.tablist
     if not tablist then return end
@@ -195,7 +176,6 @@ local methods = {
         tabs[i] = tab
       end
       tab:Show()
-      -- Measured with the interface font; a pooled group had it reverted on release.
       Theme().ApplyFont(tab)
       tab:SetText(v.text)
       tab:SetDisabled(v.disabled)
@@ -223,7 +203,6 @@ local methods = {
     rowwidths[numrows] = usedwidth + 10
     rowends[numrows] = numtabs
 
-    -- A single tab left on the last row borrows one from the row above.
     if numrows > 1 and rowends[numrows - 1] == numtabs - 1 then
       if (numrows == 2 and rowends[numrows - 1] > 2) or (rowends[numrows] - rowends[numrows - 1] > 2) then
         if (rowwidths[numrows] + widths[numtabs - 1]) <= width then
@@ -287,9 +266,6 @@ local methods = {
   end
 }
 
---[[-----------------------------------------------------------------------------
-Constructor
--------------------------------------------------------------------------------]]
 local function Constructor()
   local num = AceGUI:GetNextWidgetNum(Type)
   local frame = CreateFrame("Frame", nil, UIParent)
@@ -304,7 +280,6 @@ local function Constructor()
   titletext:SetHeight(18)
   titletext:SetText("")
 
-  -- Flat content panel under the tabs, with a one pixel border.
   local border = CreateFrame("Frame", nil, frame)
   border:SetPoint("TOPLEFT", 1, -27)
   border:SetPoint("BOTTOMRIGHT", -1, 3)

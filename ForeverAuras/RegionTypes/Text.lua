@@ -231,7 +231,7 @@ local function modify(parent, region, data)
 
       local height = text:GetStringHeight();
       if issecretvalue(height) then
-        height = 30
+        height = region.height and region.height > 0 and region.height or (data.fontSize or 12) + 4
       end
 
       if(region.height ~= height) then
@@ -250,7 +250,7 @@ local function modify(parent, region, data)
     text:SetWordWrap(true);
     text:SetNonSpaceWrap(true);
     SetText = function(textStr)
-      if(textStr ~= text.displayText) then
+      if issecretvalue(textStr) or textStr ~= text.displayText then
         if text:GetFont() then
           text:SetText(ForeverAuras.ReplaceRaidMarkerSymbols(textStr));
         end
@@ -261,10 +261,10 @@ local function modify(parent, region, data)
         local width = text:GetWidth();
         local height = text:GetStringHeight();
         if issecretvalue(width) then
-          width = 200
+          width = region.width and region.width > 0 and region.width or 200
         end
         if issecretvalue(height) then
-          height = 30
+          height = region.height and region.height > 0 and region.height or (data.fontSize or 12) + 4
         end
         if (width ~= region.width or height ~= region.height ) then
           region.width = width

@@ -7,8 +7,6 @@ Graphical Button.
 local Type, Version = "ForeverAurasToolbarButton", 7
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local OptionsPrivate = select(2, ...)
--- Themed colours: light text, a soft hover and an accent fill when toggled on.
--- Classic window style keeps the original gold text and white highlights.
 local function Modern() return OptionsPrivate.Theme.IsModern() end
 local function TextColor()
   if not Modern() then return GameFontNormal:GetTextColor() end
@@ -133,7 +131,6 @@ local function Constructor()
 	frame:SetScript("OnEnter", Control_OnEnter)
 	frame:SetScript("OnLeave", Control_OnLeave)
 
-
 	local icon = frame:CreateTexture()
 	icon:SetTexture("aaa")
 	icon:SetPoint("TOPLEFT", frame, "TOPLEFT")
@@ -147,7 +144,6 @@ local function Constructor()
 	text:SetPoint("BOTTOMRIGHT", -4, 1)
 	text:SetJustifyV("MIDDLE")
 
-
 	local hTex = frame:CreateTexture()
 	hTex:SetTexture("Interface\\AddOns\\ForeverAuras\\Media\\Textures\\Square_FullWhite")
 	hTex:SetVertexColor(1, 1, 1, 0.1)
@@ -155,7 +151,6 @@ local function Constructor()
 	hTex:SetAllPoints()
 	frame:SetHighlightTexture(hTex)
 
-	-- The interface font can change the text width; keep the button fitted.
 	frame.faOnFontChanged = function()
 		if (text:GetText() or "") ~= "" then frame:SetWidth(text:GetStringWidth() + 24) end
 	end
@@ -165,7 +160,6 @@ local function Constructor()
 	pTex:SetVertexColor(1, 1, 1, 0.2)
 	pTex:SetAllPoints()
 	frame:SetPushedTexture(pTex)
-
 
   --- @type table<string, any>
 	local widget = {

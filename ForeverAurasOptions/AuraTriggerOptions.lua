@@ -159,8 +159,6 @@ function Editor.AddOptions(options, data, triggernum)
       set = function(_, value) trigger.secretStacks = tonumber(value); Save() end}
     options.useStacksSpace = {type = "description", name = "", order = 10.088, width = ForeverAuras.normalWidth,
       hidden = function() return trigger.secretUseStacks end}
-    -- The timed glow's Aura Duration box was removed: the glow uses Total
-    -- Duration "=", else the duration learned or read from the tooltip.
     -- Debuffs on friendly units cannot be picked by spell ID in combat; this
     -- matches the entered spell by its known duration and type instead. Shown
     -- under Aura Type once a spell ID is entered.

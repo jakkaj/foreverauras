@@ -3,7 +3,6 @@ if not ForeverAuras.IsLibsOK() then return end
 local _, Private = ...
 local expiryTimer, refreshQueued
 local snapshots, castAfterShot = {}, {}
--- When each identified spell was last cast (kept across holds).
 local lastCast = {}
 local shotAt, lastShotUpdate = -math.huge, -math.huge
 local window = 3
@@ -29,21 +28,16 @@ local function Clear()
   if expiryTimer then expiryTimer:Cancel(); expiryTimer = nil end
 end
 
--- Whether Shoot's shared cooldown currently holds copied timers.
 local function Holding()
   return GetTime() - shotAt < window
 end
 
--- Refreshes rescan every spell cooldown and CDM display, so they only run when
--- the held timers change: a hold starts or ends, or a spell joins or leaves it.
--- Continuous wanding inside one hold changes nothing and needs no rescan.
 local function NoteShot()
   local now = GetTime()
   local changed = not Holding()
   -- Duplicate shot events must not clear a subsequent cast.
   if now - lastShotUpdate > 0.05 then
     shotAt = now
-    -- Spells cast since the previous shot are held again from this shot on.
     if next(castAfterShot) then changed = true end
     wipe(castAfterShot)
   end
@@ -61,7 +55,6 @@ local function OnEvent(_, event, unit, baseSpellID, spellID)
     Clear()
     Refresh()
   elseif event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player" then
-    -- Outside a hold no timer is copied, so casts there change nothing shown.
     local holding = Holding()
     if not PublicSpell(spellID) then
       -- An unidentified cast cannot safely be attributed to a tracked spell.
@@ -82,14 +75,10 @@ local function OnEvent(_, event, unit, baseSpellID, spellID)
   end
 end
 
--- Shoot puts every spell on a shared cooldown that is not the global cooldown.
--- True while that may be all that keeps spellID from being ready: a hold runs
--- and the spell was not cast since the shot.
 function Private.IsWandHeldSpell(spellID)
   return PublicSpell(spellID) and spellID ~= 5019 and Holding() and not castAfterShot[spellID]
 end
 
--- When the player last cast spellID, or nil.
 function Private.GetSpellLastCast(spellID)
   return lastCast[spellID]
 end

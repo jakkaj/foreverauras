@@ -54,7 +54,6 @@ local function GetOptions(data, triggernum)
       values = display.units,
       get = function() return trigger.unit end, set = function(_, value) Save("unit", value) end,
     },
-    -- Specific Unit: one party, raid, boss or arena token (Legacy's field).
     specificUnitSpace = {
       type = "description", name = "", order = 3.02, width = width,
       hidden = function() return trigger.unit ~= "member" end,
@@ -271,7 +270,6 @@ local function GetOptions(data, triggernum)
   end
   options.isFromPlayerOrPlayerPet.width = width
   options.nativePLAYER.width = width
-  -- Own Only first, Cast by a Player beside it.
   options.nativePLAYER.order = options.isFromPlayerOrPlayerPet.order
   options.isFromPlayerOrPlayerPet.order = options.nativePLAYER.order + 0.01
   for _, field in ipairs(display.processingOptions) do options[field[1]] = nil end

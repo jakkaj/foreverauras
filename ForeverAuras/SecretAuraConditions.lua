@@ -41,8 +41,6 @@ local nativeVariables = {faAuraPandemic = true, faAuraStealable = true, faAuraNo
   -- it styles our own static icon, never a live aura (Display.MissingDesaturated).
   faAuraMissing = true}
 for key in pairs(durationVariables) do nativeVariables[key] = true end
--- What an "Aura Missing" condition may change on the static Missing look of
--- each display type (ApplyProperty supports each on sample frames).
 Display.missingRootProperties = {
   icon = {desaturate = true, color = true, zoom = true},
   aurabar = {barColor = true, backgroundColor = true, icon_color = true, desaturate = true},
@@ -149,7 +147,6 @@ function Display.NativeConditionAllowsProperty(data, check, property)
     return target ~= nil and channel ~= "text"
   end
   if kind == "faAuraApplications" then return TextProperty(data, property, "stack") ~= nil end
-  -- Aura Missing styles the static Missing look: anything drawn on it shows
   -- only while the aura is missing (its clip hides it otherwise).
   if kind == "faAuraMissing" then
     local allowed = Display.missingRootProperties[data.regionType]
@@ -492,7 +489,6 @@ function Display.ValidateConditions(data)
       end
       if kind == "faAuraMissing" then
         local showOn = Display.ShowOn(Display.GetTrigger(data))
-        -- Two separate messages: the display type and the trigger setting.
         if not Display.missingRootProperties[data.regionType] then
           return "Aura Missing works on Icon, Bar, Progress Texture and Text displays."
         end

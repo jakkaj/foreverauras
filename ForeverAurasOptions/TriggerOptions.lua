@@ -84,9 +84,6 @@ local function GetGlobalOptions(data)
       end,
       hidden = function() return #data.triggers <= 1 end
     },
-    -- Aura (Modern) is active while its unit exists; Blizzard decides whether
-    -- its aura is drawn. This picks what the display shows while that aura is
-    -- not found (BlizzardAuraDisplay Fallback, SecretAuraSingle.lua).
     secretFallback = {
       type = "select",
       name = "When Aura (Modern) Filters Are Not Met, Use",
@@ -116,7 +113,6 @@ local function GetGlobalOptions(data)
         data.triggers.secretFallback = v ~= "next" and v or nil
         ForeverAuras.Add(data);
       end,
-      -- Only for displays with an Aura (Modern) trigger and another trigger.
       hidden = function()
         if #data.triggers <= 1 then return true end
         for _, entry in ipairs(data.triggers) do

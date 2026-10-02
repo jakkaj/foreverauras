@@ -89,7 +89,6 @@ local function CreateSample(region)
   button:SetScript("OnUpdate", function(self, elapsed)
     if not ForeverAuras.IsOptionsOpen() then
       Display.HidePreview(region)
-      -- Containers still waiting from the editor are finished now.
       if Display.FlushInstanceQueue then Display.FlushInstanceQueue(region) end
       return
     end
