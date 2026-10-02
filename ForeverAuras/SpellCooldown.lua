@@ -3,7 +3,6 @@ if not ForeverAuras.IsLibsOK() then return end
 local _, Private = ...
 
 local gcdStates = {}
--- When each spell's isOnGCD flag last turned true (kept while it stays true).
 local gcdStateSince = {}
 
 -- isOnGCD is authoritative only while handling SPELL_UPDATE_COOLDOWN.
@@ -22,9 +21,6 @@ function Private.UpdateSpellCooldownGCD(spellID)
   end
 end
 
--- The isOnGCD flag from the last SPELL_UPDATE_COOLDOWN, or nil if unknown, and
--- when it turned true. It means only a global cooldown is left: the spell's own
--- cooldown ends before that global cooldown does, not that it has ended.
 function Private.GetSpellCooldownGCDFlag(spellID)
   return gcdStates[spellID], gcdStateSince[spellID]
 end
@@ -57,8 +53,6 @@ function Private.GetSpellCooldownDurationWithoutGCD(spellID, onGCD)
   return C_Spell.GetSpellCooldownDuration(spellID, true)
 end
 
--- into: optional table to fill instead of a new one. Only for callers that read
--- the result straight away and keep no reference (it is refilled next call).
 function Private.GetSpellCooldownData(spellID, track, showGCD, showLossOfControl, into)
   local info = C_Spell.GetSpellCooldown(spellID)
   local charges = C_Spell.GetSpellCharges(spellID)
@@ -90,7 +84,6 @@ function Private.GetSpellCooldownData(spellID, track, showGCD, showLossOfControl
   local result = into and wipe(into) or {}
   result.cooldown = cooldown
   result.conditionOnCooldown = conditionOnCooldown
-  -- Appearance conditions must use the selected real timer, never the GCD swipe.
   result.conditionDuration = cooldown
   result.gcdOnly = info and info.isActive and info.isEnabled and zero == true or false
   result.onCooldown = onCooldown
@@ -145,11 +138,6 @@ end
 
 Private.ExecEnv.GetSpellCooldownData = Private.GetSpellCooldownData
 
--- For custom triggers: fills a state with what Cooldown Progress (Spell) shows
--- for spellID, including the sources it uses while cooldowns are restricted, so
--- an "onCooldown" desaturate condition and the countdown text behave as for the
--- built-in trigger, also in combat. showGCD: the swipe includes the global
--- cooldown. showGCDText: the text counts it (and the wand's shared cooldown) too.
 local customStateScratch = {}
 function ForeverAuras.SetSpellCooldownState(state, spellID, showGCD, showGCDText)
   local cooldown = Private.GetSpellCooldownData(spellID, nil, showGCD, nil, customStateScratch)

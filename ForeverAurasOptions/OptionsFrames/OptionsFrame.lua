@@ -93,8 +93,6 @@ local defaultHeight = 665
 local minWidth = 750
 local minHeight = 240
 
-
-
 function OptionsPrivate.CreateFrame()
   LibDD:Create_UIDropDownMenu("ForeverAuras_DropDownMenu", nil)
   local frame
@@ -105,14 +103,11 @@ function OptionsPrivate.CreateFrame()
   local Theme = OptionsPrivate.Theme
   local modern = Theme.IsModern()
   if not modern then
-    -- Classic style: Blizzard's frame art, as skin addons expect.
-    local color = CreateColorFromHexString("ff191a1e") -- PANEL_BACKGROUND_COLOR
+    local color = CreateColorFromHexString("ff191a1e")
     local cr, cg, cb = color:GetRGB()
     frame.Bg:SetColorTexture(cr, cg, cb, 0.94)
     frame.Bg.colorTexture = {cr, cg, cb, 0.94}
   else
-  -- Flat window: the template keeps its scripts and named parts, but its art
-  -- (portrait, nine-slice border, title strip) is hidden behind a flat skin.
   local r, g, b, a = unpack(Theme.colors.window)
   frame.Bg:ClearAllPoints()
   frame.Bg:SetAllPoints(frame)
@@ -140,11 +135,6 @@ function OptionsPrivate.CreateFrame()
   local titleAccent = Theme.Solid(frame.faTitleBar, "ARTWORK", Theme.colors.accent)
   titleAccent:SetPoint("BOTTOMLEFT", 48, 0)
   titleAccent:SetSize(56, 1)
-  -- The logo as a badge over the top-left corner, like the Classic portrait:
-  -- its own frame above the window so it can overhang the edges.
-  -- One baked badge: the logo zoomed past its notched outer ring, a thin gold
-  -- ring, and a round socket (window colours, border ring, soft shadow) that
-  -- covers the corner so it looks set into the frame.
   local badge = CreateFrame("Frame", nil, frame)
   badge:SetSize(66, 66)
   badge:SetPoint("TOPLEFT", frame, "TOPLEFT", -16, 17)
@@ -199,7 +189,6 @@ function OptionsPrivate.CreateFrame()
   frame:SetPoint("TOP", UIParent, "BOTTOMLEFT", xOffset, yOffset)
   frame:Hide()
 
-
   frame:SetScript("OnHide", function()
     local suspended = OptionsPrivate.Private.PauseAllDynamicGroups()
 
@@ -253,7 +242,6 @@ function OptionsPrivate.CreateFrame()
   frame:SetWidth(width)
   frame:SetHeight(height)
 
-
   OptionsPrivate.SetTitle()
 
   local function commitWindowChanges()
@@ -273,7 +261,6 @@ function OptionsPrivate.CreateFrame()
     if not modern then frame.TitleContainer:SetAllPoints(frame.TitleBg) end
   end
   if modern then
-    -- The flat title bar is the drag handle; the title sits after the logo.
     frame.TitleContainer:ClearAllPoints()
     frame.TitleContainer:SetAllPoints(frame.faTitleBar)
     frame.TitleContainer:SetFrameLevel(frame.faTitleBar:GetFrameLevel() + 1)
@@ -292,7 +279,6 @@ function OptionsPrivate.CreateFrame()
     frame:StopMovingOrSizing()
     commitWindowChanges()
   end)
-
 
   frame.bottomRightResizer = CreateFrameSizer(frame, commitWindowChanges, "BOTTOMRIGHT")
 
@@ -385,10 +371,7 @@ function OptionsPrivate.CreateFrame()
     end
   end
 
-
-
   if modern then
-    -- Close button: the template's button and scripts with a flat glyph.
     frame.CloseButton:ClearAllPoints()
     frame.CloseButton:SetPoint("RIGHT", frame.faTitleBar, "RIGHT", -4, 0)
     frame.CloseButton:SetSize(22, 22)
@@ -396,7 +379,6 @@ function OptionsPrivate.CreateFrame()
     Theme.SkinGlyphButton(frame.CloseButton, "close", {1, 0.42, 0.42, 1})
   end
 
-  -- Modern style: the taller title bar pushes the content down a little.
   frame.faTopGap = modern and 8 or 0
 
   local minimizebutton = CreateFrame("Button", nil, frame, "MaximizeMinimizeButtonFrameTemplate")
@@ -414,7 +396,6 @@ function OptionsPrivate.CreateFrame()
     end
   end
 
-  -- Font menu, and the Layout menu (Classic or Modern window) beside it.
   local fontButton = Theme.TextButton(frame, "Font")
   fontButton:SetFrameLevel(frame.TitleContainer:GetFrameLevel() + 1)
   fontButton:SetPoint("RIGHT", minimizebutton, "LEFT", -4, 0)
@@ -641,8 +622,6 @@ function OptionsPrivate.CreateFrame()
   -- Left Side Container
   local buttonsContainer = AceGUI:Create("InlineGroup")
   buttonsContainer:SetWidth(170)
-  -- This InlineGroup lives as long as the window, so its border is replaced
-  -- by the flat panel for good.
   if modern then
     buttonsContainer.content:GetParent():SetBackdrop(nil)
     Theme.Flat(buttonsContainer.content:GetParent(), Theme.colors.panel, Theme.colors.border)
@@ -777,7 +756,6 @@ function OptionsPrivate.CreateFrame()
   magnetButton.frame:Show()
   magnetButton:SetPoint("LEFT", lockButton.frame, "RIGHT", 10, 0)
 
-
   if C_CooldownViewer then
     local hideCDM = AceGUI:Create("CheckBox")
     hideCDM:SetLabel("Hide Blizzard's CDM")
@@ -800,7 +778,6 @@ function OptionsPrivate.CreateFrame()
     hideCDM.frame:SetPoint("LEFT", magnetButton.frame, "RIGHT", 10, 0)
     hideCDM.frame:Show()
   end
-
 
   local loadProgress = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   loadProgress:SetPoint("TOP", buttonsContainer.frame, "TOP", 0, -4)
@@ -1090,7 +1067,6 @@ function OptionsPrivate.CreateFrame()
   dynamicTextCodesScrollContainer:SetFullHeight(true)
   dynamicTextCodesScrollContainer:SetLayout("Fill")
 
-
   local dynamicTextCodesScrollList = AceGUI:Create("ScrollFrame")
   dynamicTextCodesScrollList:SetLayout("List")
   dynamicTextCodesScrollList:SetPoint("TOPLEFT", dynamicTextCodesScrollContainer.frame, "TOPLEFT")
@@ -1113,7 +1089,6 @@ function OptionsPrivate.CreateFrame()
       end
     end
   )
-
 
   dynamicTextCodesFrame.scrollList = dynamicTextCodesScrollList
   dynamicTextCodesFrame.label = dynamicTextCodesLabel
@@ -1430,7 +1405,6 @@ function OptionsPrivate.CreateFrame()
     containerScroll:SetLayout("flow")
     border:AddChild(containerScroll)
 
-
     if C_AddOns.GetAddOnEnableState("ForeverAurasTemplates") ~= Enum.AddOnEnableState.None then
       local simpleLabel = AceGUI:Create("Label")
       simpleLabel:SetFont(STANDARD_TEXT_FONT, 14, "")
@@ -1610,7 +1584,6 @@ function OptionsPrivate.CreateFrame()
     displayButtons[id]:Pick()
     self.pickedDisplay = id
 
-
     if tab then
       self.selectedTab = tab
     end
@@ -1702,15 +1675,10 @@ function OptionsPrivate.CreateFrame()
   local left, right, top, bottom = w/2,-w/2, 0, h-25
   frame:SetClampRectInsets(left, right, top, bottom)
 
-  -- Interface font: the whole window when shown, and the display list each
-  -- time it is rebuilt or filtered (the options tree hooks AceConfigDialog).
   frame:HookScript("OnShow", function() Theme.ApplyFont(frame) end)
-  -- Menus opened from the window (Font, Layout, aura right-click) close with
-  -- it; menus other addons opened from the shared library are left alone.
   frame:HookScript("OnHide", function()
     if _G.L_UIDROPDOWNMENU_OPEN_MENU == ForeverAuras_DropDownMenu then LibDD:CloseDropDownMenus() end
   end)
-  -- Rows are walked once; a re-sort or filter only reaches new rows.
   hooksecurefunc(OptionsPrivate, "SortDisplayButtons", function()
     if not frame:IsShown() then return end
     for _, child in ipairs(frame.buttonsScroll.children or {}) do

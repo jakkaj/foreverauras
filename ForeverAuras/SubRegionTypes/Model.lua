@@ -12,8 +12,6 @@ Private.barmodels = {}
 local default = function(parentType)
   return {
     model_visible = true,
-    -- Restored from WeakAuras: without it the model's alpha was nil, which
-    -- SetModelAlpha rejects (and older models saved without it, below).
     model_alpha = 1,
     api = false,
     model_x = 0,
@@ -72,7 +70,6 @@ local function PreShow(self)
     self:SetPosition(data.model_z, data.model_x, data.model_y);
     self:SetFacing(rad(data.rotation))
   end
-  -- A model whose display was not finished has no region yet.
   self:SetModelAlpha(self.region and self.region.alpha or 1)
 end
 
@@ -86,7 +83,6 @@ end
 -- Keep the two model apis separate
 local poolOldApi = CreateObjectPool(CreateModel)
 local poolNewApi = CreateObjectPool(CreateModel)
-
 
 local function AcquireModel(region, data)
   local pool = data.api and poolNewApi or poolOldApi
@@ -109,7 +105,6 @@ local function AcquireModel(region, data)
   else
     anchor = region.parent
   end
-
 
   local extra_width, extra_height = 0, 0
   if not(data.bar_model_attach and region.parentType == "aurabar") then
@@ -159,7 +154,6 @@ local funcs = {
   end,
   SetAlpha = function(self, alpha)
     if issecretvalue(alpha) then return end
-    -- Models saved without an alpha are fully opaque, as the default.
     alpha = tonumber(alpha) or 1
     if self.model then
       self.model:SetModelAlpha(alpha)
@@ -174,7 +168,6 @@ local funcs = {
     if effectiveVisible then
       if not self.model then
         self.model = AcquireModel(self, self.data)
-        -- Set first, so the model is never left in the list without its region.
         self.model.region = self
         self.model:SetModelAlpha(self.alpha or 1)
       end

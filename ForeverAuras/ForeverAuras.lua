@@ -385,7 +385,6 @@ function Private.GetActiveTriggerFor(id)
   end
 end
 
-
 -- Fallback states
 local fallbacksStates = {};
 
@@ -1234,7 +1233,6 @@ function Private.Login(takeNewSnapshots)
       db.history = nil
     end
 
-
     Private.Features:Hydrate()
     coroutine.yield(3000, "login check uid corruption")
 
@@ -1660,7 +1658,6 @@ local function scanForLoadsImpl(toCheck, event, arg1, ...)
 
   local mounted = IsMounted()
   
-  
   do
     vehicle = UnitInVehicle('player') or UnitOnTaxi('player') or false
     vehicleUi = UnitHasVehicleUI('player') or HasOverrideActionBar() or HasVehicleActionBar() or false
@@ -1688,11 +1685,8 @@ local function scanForLoadsImpl(toCheck, event, arg1, ...)
 
   local hardcore, runeEngraving = false, false
   
-
   local pvp = false
   
-
-
   local addonRestrictionsActive = ForeverAuras.IsSecretStateActive()
 
   local changed = 0;
@@ -1797,9 +1791,6 @@ do
   loadFrame:RegisterEvent("TRAIT_CONFIG_CREATED")
   loadFrame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 end
-
-
-
 
 loadFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
 loadFrame:RegisterEvent("ZONE_CHANGED");
@@ -1978,7 +1969,6 @@ function Private.Resume()
     end
   end
 
-
   UnloadAll();
   unloadingAllDisplays = false
   scanForLoadsImpl();
@@ -2101,7 +2091,6 @@ function ForeverAuras.Delete(data)
   local parentId = data.parent
   local parentUid = data.parent and db.displays[data.parent].uid
 
-
   UnloadDisplayIfLoaded(id)
 
   Private.callbacks:Fire("AboutToDelete", uid, id, parentUid, parentId)
@@ -2158,7 +2147,6 @@ function ForeverAuras.Delete(data)
   for _, triggerSystem in pairs(triggerSystems) do
     triggerSystem.Delete(id);
   end
-
 
   loaded[id] = nil;
   loadFuncs[id] = nil;
@@ -2348,7 +2336,6 @@ function Private.Convert(data, newType)
       end
     end
   end
-
 
   ForeverAuras.Add(data);
   if paused then
@@ -2895,7 +2882,6 @@ local function validateUserConfig(data, options, config)
     end
   end
 end
-
 
 local oldDataStub = {
   -- note: this is the minimal data stub which prevents false positives in diff upon reimporting an aura.
@@ -4198,7 +4184,6 @@ function Private.GetProgressSourcesForUi(data, subelement)
   return result
 end
 
-
 function Private.GetOverlayInfo(data, triggernum)
   local overlayInfo;
   if (data.controlledChildren) then
@@ -4630,7 +4615,6 @@ do
     end
   end
 
-
   ---@param pool threadPool
   ---@param finish number
   ---@param defaultEstimate number
@@ -4663,7 +4647,6 @@ do
       end
     until not continue
   end
-
 
   ---@param name string
   ---@param func thread
@@ -5360,19 +5343,30 @@ end
 
 Private.ContainsPlaceHoldersPredicate = ContainsPlaceHolders
 
+local function HiddenText(value)
+  if type(value) == "string" then return value end
+  return tostring(value)
+end
+
+local function FormatStateValue(value, formatter, state, triggerNum)
+  if formatter then
+    value = formatter(value, state, triggerNum)
+    if issecretvalue(value) then return HiddenText(value) end
+    return tostring(value or "") or ""
+  end
+  if issecretvalue(value) then return HiddenText(value) end
+  return tostring(value) or ""
+end
+
 local function ValueForSymbol(symbol, region, customCache, regionState, regionStates, useHiddenStates, formatters)
   local triggerNum, sym = string.match(symbol, "(.+)%.(.+)")
   triggerNum = triggerNum and tonumber(triggerNum)
   if triggerNum and sym then
     if regionStates[triggerNum] then
       if (useHiddenStates or regionStates[triggerNum].show) then
-        if regionStates[triggerNum][sym] then
-          local value = regionStates[triggerNum][sym]
-          if formatters[symbol] then
-            return tostring(formatters[symbol](value, regionStates[triggerNum], triggerNum) or "") or ""
-          else
-            return tostring(value) or ""
-          end
+        local value = regionStates[triggerNum][sym]
+        if issecretvalue(value) or value then
+          return FormatStateValue(value, formatters[symbol], regionStates[triggerNum], triggerNum)
         else
           local value = ReplaceValuePlaceHolders(sym, region, customCache, regionStates[triggerNum], formatters[symbol], triggerNum);
           return value or ""
@@ -5380,14 +5374,9 @@ local function ValueForSymbol(symbol, region, customCache, regionState, regionSt
       end
     end
     return ""
-  elseif regionState[symbol] ~= nil then
+  elseif issecretvalue(regionState[symbol]) or regionState[symbol] ~= nil then
     if(useHiddenStates or regionState.show) then
-      local value = regionState[symbol]
-      if formatters[symbol] then
-        return tostring(formatters[symbol](value, regionState, regionState.triggernum) or "") or ""
-      else
-        return tostring(value) or ""
-      end
+      return FormatStateValue(regionState[symbol], formatters[symbol], regionState, regionState.triggernum)
     end
     return ""
   else
@@ -5419,7 +5408,9 @@ function Private.ReplacePlaceHolders(textStr, region, customCache, useHiddenStat
         return "%" -- Double % input
       end
       local value = ValueForSymbol(symbol, region, customCache, regionState, regionStates, useHiddenStates, formatters);
-      if (value) then
+      if issecretvalue(value) then
+        textStr = value
+      elseif (value) then
         textStr = tostring(value);
       end
     end
@@ -6481,7 +6472,6 @@ function Private.ExecEnv.ParseNameCheck(name)
       local state = 1
       local name = ""
       local realm = ""
-
 
       for index = 1, #match do
         local c = match:sub(index, index)

@@ -81,7 +81,6 @@ local loaded_auras = {}; -- id to bool map
 local LoadEvent, HandleEvent, HandleUnitEvent, TestForTriState, TestForToggle, TestForLongString, TestForMultiSelect
 local ConstructTest, ConstructFunction
 
-
 local nameplateExists = {}
 
 ---@param unit UnitToken
@@ -596,7 +595,6 @@ function Private.ActivateEvent(id, triggernum, data, state, errorHandler)
     local ok, arg1, arg2, arg3, inverse = xpcall(data.durationFunc, errorHandler or Private.GetErrorHandlerId(id, L["Duration Function"]), data.trigger);
     arg1 = ok and type(arg1) == "number" and arg1 or 0;
     arg2 = ok and type(arg2) == "number" and arg2 or 0;
-
 
     if (state.inverse ~= inverse) then
       state.inverse = inverse;
@@ -2002,11 +2000,9 @@ do
   end
 end
 
-
 --#############################
 --# Support code for triggers #
 --#############################
-
 
 -- CD/Rune/GCD support code
 do
@@ -2258,18 +2254,12 @@ do
     return cd
   end
 
-
-  -- Secret cooldowns have no readable end time; poll isActive while one runs.
   local secretPolled = {}
   local secretPoller = CreateFrame("Frame")
   secretPoller:Hide()
   local SECRET_POLL_INTERVAL = 0.1
-  -- Refilled by every secret cooldown check (see Private.GetSpellCooldownData).
   local secretScratch = {}
-  -- Longer than any global cooldown (1.5 s at most).
   local SECRET_MIN_COOLDOWN = 1.6
-  -- Shoot puts every spell on a shared cooldown. With readable times, a timer
-  -- that a shot holds and that did not start when the spell was cast is Shoot's.
   local function IsWandOnlyTimer(spellID, startTime)
     if not Private.IsWandHeldSpell(spellID) then return false end
     local cast = Private.GetSpellLastCast(spellID)
@@ -2281,15 +2271,11 @@ do
     self.elapsed = self.elapsed + elapsed
     if self.elapsed < SECRET_POLL_INTERVAL then return end
     self.elapsed = 0
-    -- Polls only look for the end of a cooldown; unchanged states stay quiet.
     SpellDetails.quietSecretCheck = true
     for id in pairs(secretPolled) do
       if SpellDetails.data[id] then
-        -- isActive is never secret: while it holds, the cooldown has not ended,
-        -- so the full (table-building) check only runs once it may have.
         local info = C_Spell.GetSpellCooldown(id)
         local active = info and info.isActive
-        -- A cooldown held back behind a global cooldown is rechecked as well.
         if not info or issecretvalue(active) or active ~= true or Private.GetSpellCooldownGCDFlag(id) == true then
           SpellDetails:CheckSpellCooldown(id)
         end
@@ -2492,35 +2478,24 @@ do
         local detail = self.data[effectiveSpellId]
         local cooldown = Private.GetSpellCooldownData(effectiveSpellId, "cooldown", nil, nil, secretScratch)
         if not detail or not cooldown then return end
-        -- Read the shared table now; event handlers below may refill it.
         local ready, charges, maxCharges, count = cooldown.ready, cooldown.charges, cooldown.maxCharges, cooldown.count
         local now = GetTime()
-        -- With only a global cooldown left, the spell's own cooldown ends some
-        -- time before that global cooldown does. Report ready only once the
-        -- global cooldown seen then has surely ended.
         if ready == true then
           local onGCD, since = Private.GetSpellCooldownGCDFlag(effectiveSpellId)
           local info = onGCD == true and since and now - since < SECRET_MIN_COOLDOWN and C_Spell.GetSpellCooldown(effectiveSpellId)
           if info and info.isActive == true then ready = false end
         end
-        -- The readable timers are frozen while restricted; reset them so the end
-        -- of a cooldown already reported here is not reported again afterwards.
         for _, handler in ipairs(self.cdHandlers) do
           if handler.expirationTime[effectiveSpellId] then
             handler.expirationTime[effectiveSpellId] = 0
             handler.duration[effectiveSpellId] = 0
           end
         end
-        -- The public flags also count the global cooldown, so only a cooldown
-        -- that outlasted a global cooldown reports ready when it ends.
-        -- A spell that turned not ready during wanding, without being cast since
-        -- it was last ready, only waited for Shoot's shared cooldown.
         local wandOnly = false
         if detail.notReadyWand then
           local cast = Private.GetSpellLastCast(effectiveSpellId)
           wandOnly = not cast or (detail.lastReadyAt and cast < detail.lastReadyAt - 0.2) or false
         end
-        -- The readable timers were reset above; their wand flags go with them.
         detail.wandOnlyCooldown, detail.ownCooldownEnd = nil, nil
         if detail.ready == false and ready == true and detail.notReadySince and not wandOnly
         and now - detail.notReadySince > SECRET_MIN_COOLDOWN and not ForeverAuras.IsPaused() then
@@ -2535,9 +2510,6 @@ do
           detail.notReadySince, detail.notReadyWand = nil, nil
           if ready == true then detail.lastReadyAt = now end
         end
-        -- Without readable times only these flags show a change; repeated checks
-        -- from frequent events (usable updates, polling) skip unchanged states.
-        -- Secret charge counts change with SPELL_UPDATE_CHARGES, which is never quiet.
         local stateChanged = detail.ready ~= ready
           or (not hasanysecretvalues(detail.charges, detail.chargesMax, detail.count, charges, maxCharges, count)
             and (detail.charges ~= charges or detail.chargesMax ~= maxCharges or detail.count ~= count))
@@ -2563,9 +2535,7 @@ do
       local time = GetTime();
 
       local spellDetail = self.data[effectiveSpellId]
-      -- Forget the restricted ready state; it goes stale while timers are readable.
       spellDetail.ready = nil
-      -- Readable and not on cooldown: casting it again starts a real cooldown.
       if not hasanysecretvalues(startTime, duration) and (duration == 0 or startTime == 0) then
         spellDetail.lastReadyAt = time
       end
@@ -2588,7 +2558,6 @@ do
         end
       end
 
-      -- Whether the timer the handlers held until now was only Shoot's.
       local endedWandOnly = spellDetail.wandOnlyCooldown
       local changed = false
       changed = self.spellCds:HandleSpell(effectiveSpellId, startTime, duration, unifiedModRate, paused) or changed
@@ -2604,16 +2573,12 @@ do
       changed = chargeChanged or changed
       local wandOnly = durationCooldown > 0 and IsWandOnlyTimer(effectiveSpellId, startTimeCooldown)
       spellDetail.wandOnlyCooldown = wandOnly or nil
-      -- A longer shot timer can replace the spell's own timer before it ends;
-      -- remember when the spell's own cooldown ends.
       if durationCooldown > 0 and not wandOnly then
         spellDetail.ownCooldownEnd = startTimeCooldown + durationCooldown
       end
       local ownEnded = spellDetail.ownCooldownEnd and spellDetail.ownCooldownEnd <= time + 0.05
 
       if not ForeverAuras.IsPaused() then
-        -- The end of Shoot's shared cooldown is not a spell becoming ready,
-        -- unless the spell's own cooldown ended under it.
         if nowReady and (not endedWandOnly or ownEnded) then
           spellDetail.ownCooldownEnd = nil
           self:SendEventsForSpell(effectiveSpellId, "SPELL_COOLDOWN_READY", effectiveSpellId)
@@ -2742,9 +2707,6 @@ do
   }
   SpellDetails.cdHandlers = {SpellDetails.spellCds, SpellDetails.spellCdsRune, SpellDetails.spellCdsOnlyCooldown,
     SpellDetails.spellCdsOnlyCooldownRune, SpellDetails.spellCdsCharges}
-  -- While casting continues, the global cooldown keeps isActive true after a
-  -- secret cooldown ends, so the poller cannot see the end. isOnGCD, read on
-  -- SPELL_UPDATE_COOLDOWN, can: only the global cooldown is left.
   function SpellDetails:CheckSecretCooldownsOnGCD(except)
     for id in pairs(secretPolled) do
       if id ~= except and self.data[id] and Private.GetSpellCooldownGCDFlag(id) == true then
@@ -2780,14 +2742,11 @@ do
     cdReadyFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
     cdReadyFrame:RegisterEvent("PLAYER_LEAVING_WORLD")
     
-
     Private.callbacks:RegisterCallback("WA_SECRET_STATE_UPDATE", function()
       cdReadyFrame:HandleEvent("WA_SECRET_STATE_UPDATE")
     end)
 
     cdReadyFrame.HandleEvent = function(self, event, ...)
-      -- Usable updates fire on every mana change. While cooldowns are secret they
-      -- cannot reveal a change; the secret poller watches running cooldowns.
       if event == "SPELL_UPDATE_USABLE" and C_Secrets.ShouldSpellCooldownBeSecret(61304) then return end
       if event == "SPELL_UPDATE_COOLDOWN" then
         for id in pairs(SpellDetails.data) do
@@ -2845,10 +2804,8 @@ do
           mark_ACTIONBAR_UPDATE_COOLDOWN = nil
         end
         if spellId and not SpellDetails.data[spellId] then spellId = nil end
-        -- Usable updates fire on every mana change; they cannot change a cooldown.
         SpellDetails.quietSecretCheck = event == "SPELL_UPDATE_USABLE" or nil
         Private.CheckCooldownReady(spellId)
-        -- A single-spell update leaves other secret cooldowns to the check above.
         if spellId then
           SpellDetails.quietSecretCheck = true
           SpellDetails:CheckSecretCooldownsOnGCD(spellId)
@@ -3005,7 +2962,6 @@ do
       end
     end
   end
-
 
   ---@param identifier string | number
   ---@return number? startTime, number? duration
@@ -3252,7 +3208,6 @@ do
         startTimeCooldown = startTimeCooldown - 2^32 / 1000
       end
 
-
       -- Paused cooldowns are:
       -- Spells like Presence of Mind/Nature's Swiftness that start their cooldown after the effect is consumed
       -- But also oddly some Evoker spells
@@ -3306,7 +3261,6 @@ do
   end
 
   ---@type fun(id): boolean|nil
-  -- These return one field, so they fill a shared table instead of a new one.
   local queryScratch = {}
   function ForeverAuras.IsSpellReady(id)
     local cooldown = Private.GetSpellCooldownData(id, "cooldown", nil, nil, queryScratch)
@@ -4039,8 +3993,94 @@ function Private.ExecEnv.CheckTotemSpellId(spellId, triggerSpellId, followoverri
   return false
 end
 
--- Queueable Spells
+local totemSlots = {}
+local lastTotemCast = {time = -math.huge}
+local TOTEM_CAST_WINDOW = 0.5
 
+local function LearnedTotemSpells()
+  if not Private.db then return end
+  Private.db.totemSpells = Private.db.totemSpells or {}
+  return Private.db.totemSpells
+end
+
+local function ReadTotemSlot(slot)
+  local haveTotem, name, startTime, duration, icon, modRate, spellId = GetTotemInfo(slot)
+  if hasanysecretvalues(haveTotem, name, startTime, duration, icon, modRate, spellId) then return end
+  if haveTotem and startTime and startTime ~= 0 then
+    totemSlots[slot] = {name = name, icon = icon, spellId = spellId}
+    local learned = LearnedTotemSpells()
+    if learned and type(spellId) == "number" and spellId > 0 then learned[spellId] = slot end
+  else
+    totemSlots[slot] = nil
+  end
+  return true
+end
+
+local function UpdateSecretTotemSlot(slot)
+  local learned = LearnedTotemSpells()
+  local spellId = lastTotemCast.spellId
+  if spellId and learned and learned[spellId] == slot and GetTime() - lastTotemCast.time <= TOTEM_CAST_WINDOW then
+    totemSlots[slot] = {name = Private.ExecEnv.GetSpellName(spellId), icon = Private.ExecEnv.GetSpellIcon(spellId), spellId = spellId}
+    return true
+  end
+  local changed = totemSlots[slot] ~= nil
+  totemSlots[slot] = nil
+  return changed
+end
+
+local totemFrame = CreateFrame("Frame")
+totemFrame:RegisterEvent("PLAYER_TOTEM_UPDATE")
+totemFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+totemFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+totemFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+totemFrame:SetScript("OnEvent", function(_, event, arg1, _, spellId)
+  if event == "UNIT_SPELLCAST_SUCCEEDED" then
+    local public = not issecretvalue(spellId) and type(spellId) == "number"
+    lastTotemCast.time, lastTotemCast.spellId = GetTime(), public and spellId or nil
+    local learned = public and LearnedTotemSpells()
+    local slot = learned and learned[spellId]
+    if slot and C_Secrets.ShouldTotemSlotBeSecret(slot) and UpdateSecretTotemSlot(slot) then
+      Private.ScanEvents("FA_TOTEM_UPDATE", slot)
+    end
+  elseif event == "PLAYER_TOTEM_UPDATE" then
+    if type(arg1) == "number" and not issecretvalue(arg1) and not ReadTotemSlot(arg1) then
+      UpdateSecretTotemSlot(arg1)
+    end
+    Private.ScanEvents("FA_TOTEM_UPDATE", arg1)
+  else
+    for slot = 1, 5 do
+      if not C_Secrets.ShouldTotemSlotBeSecret(slot) then ReadTotemSlot(slot) end
+    end
+    Private.ScanEvents("FA_TOTEM_UPDATE")
+  end
+end)
+
+function Private.ExecEnv.GetTotemSlotInfo(slot)
+  if not C_Secrets.ShouldTotemSlotBeSecret(slot) and ReadTotemSlot(slot) then
+    local _, name, startTime, duration, icon, modRate, spellId = GetTotemInfo(slot)
+    return totemSlots[slot] ~= nil, name, startTime, duration, icon, modRate, spellId
+  end
+  local totem = totemSlots[slot]
+  if not totem then return false end
+  local ok, durationObject = pcall(GetTotemDuration, slot)
+  return true, totem.name, nil, nil, totem.icon, nil, totem.spellId, ok and durationObject or nil
+end
+
+function Private.ExecEnv.SetTotemStateTimer(state, startTime, duration, modRate, durationObject)
+  if durationObject then
+    state.progressType = "durationObject"
+    state.durationObject = durationObject
+    state.duration, state.expirationTime, state.modRate = nil, nil, nil
+  else
+    state.progressType = "timed"
+    state.durationObject = nil
+    state.duration = duration
+    state.expirationTime = startTime and (startTime + duration)
+    state.modRate = modRate
+  end
+end
+
+-- Queueable Spells
 
 local GetSpellPowerCost = GetSpellPowerCost or C_Spell and C_Spell.GetSpellPowerCost
 
@@ -4100,7 +4140,6 @@ do
       -- Swapping a weapon must invalidate enchant art and timing together.
       tenchFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
       
-
       local getTenchName
       do
         getTenchName = function(id)
@@ -5321,7 +5360,6 @@ Private.ExecEnv.GetCurrencyAccountInfo = function(currencyId)
     end
   end
 
-
   if currencyInfo then
     currencyInfo.capped = currencyInfo.maxQuantity and currencyInfo.maxQuantity > 0 and currencyInfo.quantity >= currencyInfo.maxQuantity
     currencyInfo.seasonCapped = currencyInfo.maxQuantity and currencyInfo.maxQuantity > 0 and currencyInfo.useTotalEarnedForMaxQty and currencyInfo.totalEarned >= currencyInfo.maxQuantity
@@ -5338,7 +5376,6 @@ Private.ExecEnv.GetCurrencyAccountInfo = function(currencyId)
 
   return currencyInfo or {}
 end
-
 
 local types = {}
 tinsert(types, "custom")

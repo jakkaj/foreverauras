@@ -55,12 +55,6 @@ function Display.FlowGroup(data)
   if parent and parent.regionType == "group" and parent.blizzardFlow then return parent end
 end
 
--- The growth the group draws with. Grouped by unit frame or nameplate, the
--- group's Anchor point also sets where a centred row sits along its growth,
--- as for a Dynamic Group: a left anchor starts the row at the frame point and
--- grows right, a right anchor grows left from it (top: down, bottom: up). A
--- middle anchor keeps the row centred. On the screen the group's own frame
--- is anchored, so the growth is used as chosen.
 local function GrowthKey(group)
   local growth = GROWTH[group.blizzardFlowGrowth] and group.blizzardFlowGrowth or "RIGHT"
   local mode = group.blizzardFlowFrames
@@ -493,11 +487,6 @@ local function CrossOffset(group, g, cross)
   return -cross / 2, 0
 end
 
--- Grouped by frame, the anchor point also aligns displays of different icon
--- sizes across the growth, as a Dynamic Group does: each display is attached
--- to the previous one at the top, middle or bottom edge (left, middle or right
--- for vertical growth), so smaller icons line up on that edge instead of always
--- hanging from the top. Returns g's start, list end and far points, aligned.
 local function AlignedPoints(group, g)
   local selfPoint = group.selfPoint or "CENTER"
   local horizontal = g.sign[1] ~= 0
@@ -533,10 +522,8 @@ function Display.RelinkFlowUnits(group)
   local mode = group and group.blizzardFlowFrames
   if mode ~= "UNITFRAME" and mode ~= "NAMEPLATE" then return end
   if batch then batch[group] = true; return end
-  -- Anchor-adjusted growth (GrowthKey).
   local g = GROWTH[GrowthKey(group)]
   -- The group's own Position and Size settings, relative to each frame.
-  -- The aligned points place the row on the frame point directly.
   local point, frameX, frameY = FramePosition(group)
   local start, listEnd = AlignedPoints(group, g)
   local spacing = tonumber(group.blizzardFlowSpacing) or 2
@@ -652,7 +639,6 @@ function Display.ArrangeFlowPreview(group)
   local mode = group.blizzardFlowFrames
   local framed = mode == "UNITFRAME" or mode == "NAMEPLATE"
   if mode ~= "NAMEPLATE" then Display.ReleaseNameplatePreview(group) end
-  -- Anchor-adjusted growth when grouped by frame (GrowthKey).
   local g = GROWTH[GrowthKey(group)]
   local spacing = tonumber(group.blizzardFlowSpacing) or 2
   local along = g.sign[1] ~= 0
@@ -696,7 +682,6 @@ function Display.ArrangeFlowPreview(group)
           local ox, oy = Offset(key)
           -- The group's anchor point only places the row on a frame; on the
           -- screen the row sits on the first display's box, as the live auras do.
-          -- On a frame, samples line up on the anchor's edge (AlignedPoints).
           local start, far = g.start, g.far
           if framed then
             local alignedStart, _, alignedFar = AlignedPoints(group, g)
@@ -734,8 +719,6 @@ function Display.ArrangeFlowPreview(group)
   end
 end
 
--- True when a child of a group grouped by frame was built for a growth other
--- than the group's current one (GrowthKey); pending rebuilds by child ID.
 local staleRebuilds = {}
 local function StaleGrowth(group, childID)
   local entry = Private.regions[childID]
@@ -748,16 +731,12 @@ end
 function Display.RechainFlow(group)
   if not group then return end
   if group.blizzardFlowFrames == "UNITFRAME" or group.blizzardFlowFrames == "NAMEPLATE" then
-    -- The group's Anchor can change the growth (GrowthKey) without its
-    -- children being saved again; those built for the old growth are rebuilt
-    -- on the next frame, out of combat. A rebuilt child matches and stops.
     if not InCombatLockdown() then
       for _, childID in ipairs(group.controlledChildren or {}) do
         if StaleGrowth(group, childID) and not staleRebuilds[childID] then
           staleRebuilds[childID] = true
           C_Timer.After(0, function()
             staleRebuilds[childID] = nil
-            -- Checked again: saving the group usually rebuilds them already.
             local child = ForeverAuras.GetData(childID)
             if child and not InCombatLockdown() and StaleGrowth(group, childID) then ForeverAuras.Add(child) end
           end)

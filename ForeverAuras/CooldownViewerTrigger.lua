@@ -29,12 +29,8 @@ local function IsAvailable()
   return C_CooldownViewer and C_CooldownViewer.GetCooldownViewerCategorySet and C_CooldownViewer.GetCooldownViewerCooldownInfo and Enum and Enum.CooldownViewerCategory and C_Spell and C_Spell.GetSpellCooldownDuration
 end
 
--- GetTime() of the last catalog build.
 local catalogTime
 
--- Whether a scan for this event rebuilds the catalog. OPTIONS rebuilds at most
--- once per frame: opening the options previews every CDM display in the same
--- frame, and one fresh catalog serves them all (with its resolve cache).
 local function CatalogRefresh(event)
   if refreshEvents[event] then return true end
   return event == "OPTIONS" and not (catalog and catalogTime == GetTime())
@@ -215,10 +211,6 @@ function Private.ResolveCDMSpell(trigger, event)
     if spell and spell.name:lower() == name then seen[spellID] = true; buffSpellIDs[#buffSpellIDs + 1] = spellID end
   end
   local best, bestRank, bestScore
-  -- OPTIONS previews every CDM display in one frame, and its catalog (with
-  -- this cache) lasts one frame (CatalogRefresh). Entry info, identities and
-  -- spell names cannot change within a frame, so each query in that frame
-  -- reuses them instead of asking the client again for every entry.
   local memo = event == "OPTIONS" and resolved
   if memo and not memo.entryInfo then memo.entryInfo, memo.identities, memo.spellNames = {}, {}, {} end
   local function EntryInfo(entryID)
@@ -281,7 +273,6 @@ function Private.ResolveCDMSpell(trigger, event)
     end
   end
   -- Keep configured spell samples visible even without a usable CDM entry.
-  -- Cached like a found entry: the OPTIONS cache lasts one frame (see memo above).
   if event == "OPTIONS" and not best then
     resolved[key] = {previewSpell = spell or {name = query, iconID = 134400, spellID = id}, singleClone = true}
     return resolved[key]
@@ -422,7 +413,6 @@ local function QueueRefresh()
   Private.QueueCDMRefresh()
 end
 
--- Clone keys written by the current BuildCooldownViewerStates run (reused).
 local built = {}
 local function BuildCooldownViewerStates(allstates, selected, event, showGCD, track, hideGCDText, showMode, exactID, requireTarget, ignoreSpellKnown)
   wipe(built)
@@ -466,8 +456,6 @@ local function BuildCooldownViewerStates(allstates, selected, event, showGCD, tr
           identity = {spellID = displaySpellID, name = spell and spell.name or identity.name, icon = spell and spell.iconID or identity.icon}
         end
         local cloneID = selected.singleClone and "spell" or tostring(cooldownID)
-        -- A reused table starts empty on its first use in this run, exactly like
-        -- a new one; later entries sharing the clone add to it as before.
         local state = allstates[cloneID]
         if not state then
           state = {}
@@ -651,9 +639,6 @@ end
 
 -- Compare snapshots because the trigger engine modifies live states.
 -- Secret values and mutable aura bindings still require an update.
--- Snapshots are copies kept per trigger, so the output tables below can be
--- reused between scans: rebuilding them on every scan created garbage that
--- the Lua collector had to clear in visible pauses during combat.
 local snapshots = setmetatable({}, {__mode = "k"})
 local persistentOutputs = setmetatable({}, {__mode = "k"})
 local function GetOutputs(selected, event, showGCD, track, hideGCDText, showMode, exactID, requireTarget, ignoreSpellKnown)
@@ -672,7 +657,6 @@ local function GetOutputs(selected, event, showGCD, track, hideGCDText, showMode
   local outputs = store[key]
   if not outputs then outputs = {}; store[key] = outputs end
   BuildCooldownViewerStates(outputs, selected, event, showGCD, track, hideGCDText, showMode, exactID, requireTarget, ignoreSpellKnown)
-  -- Drop clones the selection no longer produces, as a fresh table would.
   for cloneID in pairs(outputs) do
     if not built[cloneID] then outputs[cloneID] = nil end
   end
@@ -713,7 +697,6 @@ local function CommitStates(allstates, outputs)
       state.changed = true
       changed = true
     end
-    -- Keep a copy: the output table is refilled by the next scan.
     if snapshot then wipe(snapshot) else snapshot = {}; previous[key] = snapshot end
     for field, value in pairs(output) do snapshot[field] = value end
   end
@@ -745,7 +728,6 @@ Private.ExecEnv.UpdateCDMSpell = function(allstates, config, event, ...)
   return Private.UpdateCooldownViewerStates(allstates, selected, event, config.showGCD, config.track, config.hideGCDText, config.showMode, config.cdmExact and tonumber(config.cdmSpell) or nil, config.requireTarget, config.use_ignoreSpellKnown)
 end
 
--- Per trigger output containers and buff clones, refilled on each scan.
 local listOutputs = setmetatable({}, {__mode = "k"})
 local listClones = setmetatable({}, {__mode = "k"})
 function Private.ExecEnv.UpdateCDMSelectionList(allstates, queries, event)
@@ -1023,7 +1005,6 @@ local filterOutputs = setmetatable({}, {__mode = "k"})
 function Private.ExecEnv.UpdateCDMBuffFilters(allstates, rawStates, event, value, op, stackValue, stackOp, totalValue, totalOp, elapsedValue, elapsedOp)
   value, stackValue = tonumber(value), tonumber(stackValue)
   totalValue, elapsedValue = tonumber(totalValue), tonumber(elapsedValue)
-  -- Output tables are refilled on each scan (see GetOutputs).
   local outputs = filterOutputs[rawStates]
   if not outputs then outputs = {}; filterOutputs[rawStates] = outputs end
   for key in pairs(outputs) do

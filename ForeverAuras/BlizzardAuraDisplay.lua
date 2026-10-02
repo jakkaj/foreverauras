@@ -16,16 +16,12 @@ Display.units = {
   member = "Specific Unit",
 }
 
--- Specific Unit: one numbered group or enemy unit token (trigger.specificUnit,
--- the Legacy field). Each pattern also gives the unit group it belongs to,
--- which decides what works with it (friendly or hostile, group learning).
 local specificUnitPatterns = {
   {"^party[1-4]$", "party"}, {"^partypet[1-4]$", "party"},
   {"^raid(%d+)$", "raid", 40}, {"^raidpet(%d+)$", "raid", 40},
   {"^boss[1-8]$", "boss"}, {"^arena[1-5]$", "arena"},
 }
 
--- The unit token and its group, or nil when the text is not a supported token.
 function Display.SpecificUnit(trigger)
   local text = type(trigger) == "table" and type(trigger.specificUnit) == "string" and trigger.specificUnit:lower():match("^%s*(%S+)%s*$")
   if not text then return end
@@ -38,7 +34,6 @@ function Display.SpecificUnit(trigger)
   end
 end
 
--- The unit setting, with a Specific Unit given as the group it belongs to.
 function Display.UnitCategory(trigger)
   if type(trigger) ~= "table" then return end
   if trigger.unit == "member" then return select(2, Display.SpecificUnit(trigger)) end
@@ -46,8 +41,6 @@ function Display.UnitCategory(trigger)
 end
 
 Display.booleanFilters = {
-  -- Blizzard's flag means cast by any player or player pet, not only yours
-  -- (its target frame tells your own auras apart by their caster instead).
   {"isFromPlayerOrPlayerPet", "Cast by a Player", "Auras cast by any player or player pet, not only yours. For your own auras, use Own Only."},
   {"canApplyAura", "Can Apply Aura", "Auras Blizzard says your character can apply."},
   {"isStealable", "Is Stealable", "Buffs that can be stolen with abilities such as Spellsteal."},
@@ -107,7 +100,6 @@ local function IsNameplateFilter(key)
 end
 Display.dispelTypes = {Magic = "Magic", Curse = "Curse", Disease = "Disease", Poison = "Poison", Bleed = "Bleed", [""] = "Enrage"}
 Display.nativeFilters = {
-  -- Blizzard's own-aura filter, as its nameplates use for your debuffs.
   {"PLAYER", "Own Only", "Auras cast by you, your pet or your vehicle."},
   {"RAID", "Can apply / dispel", "Buffs you can apply, or debuffs you can dispel."},
   {"CANCELABLE", "Cancelable", "Auras that the player can cancel."},
@@ -688,7 +680,6 @@ function Display.Release(region)
   local native = region.blizzardAuraDisplay
   if native then
     native.active = false
-    -- Deferred editor work is dropped; the next Apply starts afresh.
     native.instanceQueue = nil
     for _, instance in ipairs(native.instances) do
       instance.container:SetEnabled(false)
@@ -1071,7 +1062,6 @@ end
 local function RefreshUnits(region, removedUnit, changedUnit)
   local native = region.blizzardAuraDisplay
   if not native or not native.active then return end
-  -- Outside the editor, containers deferred while editing are finished first.
   if native.instanceQueue and not IsPreview() and Display.FlushInstanceQueue then Display.FlushInstanceQueue(region) end
   local data = native.data
   local trigger = Display.GetTrigger(data)
@@ -1226,10 +1216,8 @@ local function DynamicGroupWarning(data)
     inGroup and Display.dynamicGroupWarning or nil)
 end
 
--- Configures one reserved container (one unit's aura area) for data.
 local function ApplyInstance(region, data, index, instance)
   instance.data = data
-  -- Apply the complete configuration before Blizzard refreshes visible auras.
   instance.container:SetEnabled(false)
   for _, button in ipairs(instance.buttons) do Style(button, data, region) end
   Layout(instance, region, data)
@@ -1239,15 +1227,9 @@ local function ApplyInstance(region, data, index, instance)
   instance.container:SetAuraGroupFilterString("Auras", FilterString(trigger))
   instance.container:SetAuraGroupCandidateFilters("Auras", CandidateFilters(data))
   ConfigureUnitGlow(instance, region, data)
-  -- Builds or retires the Missing and Remaining Time parts before units are bound.
   Display.ConfigureSingle(instance, region, data, index)
 end
 
--- In the editor a display with many reserved containers (nameplates: 40)
--- styles its first few at once and the rest a few per frame: while editing,
--- the live containers are hidden behind the preview, and restyling all of them
--- on every change made editing lag. Unfinished work is completed before the
--- display is used live (FlushInstanceQueue); in combat it waits as pending.
 local EDITOR_INSTANCES_NOW, EDITOR_INSTANCES_PER_FRAME = 2, 4
 local instanceQueues = {}
 local instanceDraining = false
@@ -1260,7 +1242,6 @@ local function DrainInstanceQueues()
     if not queue or not native.active or native.data ~= queue.data then
       instanceQueues[region] = nil
     elseif Restricted() then
-      -- Finished by the normal rebuild once restrictions end.
       native.instanceQueue, instanceQueues[region] = nil, nil
       pending[region] = queue.data
     else
@@ -1281,7 +1262,6 @@ local function DrainInstanceQueues()
   end
 end
 
--- Completes a display's deferred containers at once (leaving the editor).
 function Display.FlushInstanceQueue(region)
   local native = region.blizzardAuraDisplay
   local queue = native and native.instanceQueue
@@ -1367,7 +1347,6 @@ function Display.Apply(region, data)
     if not native.instances[index] then native.instances[index] = Create(region, data) end
   end
   Display.ClearSingleWarning(data)
-  -- In the editor, many containers are finished over the next frames.
   native.instanceQueue, instanceQueues[region] = nil, nil
   local now = #native.instances
   if IsPreview() and now > EDITOR_INSTANCES_NOW then
@@ -1388,7 +1367,6 @@ function Display.Apply(region, data)
   pending[region] = nil
   SyncSounds(region)
   Warn(data)
-  -- The rest of the containers, from the next frame (see above).
   if native.instanceQueue and not instanceDraining then
     instanceDraining = true
     C_Timer.After(0, DrainInstanceQueues)
@@ -1408,7 +1386,6 @@ local function Install(region)
     region.Update = function(self, ...)
       if update then update(self, ...) end
       Suppress(self)
-      -- A Missing look that follows another trigger (SecretAuraSingle.lua).
       if Display.UpdateMissingSource then Display.UpdateMissingSource(self) end
     end
   end
@@ -1424,7 +1401,6 @@ function Display.Activate(region, data)
   Install(region)
   local native = region.blizzardAuraDisplay
   if native and native.data == data and not pending[region] and Display.Validate(data) == nil then
-    -- Containers left from the editor are finished before going live.
     Display.FlushInstanceQueue(region)
     -- Reloading an existing display must restore its learning subscription too.
     local trigger = Display.GetTrigger(data)
@@ -1521,7 +1497,6 @@ end
 
 -- Native containers watch UNIT_AURA themselves. Only rebind when their unit can change.
 local unitEvents = {
-  -- Specific Unit (member) tokens can change owner with the roster or encounter.
   GROUP_ROSTER_UPDATE = {group = true, party = true, raid = true, member = true},
   PLAYER_ROLES_ASSIGNED = {group = true, party = true, raid = true},
   PLAYER_TARGET_CHANGED = {target = true, targettarget = true},

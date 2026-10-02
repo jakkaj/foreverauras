@@ -12,14 +12,26 @@ function ForeverAuras.GetSwingTimerInfo(swingType)
     names[swingType], GetInventoryItemTexture('player', slots[swingType]) or 132324
 end
 
+function ForeverAuras.IsTargetInSwingRange(swingType)
+  if not (C_SwingTimer and C_SwingTimer.IsTargetWithinSwingRange) then return end
+  local ok, inRange = pcall(C_SwingTimer.IsTargetWithinSwingRange, swingType)
+  if ok and type(inRange) == 'boolean' and not issecretvalue(inRange) then return inRange end
+end
+
 function ForeverAuras.WatchSwingTimer()
   if frame or not Enum.PlayerSwingType then return end
   frame = CreateFrame('Frame')
   frame:RegisterEvent('PLAYER_SWING')
   frame:RegisterEvent('PLAYER_ENTERING_WORLD')
   frame:RegisterEvent('WEAPON_SLOT_CHANGED')
+  if C_SwingTimer and C_SwingTimer.EnableRangeCheck then
+    for swingType in pairs(slots) do pcall(C_SwingTimer.EnableRangeCheck, swingType, true) end
+    frame:RegisterEvent('PLAYER_SWING_RANGE_UPDATE')
+    frame:RegisterEvent('PLAYER_TARGET_CHANGED')
+  end
   frame:SetScript('OnEvent', function(_, event, duration, swingType)
-    if event == 'PLAYER_SWING' then
+    if event == 'PLAYER_SWING_RANGE_UPDATE' or event == 'PLAYER_TARGET_CHANGED' then
+    elseif event == 'PLAYER_SWING' then
       if issecretvalue(duration) or issecretvalue(swingType) then return end
       if not slots[swingType] or type(duration) ~= 'number' or duration <= 0 or duration == math.huge or duration ~= duration then return end
       if timers[swingType] then timers[swingType]:Cancel() end

@@ -150,11 +150,11 @@ end
 
 local function UnitInSubgroupOrPlayer(unit, includePets)
   if includePets == nil then
-    return UnitInSubgroup(unit) or UnitIsUnit("player", unit)
+    return UnitInSubgroup(unit) or Private.ExecEnv.UnitIsUnit("player", unit)
   elseif includePets == "PlayersAndPets" then
-    return UnitInSubgroup(ForeverAuras.petUnitToUnit[unit] or unit) or UnitIsUnit("player", unit) or UnitIsUnit("pet", unit)
+    return UnitInSubgroup(ForeverAuras.petUnitToUnit[unit] or unit) or Private.ExecEnv.UnitIsUnit("player", unit) or Private.ExecEnv.UnitIsUnit("pet", unit)
   elseif includePets == "PetsOnly" then
-    return UnitInSubgroup(ForeverAuras.petUnitToUnit[unit]) or UnitIsUnit("pet", unit)
+    return UnitInSubgroup(ForeverAuras.petUnitToUnit[unit]) or Private.ExecEnv.UnitIsUnit("pet", unit)
   end
 end
 

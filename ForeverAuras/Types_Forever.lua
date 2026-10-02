@@ -91,8 +91,6 @@ function Private.GetTalentConfigID()
   return C_SpecializationInfo.GetCombatConfigIDForSpecGroup(group)
 end
 
--- Reads every talent of a trait config: the player's own (active) config, or
--- Blizzard's view config after InitializeViewLoadout for another spec.
 local function ReadTalentConfig(configId)
   local config = configId and C_Traits.GetConfigInfo(configId)
   local talents, byNode = {}, {}
@@ -130,8 +128,6 @@ local function ReadTalentConfig(configId)
   return talents, {}, byNode
 end
 
--- Other classes' and specs' trees, read once through the view loadout (as
--- upstream WeakAuras does), so load conditions can pick their talents too.
 local viewedTalents = {}
 local function ViewTalentData(specId)
   if viewedTalents[specId] then return unpack(viewedTalents[specId]) end
@@ -144,7 +140,6 @@ local function ViewTalentData(specId)
   ok = ok and pcall(C_ClassTalents.ViewLoadout, {})
   if not ok then return {}, {}, {} end
   local talents, hero, byNode = ReadTalentConfig(viewId)
-  -- An empty read (tree not available) is retried next time.
   if #talents > 0 then viewedTalents[specId] = {talents, hero, byNode} end
   return talents, hero, byNode
 end

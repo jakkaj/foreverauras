@@ -160,8 +160,6 @@ local constants = {
   guildFilterDesc = L["Supports multiple entries, separated by commas. Escape with \\. Prefix with '-' for negation."]
 }
 
-
-
 ---@param school integer
 ---@return string school
 function ForeverAuras.SpellSchool(school)
@@ -308,7 +306,6 @@ function ForeverAuras.GetHSVTransition(perc, r1, g1, b1, a1, r2, g2, b2, a2)
   --return the new color
   return r, g, b, a
 end
-
 
 Private.anim_function_strings = {
 straight = [[
@@ -711,10 +708,6 @@ for _, classID in ipairs({1, 2, 3, 4, 5, 7, 8, 9, 11}) do
   end
 end
 table.sort(ForeverAuras.classes_sorted)
-
-
-
-
 
 do
   local talentCheckFrame = CreateFrame("Frame")
@@ -1139,8 +1132,6 @@ function ForeverAuras.IsSpellKnownIncludingPet(spell)
   end
   return ForeverAuras.IsSpellKnown(spell, false) or ForeverAuras.IsSpellKnown(spell, true)
 end
-
-
 
 do
 -- A small helper to fire WA_DELAYED_SET_INFORMATION if GetNumSetItemsEquipped couldn't give
@@ -2168,7 +2159,7 @@ local unitHelperFunctions = {
     end
 
     return string.format([=[
-      local specificUnitCheck = UnitIsUnit(%q, unit)
+      local specificUnitCheck = Private.ExecEnv.UnitIsUnit(%q, unit)
     ]=], trigger.unit or "")
   end
 }
@@ -2211,11 +2202,6 @@ local GetNameAndIconForSpellName = function(trigger)
   return name, icon
 end
 
--- Cast trigger status line. In combat Blizzard keeps the cast information of
--- every unit but the player secret (C_Secrets.ShouldUnitSpellCastingBeSecret,
--- checked in game): such a cast still shows, with its bar and timer, but
--- nothing can test it. Spells Blizzard marks as never secret stay
--- readable, so a spell filter made only of those still matches.
 local castReadableArgs = {
   {"spellNames", "Name(s)"}, {"spellIds", "Exact Spell ID(s)"}, {"spellId", "Spell ID"}, {"spell", "Spellname"},
   {"interruptible", "Interruptible"}, {"remaining", "Remaining Time"},
@@ -2281,13 +2267,16 @@ Private.event_prototypes = {
         local duration, expirationTime, name, icon = ForeverAuras.GetSwingTimerInfo(%d)
         local progressType = "timed"
         local active = expirationTime > GetTime()
-      ]]):format(hand)
+        local inRange = ForeverAuras.IsTargetInSwingRange(%d)
+      ]]):format(hand, hand)
     end,
     args = {
       {name = "swingType", display = "Weapon", type = "select", required = true, default = 0,
         values = function() return {[0] = "Main Hand", [1] = "Off Hand", [2] = "Ranged"} end, test = "true"},
       {name = "swingHelp", type = "description", display = "",
         text = "Starts when Blizzard reports a player swing. Choose a weapon and style the timer in Display.", test = "true"},
+      {name = "inRange", display = "Target In Range", type = "tristate", init = "inRange", store = true,
+        conditionType = "bool", desc = "Whether your target is within reach of this weapon."},
       {name = "duration", hidden = true, init = "duration", test = "true", store = true},
       {name = "expirationTime", hidden = true, init = "expirationTime", test = "true", store = true},
       {name = "progressType", hidden = true, init = "progressType", test = "true", store = true},
@@ -2363,7 +2352,7 @@ Private.event_prototypes = {
         name = "unitisunit",
         display = L["Unit is Unit"],
         type = "unit",
-        init = "UnitIsUnit(unit, extraUnit)",
+        init = "Private.ExecEnv.UnitIsUnit(unit, extraUnit)",
         values = function(trigger)
           if Private.multiUnitUnits[trigger.unit] then
             return Private.actual_unit_types
@@ -2540,7 +2529,7 @@ Private.event_prototypes = {
         enable = function(trigger)
           return trigger.unit == "nameplate" or trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
-        init = "not UnitIsUnit(\"player\", unit)"
+        init = "not Private.ExecEnv.UnitIsUnit(\"player\", unit)"
       },
       {
         name = "ignoreDisconnected",
@@ -3212,8 +3201,6 @@ Private.event_prototypes = {
         tinsert(result, "WA_UNIT_STAGGER_CHANGED");
       end
       
-      
-      
       return result
     end,
     loadFunc = function(trigger)
@@ -3608,7 +3595,7 @@ Private.event_prototypes = {
         enable = function(trigger)
           return trigger.unit == "nameplate" or trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
-        init = "not UnitIsUnit(\"player\", unit)"
+        init = "not Private.ExecEnv.UnitIsUnit(\"player\", unit)"
       },
       {
         name = "ignoreDead",
@@ -3868,7 +3855,7 @@ Private.event_prototypes = {
         enable = function(trigger)
           return trigger.unit == "nameplate" or trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
-        init = "not UnitIsUnit(\"player\", unit)"
+        init = "not Private.ExecEnv.UnitIsUnit(\"player\", unit)"
       },
       {
         name = "ignoreDead",
@@ -5429,7 +5416,6 @@ Private.event_prototypes = {
         "PLAYER_SOFT_FRIEND_CHANGED"
       }
       
-
       return {
         ["events"] = events,
         ["unit_events"] = {
@@ -5952,6 +5938,7 @@ Private.event_prototypes = {
     },
     internal_events = {
       "COOLDOWN_REMAINING_CHECK",
+      "FA_TOTEM_UPDATE",
     },
     force_events = "PLAYER_ENTERING_WORLD",
     name = L["Totem"],
@@ -5977,16 +5964,14 @@ Private.event_prototypes = {
         end
 
         if (totemType) then -- Check a specific totem slot
-          if slotId and event == "PLAYER_TOTEM_UPDATE" and totemType ~= slotId then
+          if slotId and (event == "PLAYER_TOTEM_UPDATE" or event == "FA_TOTEM_UPDATE") and totemType ~= slotId then
             -- PLAYER_TOTEM_UPDATE for a different slot
             return false
           end
 
-          local _, totemName, startTime, duration, icon, modRate, spellId = GetTotemInfo(totemType);
-          if issecretvalue(startTime) then
-            return false
-          end
-          active = (startTime and startTime ~= 0);
+          -- While the slot is secret its times are nil and durationObject is its timer.
+          local haveTotem, totemName, startTime, duration, icon, modRate, spellId, durationObject = Private.ExecEnv.GetTotemSlotInfo(totemType);
+          active = haveTotem and (durationObject ~= nil or (startTime and startTime ~= 0));
 
           if not Private.ExecEnv.CheckTotemName(totemName, triggerTotemName, triggerTotemPattern, triggerTotemPatternOperator) then
             active = false;
@@ -6005,6 +5990,9 @@ Private.event_prototypes = {
             if (triggerTotemName) then
               icon = Private.ExecEnv.GetSpellIcon(triggerTotemName);
             end
+          elseif (active and remainingCheck and durationObject) then
+            -- The remaining time of a secret totem cannot be compared.
+            active = false
           elseif (active and remainingCheck) then
             local expirationTime = startTime and (startTime + duration) or 0;
             local remainingTime = expirationTime - GetTime()
@@ -6020,21 +6008,15 @@ Private.event_prototypes = {
           if (active) then
             state.name = totemName;
             state.totemName = totemName;
-            state.progressType = "timed";
-            state.duration = duration;
-            state.expirationTime = startTime and (startTime + duration);
-            state.modRate = modRate
+            Private.ExecEnv.SetTotemStateTimer(state, startTime, duration, modRate, durationObject)
             state.spellId = spellId
             state.icon = icon;
           end
         elseif inverse then -- inverse without a specific slot
           local found = false;
           for i = 1, 5 do
-            local _, totemName, startTime, duration, icon, modRate, spellId = GetTotemInfo(i);
-            if issecretvalue(startTime) then
-              return false
-            end
-            if ((startTime and startTime ~= 0)
+            local haveTotem, totemName, startTime, duration, icon, modRate, spellId, durationObject = Private.ExecEnv.GetTotemSlotInfo(i);
+            if (haveTotem and (durationObject ~= nil or (startTime and startTime ~= 0))
               and Private.ExecEnv.CheckTotemName(totemName, triggerTotemName, triggerTotemPattern, triggerTotemPatternOperator)
               and Private.ExecEnv.CheckTotemIcon(icon, triggerTotemIcon, triggerTotemIconOperator)
               and Private.ExecEnv.CheckTotemSpellId(spellId, triggerSpellId, followoverride)
@@ -6054,11 +6036,8 @@ Private.event_prototypes = {
           end
         else -- cloning, check all slots
           for i = 1, 5 do
-            local _, totemName, startTime, duration, icon, modRate, spellId = GetTotemInfo(i);
-            if issecretvalue(startTime) then
-              return false
-            end
-            active = (startTime and startTime ~= 0);
+            local haveTotem, totemName, startTime, duration, icon, modRate, spellId, durationObject = Private.ExecEnv.GetTotemSlotInfo(i);
+            active = haveTotem and (durationObject ~= nil or (startTime and startTime ~= 0));
 
             if not Private.ExecEnv.CheckTotemName(totemName, triggerTotemName, triggerTotemPattern, triggerTotemPatternOperator)
               or not Private.ExecEnv.CheckTotemIcon(icon, triggerTotemIcon, triggerTotemIconOperator)
@@ -6066,7 +6045,9 @@ Private.event_prototypes = {
             then
               active = false;
             end
-            if (active and remainingCheck) then
+            if (active and remainingCheck and durationObject) then
+              active = false
+            elseif (active and remainingCheck) then
               local expirationTime = startTime and (startTime + duration) or 0;
               local remainingTime = expirationTime - GetTime()
               if (remainingTime >= remainingCheck) then
@@ -6083,11 +6064,8 @@ Private.event_prototypes = {
             if (active) then
               state.name = totemName;
               state.totemName = totemName;
-              state.progressType = "timed";
-              state.duration = duration;
-              state.modRate = modRate
+              Private.ExecEnv.SetTotemStateTimer(state, startTime, duration, modRate, durationObject)
               state.spellId = spellId
-              state.expirationTime = startTime and (startTime + duration);
               state.icon = icon;
             end
             if (active and not clone) then
@@ -6984,7 +6962,7 @@ if count == nil then return false end
         store = true,
         conditionType = "select",
         conditionTest = function(state, needle, op)
-          return state and state.show and (UnitIsUnit(needle, state.unit or '') == (op == "=="))
+          return state and state.show and (Private.ExecEnv.UnitIsUnit(needle, state.unit or '') == (op == "=="))
         end
       },
       {
@@ -7909,8 +7887,6 @@ if count == nil then return false end
   },
   ["Cast"] = {
     type = "unit",
-    -- Shown at the top of the trigger: whether the chosen unit and filters
-    -- work in combat (Private.CastCombatStatus).
     events = function(trigger)
       local result = {}
       local unit = trigger.unit
@@ -8321,7 +8297,7 @@ if count == nil then return false end
         values = "actual_unit_types_with_specific",
         conditionType = "unit",
         conditionTest = function(state, unit, op)
-          return state and state.show and state.unit and (UnitIsUnit(state.sourceUnit, unit) == (op == "=="))
+          return state and state.show and state.unit and (Private.ExecEnv.UnitIsUnit(state.sourceUnit, unit) == (op == "=="))
         end,
         store = true,
         hidden = true,
@@ -8371,11 +8347,11 @@ if count == nil then return false end
         values = "actual_unit_types_with_specific",
         conditionType = "unit",
         conditionTest = function(state, unit, op)
-          return state and state.show and state.destUnit and (UnitIsUnit(state.destUnit, unit) == (op == "=="))
+          return state and state.show and state.destUnit and (Private.ExecEnv.UnitIsUnit(state.destUnit, unit) == (op == "=="))
         end,
         store = true,
         enable = function(trigger) return not trigger.use_inverse end,
-        test = "UnitIsUnit(destUnit, [[%s]])"
+        test = "Private.ExecEnv.UnitIsUnit(destUnit, [[%s]])"
       },
       {
         name = "destName",
@@ -8447,7 +8423,7 @@ if count == nil then return false end
         enable = function(trigger)
           return trigger.unit == "nameplate" or trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
-        init = "not UnitIsUnit(\"player\", unit)"
+        init = "not Private.ExecEnv.UnitIsUnit(\"player\", unit)"
       },
       {
         name = "onUpdateUnitTarget",
@@ -10486,11 +10462,6 @@ if count == nil then return false end
   },
 };
 
-
-
-
-
-
 -- Queued Action remains registered under Spell, preserving its saved event name.
 
 Private.category_event_prototype = {}
@@ -10501,7 +10472,6 @@ end
 -- The Utility prototype is an import alias, not a separate selectable trigger.
 Private.category_event_prototype.cdm["Blizzard CDM Utility"] = nil
 Private.category_event_prototype.addons = Private.category_event_prototype.addons or {}
-
 
 Private.dynamic_texts = {
   ["p"] = {

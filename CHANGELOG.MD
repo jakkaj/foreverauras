@@ -1,6 +1,11 @@
 # Changelog
 
 ## Versions
+## 0.44.0
+- Fix Health values being displayed as Text
+- Totem Trigger is functional again, and works in Combat
+- Backend tweaks
+
 ## 0.43.19
 - Yet more wand fixes affecting other events
 - Saturation wand fixes

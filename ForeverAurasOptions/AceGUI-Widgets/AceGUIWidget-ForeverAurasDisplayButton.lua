@@ -91,10 +91,6 @@ end
 local function copyAuraPart(source, destination, part)
   local all = (part == "all");
   local sourceKind, destinationKind = NativeDisplayKind(source), NativeDisplayKind(destination)
-  -- Between two displays of the same type driven the same way (both Aura
-  -- (Modern), or both Cooldown Manager), every display setting is copied as
-  -- for ordinary displays: the source's elements and text codes are valid
-  -- for the destination too. The limited copy below is for mixed pairs.
   local sameNative = sourceKind ~= nil and sourceKind == destinationKind and source.regionType == destination.regionType
   if part == "display" and (destinationKind or sourceKind) and not sameNative then
     CopyNativeAppearance(source, destination)
@@ -116,8 +112,6 @@ local function copyAuraPart(source, destination, part)
         end
       end
     end
-    -- The sort order lives on the Aura (Modern) trigger but belongs to the
-    -- display, as in the limited copy above.
     if part == "display" and sameNative and sourceKind == "aura" then
       local Display = OptionsPrivate.Private.BlizzardAuraDisplay
       local from, to = Display.GetSavedTrigger(source), Display.GetSavedTrigger(destination)
@@ -273,7 +267,6 @@ clipboard.copyUserConfigEntry = {
 local function UpdateClipboardMenuEntry(data)
   clipboard.current = data;
 
-
   if (IsRegionAGroup(clipboard.source) and not IsRegionAGroup(clipboard.current)) then
     -- Don't copy from a group to a non group
     clipboard.pasteMenuEntry.text = nil;
@@ -426,7 +419,6 @@ local Actions = {
   end
 }
 
-
 local function GetAction(target, area)
   if target and area then
     if area == "GROUP" then
@@ -560,9 +552,6 @@ local methods = {
       elseif(IsShiftKeyDown()) then
         local editbox = GetCurrentKeyBoardFocus();
         if(editbox) then
-          -- Chat links share the aura's URL (Information tab); clicking one
-          -- offers the URL to copy (Transmission.lua). Auras without one are
-          -- not linked, as this realm cannot transfer them through chat.
           local url = type(self.data.url) == "string" and self.data.url:match("^%s*(%S+)%s*$")
           if not url then
             print("ForeverAuras: Add a URL to Information to share the link to the Aura.")
@@ -627,7 +616,6 @@ local methods = {
         self:EnableExpand();
       end
     end
-
 
     function self.callbacks.OnClickGrouping()
       if (ForeverAuras.IsImporting()) then return end;
@@ -1777,7 +1765,6 @@ local methods = {
   end,
   ["OnRelease"] = function(self)
     self:ReleaseThumbnail()
-    -- A pooled row must not keep the picked look for its next display.
     self.frame.picked:Hide()
     self.frame.pickedBar:Hide()
     self:Enable();
@@ -1861,7 +1848,6 @@ local methods = {
       end
     else
       self.iconRegion = icon;
-      -- Thumbnails show the aura's own fonts, not the interface font.
       icon.faKeepFont = true
       icon:SetAllPoints(self.icon);
       icon:SetParent(self.frame);
@@ -1904,7 +1890,6 @@ local function Constructor()
 
   local background = button:CreateTexture(nil, "BACKGROUND");
   button.background = background;
-  -- Flat row: a faint fill, a soft hover, and an accent bar on picked rows.
   local Theme = OptionsPrivate.Theme
   local modern = Theme.IsModern()
   if modern then
@@ -1913,7 +1898,6 @@ local function Constructor()
     background:SetPoint("TOP", button, "TOP", 0, -1);
     background:SetPoint("BOTTOM", button, "BOTTOM", 0, 1);
   else
-    -- Classic window style keeps the original list look.
     background:SetTexture("Interface\\BUTTONS\\UI-Listbox-Highlight2.blp");
     background:SetBlendMode("ADD");
     background:SetVertexColor(0.5, 0.5, 0.5, 0.25);
@@ -1932,8 +1916,6 @@ local function Constructor()
   end
   local picked = button:CreateTexture(nil, "BACKGROUND", nil, 1)
   picked:SetTexture(Theme.WHITE)
-  -- A light neutral tint keeps the gold names readable; the bar carries the accent.
-  -- (Texture:SetAlpha would replace the tint's alpha, so classic clears the texture.)
   picked:SetVertexColor(1, 1, 1, 0.06)
   picked:SetAllPoints(background)
   picked:Hide()

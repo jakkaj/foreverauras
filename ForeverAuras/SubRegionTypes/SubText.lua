@@ -120,7 +120,6 @@ local properties = {
 Private.subRegionPrototype.AddAlphaProperties(properties, "text")
 Private.subRegionPrototype.AddColorFromBooleanProperty(properties, "text", "text_color")
 
-
 -- Rotate object around its origin
 local function animRotate(object, degrees, anchor)
   if (not anchor) then
@@ -510,11 +509,6 @@ local function modify(parent, region, parentData, data, first)
 
   local textDegrees = data.rotateText == "LEFT" and 90 or data.rotateText == "RIGHT" and -90 or 0;
 
-  -- Native text follows this subtext's own text (left empty while the native
-  -- countdown shows), point to point, without reading live points. The text
-  -- moves with whichever aura owns this pooled subtext, so the countdown never
-  -- stays on a previous aura when Blizzard locks it against re-anchoring in
-  -- combat (CDMAuraProgress.StyleText).
   region.AnchorNativeText = function(self, nativeText)
     nativeText:ClearAllPoints()
     nativeText:SetPoint(selfPoint, text, selfPoint)

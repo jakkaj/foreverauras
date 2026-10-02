@@ -160,8 +160,6 @@ local function filterFunc(_, event, msg, player, l, cs, t, flag, channelId, ...)
       characterName = characterName:gsub("|c[Ff][Ff]......", ""):gsub("|r", "");
       displayName = displayName:gsub("|c[Ff][Ff]......", ""):gsub("|r", "");
       newMsg = newMsg..remaining:sub(1, start-1);
-      -- A link followed by the aura's URL carries that URL; clicking it offers
-      -- the URL to copy. Links without one keep the old request behaviour.
       local url = remaining:sub(finish + 1):match("^ ([^%s|]+%.[^%s|]+)")
       if url then
         newMsg = newMsg.."|Haddon:ForeverAurasShare:url:"..url.."|h|cFF8800FF["..characterName.." |r|cFF8800FF- "..displayName.."]|h|r";
@@ -238,7 +236,6 @@ local configForLS = {
 local tooltipLoading;
 local receivedData;
 
--- Copy box for shared aura URLs.
 StaticPopupDialogs["FOREVERAURAS_COPY_URL"] = {
   text = "%s\nPress Ctrl+C to copy the link.",
   button1 = CLOSE,
@@ -263,7 +260,6 @@ EventRegistry:RegisterCallback("SetItemRef", function(_, link, text)
   if url then
     local label = text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
     if IsShiftKeyDown() then
-      -- Re-linking keeps the URL with the link.
       local editbox = GetCurrentKeyBoardFocus()
       local inner = label:match("%[(.-)%]")
       if editbox and inner then editbox:Insert("[ForeverAuras: " .. inner .. "] " .. url) end
@@ -383,7 +379,6 @@ function StringToTable(inString, fromChat)
       return L["Error decompressing. This doesn't look like a ForeverAuras import."]
     end
   end
-
 
   local success, deserialized
   if encodeVersion < 2 then
@@ -819,5 +814,3 @@ end
 Comm:RegisterComm("ForeverAurasProg", HandleProgressComm)
 Comm:RegisterComm("ForeverAuras", HandleComm)
 Chomp.RegisterAddonPrefix("ForeverAuras2", HandleComm)
-
-

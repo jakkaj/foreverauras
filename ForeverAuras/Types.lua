@@ -189,15 +189,18 @@ local AbbreviateNumbers = AbbreviateNumbers
 local simpleFormatters = {
   AbbreviateNumbers = function(value)
     if type(value) == "string" and not issecretvalue(value) then value = tonumber(value) end
-    return (type(value) == "number") and AbbreviateNumbers(value) or value
+    if type(value) == "number" then return AbbreviateNumbers(value) end
+    return value
   end,
   AbbreviateLargeNumbers = function(value)
     if type(value) == "string" and not issecretvalue(value) then value = tonumber(value) end
-    return (type(value) == "number") and AbbreviateLargeNumbers(value) or value
+    if type(value) == "number" then return AbbreviateLargeNumbers(value) end
+    return value
   end,
   BreakUpLargeNumbers = function(value)
     if type(value) == "string" and not issecretvalue(value) then value = tonumber(value) end
-    return (type(value) == "number") and BreakUpLargeNumbers(value) or value
+    if type(value) == "number" then return BreakUpLargeNumbers(value) end
+    return value
   end,
   floor = function(value)
     if issecretvalue(value) then
@@ -751,7 +754,8 @@ Private.format_types = {
       else
         local format = "%." .. precision .. "f"
         formatterFunc = function(value)
-          return (type(value) == "number") and string.format(format, value) or value
+          if type(value) == "number" then return string.format(format, value) end
+          return value
         end
       end
       if pad then
@@ -1377,7 +1381,6 @@ for _, classID in ipairs({1, 2, 3, 4, 5, 7, 8, 9, 11}) do
   end
 end
 
-
 ForeverAuras.race_types = {}
 do
   -- Skyborne has separate Alliance and Horde race records.
@@ -1663,8 +1666,6 @@ do
   Private.power_types[99] = STAGGER
   Private.power_types[19] = POWER_TYPE_ESSENCE
 end
-
-
 
 ---@type table<string, string>
 Private.miss_types = {
@@ -2473,8 +2474,6 @@ elseif Private.AtlasList then
 end
 local BuildInfo = select(4, GetBuildInfo())
 
-
-
 local PowerAurasPath = "Interface\\Addons\\ForeverAuras\\PowerAurasMedia\\Auras\\"
 Private.texture_types["PowerAuras Heads-Up"] = {
   [PowerAurasPath.."Aura1"] = "Runed Text",
@@ -2668,14 +2667,11 @@ Private.weapon_types = {
   ["off"] = SECONDARYHANDSLOT
 }
 
-
 ---@type table<string, string>
 Private.swing_types = {
   ["main"] = MAINHANDSLOT,
   ["off"] = SECONDARYHANDSLOT
 }
-
-
 
 do
   ---@type string[]
@@ -2904,8 +2900,6 @@ Private.instance_types = {
   ratedarena = L["Rated Arena"]
 }
 
-
-
 ---@type table
 Private.instance_difficulty_types = {}
 
@@ -2954,7 +2948,6 @@ do
 end
 
 ---@type table<string, string>
-
 
 ---@type table<string, string>
 Private.role_types = {
@@ -3101,7 +3094,6 @@ Private.send_chat_message_types = {
 }
 
 Private.send_chat_message_types.TTS = L["Text-to-speech"]
-
 
 ---@type table<string, string>
 Private.group_aura_name_info_types = {
@@ -3285,7 +3277,6 @@ LSM:Register("font", "Fira Sans Condensed Medium", "Interface\\Addons\\ForeverAu
 LSM:Register("font", "Fira Sans Medium", "Interface\\Addons\\ForeverAuras\\Media\\Fonts\\FiraSans-Medium.ttf", LSM.LOCALE_BIT_western + LSM.LOCALE_BIT_ruRU)
 LSM:Register("font", "PT Sans Narrow Regular", "Interface\\Addons\\ForeverAuras\\Media\\Fonts\\PTSansNarrow-Regular.ttf", LSM.LOCALE_BIT_western + LSM.LOCALE_BIT_ruRU)
 LSM:Register("font", "PT Sans Narrow Bold", "Interface\\Addons\\ForeverAuras\\Media\\Fonts\\PTSansNarrow-Bold.ttf", LSM.LOCALE_BIT_western + LSM.LOCALE_BIT_ruRU)
--- Inter (SIL OFL 1.1, see Media/Inter License.txt): the options interface font.
 LSM:Register("font", "Inter", "Interface\\Addons\\ForeverAuras\\Media\\Fonts\\Inter-Regular.ttf", LSM.LOCALE_BIT_western + LSM.LOCALE_BIT_ruRU)
 LSM:Register("font", "Inter Medium", "Interface\\Addons\\ForeverAuras\\Media\\Fonts\\Inter-Medium.ttf", LSM.LOCALE_BIT_western + LSM.LOCALE_BIT_ruRU)
 LSM:Register("font", "Inter SemiBold", "Interface\\Addons\\ForeverAuras\\Media\\Fonts\\Inter-SemiBold.ttf", LSM.LOCALE_BIT_western + LSM.LOCALE_BIT_ruRU)
@@ -3353,8 +3344,6 @@ Private.pet_behavior_types = {
   defensive = PET_MODE_DEFENSIVE,
   assist = PET_MODE_ASSIST
 }
-
-
 
 ---@type table<number, string>
 do
@@ -4213,14 +4202,9 @@ ForeverAuras.StopMotion.texture_types.Basic = {
 
 ForeverAuras.StopMotion.texture_data["Interface\\AddOns\\ForeverAuras\\Media\\Textures\\stopmotion"] = { count = 64, rows = 8, columns = 8 }
 
-
 ForeverAuras.StopMotion.animation_types = {
   loop = L["Loop"],
   bounce = L["Forward, Reverse Loop"],
   once = L["Forward"],
   progress = L["Progress"]
 }
-
-
-
-

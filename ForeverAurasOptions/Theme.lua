@@ -1,5 +1,3 @@
--- Options interface theme: colours, flat skin helpers and the interface font.
--- Everything here only touches the options window; displays keep their own fonts.
 if not ForeverAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
@@ -14,8 +12,6 @@ local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 local Theme = {}
 OptionsPrivate.Theme = Theme
 
--- Palette: close to WeakAuras' own panel colour, with a muted touch of the
--- logo's gold as accent. Kept low-contrast so it still feels like WeakAuras.
 Theme.colors = {
   window   = {0.098, 0.102, 0.118, 0.95},
   titleBar = {0.118, 0.122, 0.141, 1},
@@ -42,7 +38,6 @@ local function SetOnePixel(region, axis)
   end
 end
 
--- A solid colour texture.
 function Theme.Solid(parent, layer, color, sublevel)
   local texture = parent:CreateTexture(nil, layer or "BACKGROUND", nil, sublevel)
   texture:SetTexture(Theme.WHITE)
@@ -50,8 +45,6 @@ function Theme.Solid(parent, layer, color, sublevel)
   return texture
 end
 
--- Flat background with a one pixel border, made once per frame and recoloured
--- on later calls. A nil border colour hides the border.
 function Theme.Flat(frame, background, border)
   local skin = frame.faSkin
   if not skin then
@@ -83,7 +76,6 @@ function Theme.Flat(frame, background, border)
   return skin
 end
 
--- Text button for the title bar, muted until hovered and sized to its text.
 function Theme.TextButton(parent, label)
   local button = CreateFrame("Button", nil, parent)
   button:SetHeight(20)
@@ -108,8 +100,6 @@ function Theme.TextButton(parent, label)
   return button
 end
 
--- Recolours an existing Button (such as the template close button) as a glyph
--- button, keeping its own scripts.
 function Theme.SkinGlyphButton(button, glyph, hoverColor)
   if not button then return end
   local path = Theme.mediaPath .. glyph
@@ -147,15 +137,9 @@ function Theme.SkinGlyphButton(button, glyph, hoverColor)
   end
 end
 
---------------------------------------------------------------------------------
--- Interface font
---------------------------------------------------------------------------------
 Theme.GAME_DEFAULT = "Game Default"
 local GAME_DEFAULT = Theme.GAME_DEFAULT
 
--- Automatic (nothing saved): Inter, unless the interface font was changed by
--- the user or a UI pack (GameFontNormal no longer Friz Quadrata), which is then
--- followed. Inter has no CJK or Hangul glyphs, so those clients keep the game font.
 local function AutomaticKey()
   if ({koKR = true, zhCN = true, zhTW = true})[GetLocale()] then return GAME_DEFAULT end
   local face = GameFontNormal and GameFontNormal:GetFont()
@@ -170,28 +154,19 @@ function Theme.GetFontKey()
   return AutomaticKey()
 end
 
--- Layout: "classic" (default, Blizzard frame art as in WeakAuras, also what
--- skin addons expect) or "modern" (flat). Read when the window is created, so
--- a change needs a reload.
 function Theme.IsModern()
   return type(ForeverAurasOptionsSaved) == "table" and ForeverAurasOptionsSaved.windowStyle == "modern"
 end
 
--- nil while the game font is used.
 function Theme.GetFontPath()
   local key = Theme.GetFontKey()
   if key == GAME_DEFAULT then return nil end
   return LSM:Fetch("font", key, true)
 end
 
--- Font object clones: each Blizzard font object a widget uses gets one copy
--- with the chosen face, so colours, shadows and sizes stay as designed.
 local clones, cloneSource, cloneCount = {}, {}, 0
--- Strings and edit boxes set with SetFont directly: original face, size, flags.
 local direct = setmetatable({}, {__mode = "k"})
--- Button state font objects replaced with clones.
 local buttonFonts = setmetatable({}, {__mode = "k"})
--- Frames walked by Apply; only these are reverted on release.
 local touched = setmetatable({}, {__mode = "k"})
 
 local function CloneFor(object, path)
@@ -210,8 +185,6 @@ local function CloneFor(object, path)
   return clone
 end
 
--- Only the game's own interface faces are replaced. Code editors (Fira Mono),
--- aura thumbnails and other chosen fonts keep theirs.
 local function Normalize(path)
   return type(path) == "string" and path:lower():gsub("/", "\\") or nil
 end
@@ -224,8 +197,6 @@ for _, object in ipairs({GameFontNormal, GameFontHighlight, GameFontNormalSmall,
   if Normalize(face) then defaultFaces[Normalize(face)] = true end
 end
 
--- SetFontObject also resets colour, justification and shadow to the font
--- object's; widgets often set their own afterwards, so those are kept.
 local function SwapFontObject(region, object)
   local r, g, b, a = region:GetTextColor()
   local justifyH = region.GetJustifyH and region:GetJustifyH()
@@ -253,7 +224,6 @@ local function ApplyText(region, path)
   end
   if not defaultFaces[Normalize(current)] then return end
   if object then
-    -- Only strings that still show their font object's face and size.
     local objectPath, objectSize = object:GetFont()
     if objectPath == current and objectSize and math.abs(objectSize - size) < 0.5 then
       local clone = CloneFor(object, path)
@@ -263,7 +233,6 @@ local function ApplyText(region, path)
       end
     end
   end
-  -- First time, or the widget set its own font since: remember that one.
   direct[region] = {path = current, size = size, flags = flags or "", applied = path}
   region:SetFont(path, size, flags or "")
 end
@@ -312,7 +281,6 @@ local function RevertButton(button)
 end
 
 local function Walk(frame, path, revert)
-  -- faKeepFont: aura thumbnails in the display list show the aura's own font.
   if frame:IsForbidden() or (frame.faKeepFont and not revert) then return end
   if revert then
     touched[frame] = nil
@@ -335,29 +303,23 @@ local function Walk(frame, path, revert)
   for i = 1, #children do
     Walk(children[i], path, revert)
   end
-  -- Widgets sized to their text refit after a font change.
   if frame.faOnFontChanged then frame.faOnFontChanged() end
 end
 
--- Uses the chosen interface font for every text under frame.
 function Theme.ApplyFont(frame)
   local path = frame and Theme.GetFontPath()
   if path then Walk(frame, path, false) end
 end
 
--- Puts the original fonts back under frame.
 function Theme.RevertFont(frame)
   if frame then Walk(frame, nil, true) end
 end
 
--- AceGUI widgets are pooled and shared with other addons: give them their
--- original fonts back when they are released.
 hooksecurefunc(AceGUI, "Release", function(_, widget)
   local frame = type(widget) == "table" and widget.frame
   if frame and touched[frame] then Walk(frame, nil, true) end
 end)
 
--- The options tree is rebuilt by AceConfigDialog on every change.
 hooksecurefunc(AceConfigDialog, "Open", function(_, appName, container)
   if appName == "ForeverAuras" and type(container) == "table" and container.frame then
     Theme.ApplyFont(container.frame)
@@ -375,22 +337,15 @@ function Theme.SetFontKey(key)
   elseif frame then
     Theme.RevertFont(frame)
   end
-  -- Tab widths and wrapped text follow the new face once the editor is rebuilt.
   if frame and frame:IsShown() and frame.FillOptions then frame:FillOptions() end
 end
 
--- Applies the font only to frames not yet walked (the display list rows are
--- walked once when shown, not on every re-sort).
 function Theme.ApplyFontOnce(frame)
   if frame and not touched[frame] then Theme.ApplyFont(frame) end
 end
 
 local CHUNK = 20
 
--- Menus from the shared dropdown library: this client does not get the
--- library's click-away handling (retail only), so a click outside an open
--- ForeverAuras menu closes it here. Clicks on the menu itself, or on the
--- button that opened it (which toggles it), are left alone.
 local menuAnchor
 local function MenuOpen()
   return _G.L_UIDROPDOWNMENU_OPEN_MENU == ForeverAuras_DropDownMenu and _G.L_DropDownList1 and L_DropDownList1:IsShown()
@@ -408,7 +363,6 @@ if pcall(dismiss.RegisterEvent, dismiss, "GLOBAL_MOUSE_DOWN") then
   end)
 end
 
--- Opens a menu from anchor, or closes it when that anchor's menu is open.
 local function ToggleMenu(menu, anchor)
   if MenuOpen() and menuAnchor == anchor then
     LibDD:CloseDropDownMenus()
@@ -418,8 +372,6 @@ local function ToggleMenu(menu, anchor)
   LibDD:EasyMenu(menu, ForeverAuras_DropDownMenu, anchor, 0, 0, "MENU")
 end
 
--- Font picker menu: the game font, the bundled Inter weights, then every
--- registered font in alphabetical groups.
 function Theme.ShowFontMenu(anchor)
   local saved = type(ForeverAurasOptionsSaved) == "table" and ForeverAurasOptionsSaved.interfaceFont or nil
   local function Entry(key, label)
@@ -457,7 +409,6 @@ function Theme.ShowFontMenu(anchor)
   ToggleMenu(menu, anchor)
 end
 
--- Layout menu: Classic or Modern window, applied after a reload.
 function Theme.ShowLayoutMenu(anchor)
   local function Style(value, label)
     return {
