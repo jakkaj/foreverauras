@@ -984,6 +984,12 @@ function Private.GetGlobalConditions(data)
   return Private.BlizzardAuraDisplay.FilterGlobalConditions(data, globalConditions);
 end
 
+-- Picks yes or no by a readable condition result; yes/no may be restricted.
+function Private.ExecEnv.SelectDesaturationByBoolean(active, yes, no)
+  if active then return yes end
+  return no
+end
+
 -- Compile a display-only selection for ordinary icon desaturation conditions.
 -- Nested AND/OR checks select color components instead of branching on restricted
 -- cooldown values. Other condition effects still use the normal public tests.
@@ -991,6 +997,20 @@ local function SpellCooldownDesaturationExpression(data, templates)
   if data.regionType ~= "icon" or Private.BlizzardAuraDisplay.Enabled(data)
       or not C_CurveUtil or not C_CurveUtil.EvaluateColorValueFromBoolean then return end
   local hasCooldownCheck = false
+  -- Spell cooldown checks use the same appearance source as a lone onCooldown
+  -- condition (wand and restricted timers included).
+  local function UsesAppearance(check)
+    local entry = data.triggers[check.trigger]
+    local trigger = entry and entry.trigger
+    -- CDM spell cooldowns share only the visual selector. Buffs/items retain their
+    -- existing condition path and never consume the wand snapshot.
+    local spell = trigger and trigger.type == "spell" and trigger.event == "Cooldown Progress (Spell)"
+    local cdm = trigger and trigger.type == "cdm" and (trigger.event == "Blizzard Cooldown Manager" or trigger.event == "Blizzard CDM Utility")
+    -- Custom states filled by ForeverAuras.SetSpellCooldownState; other custom
+    -- states fall back to their own onCooldown value in the same selector.
+    local custom = trigger and trigger.type == "custom" and trigger.custom_type == "stateupdate"
+    return (spell or cdm or custom) and check.variable == "onCooldown" and (check.value == 0 or check.value == 1)
+  end
   local function Supported(check)
     if not check then return false end
     if check.variable == "AND" or check.variable == "OR" then
@@ -998,15 +1018,9 @@ local function SpellCooldownDesaturationExpression(data, templates)
       for _, child in ipairs(check.checks) do
         if not Supported(child) then return false end
       end
-      return true
     end
-    local entry = data.triggers[check.trigger]
-    local trigger = entry and entry.trigger
-    -- CDM spell cooldowns share only the visual selector. Buffs/items retain their
-    -- existing condition path and never consume the wand snapshot.
-    local spell = trigger and trigger.type == "spell" and trigger.event == "Cooldown Progress (Spell)"
-    local cdm = trigger and trigger.type == "cdm" and (trigger.event == "Blizzard Cooldown Manager" or trigger.event == "Blizzard CDM Utility")
-    return (spell or cdm) and check.variable == "onCooldown" and (check.value == 0 or check.value == 1)
+    -- Other checks (resources, range, ...) are readable and keep their own test.
+    return true
   end
   local function Select(check, yes, no)
     if not check then return no end
@@ -1023,35 +1037,52 @@ local function SpellCooldownDesaturationExpression(data, templates)
       end
       return result
     end
-    hasCooldownCheck = true
-    -- Supported has validated every leaf; readable states retain the existing
-    -- timed/paused test, while restricted states use only the appearance helper.
     local test = CreateTestForCondition(data, check, templates, {}) or "false"
+    if not UsesAppearance(check) then
+      return "Private.ExecEnv.SelectDesaturationByBoolean(not not (" .. test .. "), " .. yes .. ", " .. no .. ")"
+    end
+    hasCooldownCheck = true
+    -- Readable states retain the existing timed/paused test, while restricted
+    -- states use only the appearance helper.
     local trigger = data.triggers[check.trigger].trigger
     local selector = trigger.type == "cdm" and "SelectCDMCooldownDesaturation" or "SelectSpellCooldownDesaturation"
     return "Private.ExecEnv." .. selector .. "(state[" .. check.trigger .. "], "
       .. check.value .. ", " .. yes .. ", " .. no .. ", not not (" .. test .. "))"
   end
 
-  local expression = data.desaturate and "1" or "0"
+  -- Each desaturate change updates one local, so repeated references to the
+  -- previous value stay short.
+  local steps = {"local desaturation = " .. (data.desaturate and "1" or "0")}
+  local expression = "desaturation"
   for index, condition in ipairs(data.conditions) do
     for _, change in ipairs(condition.changes or {}) do
-      -- Preserve the separate boolean binding, linked chains and unrelated/custom
-      -- checks. Only complete cooldown-only trees use the display fallback.
+      -- Preserve the separate boolean binding.
       if change.property == "desaturationFromBoolean" then return end
       if change.property == "desaturate" then
         if type(change.value) ~= "boolean" then return end
         local value = change.value and "1" or "0"
-        local nextLinked = data.conditions[index + 1] and data.conditions[index + 1].linked
-        if condition.linked or nextLinked or not Supported(condition.check) then
-          expression = "C_CurveUtil.EvaluateColorValueFromBoolean(not not newActiveConditions[" .. index .. "], " .. value .. ", " .. expression .. ")"
+        if not Supported(condition.check) then
+          steps[#steps + 1] = "desaturation = C_CurveUtil.EvaluateColorValueFromBoolean(not not newActiveConditions[" .. index .. "], " .. value .. ", " .. expression .. ")"
         else
-          expression = Select(condition.check, value, expression)
+          local selected = Select(condition.check, value, expression)
+          -- A linked condition applies only when no earlier condition of its
+          -- chain is active; those results are readable.
+          local earlier = {}
+          local first = index
+          while first > 1 and data.conditions[first].linked do first = first - 1 end
+          for previous = first, index - 1 do
+            earlier[#earlier + 1] = "newActiveConditions[" .. previous .. "]"
+          end
+          if #earlier > 0 then
+            selected = "Private.ExecEnv.SelectDesaturationByBoolean(not not (" .. table.concat(earlier, " or ")
+              .. "), " .. expression .. ", " .. selected .. ")"
+          end
+          steps[#steps + 1] = "desaturation = " .. selected
         end
       end
     end
   end
-  if hasCooldownCheck then return expression end
+  if hasCooldownCheck then return table.concat(steps, "\n    ") end
 end
 
 local function ConstructConditionFunction(data)
@@ -1130,7 +1161,8 @@ local function ConstructConditionFunction(data)
   local desaturation = SpellCooldownDesaturationExpression(data, allConditionsTemplate)
   if desaturation then
     table.insert(ret, "  if not hideRegion then\n")
-    table.insert(ret, "    propertyChanges['desaturate'] = " .. desaturation .. "\n")
+    table.insert(ret, "    " .. desaturation .. "\n")
+    table.insert(ret, "    propertyChanges['desaturate'] = desaturation\n")
     table.insert(ret, "  else\n")
     table.insert(ret, "    propertyChanges['desaturate'] = " .. (data.desaturate and "1" or "0") .. "\n")
     table.insert(ret, "  end\n")

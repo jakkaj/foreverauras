@@ -46,7 +46,9 @@ function Display.UnitCategory(trigger)
 end
 
 Display.booleanFilters = {
-  {"isFromPlayerOrPlayerPet", "Own Only", "Auras cast by you or your pet. Vehicle casts are not included. Use Own Only: Include Vehicle instead to include them."},
+  -- Blizzard's flag means cast by any player or player pet, not only yours
+  -- (its target frame tells your own auras apart by their caster instead).
+  {"isFromPlayerOrPlayerPet", "Cast by a Player", "Auras cast by any player or player pet, not only yours. For your own auras, use Own Only."},
   {"canApplyAura", "Can Apply Aura", "Auras Blizzard says your character can apply."},
   {"isStealable", "Is Stealable", "Buffs that can be stolen with abilities such as Spellsteal."},
   {"isBossAura", "Is Boss Aura", "Auras Blizzard identifies as boss auras."},
@@ -105,7 +107,8 @@ local function IsNameplateFilter(key)
 end
 Display.dispelTypes = {Magic = "Magic", Curse = "Curse", Disease = "Disease", Poison = "Poison", Bleed = "Bleed", [""] = "Enrage"}
 Display.nativeFilters = {
-  {"PLAYER", "Own Only: Include Vehicle", "Auras cast by you, your pet or your vehicle. Use this instead of the player-and-pet filter when vehicle casts should also match."},
+  -- Blizzard's own-aura filter, as its nameplates use for your debuffs.
+  {"PLAYER", "Own Only", "Auras cast by you, your pet or your vehicle."},
   {"RAID", "Can apply / dispel", "Buffs you can apply, or debuffs you can dispel."},
   {"CANCELABLE", "Cancelable", "Auras that the player can cancel."},
   {"EXTERNAL_DEFENSIVE", "External defensive", "Auras Blizzard classifies as external defensives."},

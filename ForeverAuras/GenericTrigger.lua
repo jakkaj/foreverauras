@@ -2268,6 +2268,13 @@ do
   local secretScratch = {}
   -- Longer than any global cooldown (1.5 s at most).
   local SECRET_MIN_COOLDOWN = 1.6
+  -- Shoot puts every spell on a shared cooldown. With readable times, a timer
+  -- that a shot holds and that did not start when the spell was cast is Shoot's.
+  local function IsWandOnlyTimer(spellID, startTime)
+    if not Private.IsWandHeldSpell(spellID) then return false end
+    local cast = Private.GetSpellLastCast(spellID)
+    return not cast or math.abs(startTime - cast) > 0.5
+  end
   secretPoller.elapsed = 0
   local SpellDetails
   secretPoller:SetScript("OnUpdate", function(self, elapsed)
@@ -2282,7 +2289,8 @@ do
         -- so the full (table-building) check only runs once it may have.
         local info = C_Spell.GetSpellCooldown(id)
         local active = info and info.isActive
-        if not info or issecretvalue(active) or active ~= true then
+        -- A cooldown held back behind a global cooldown is rechecked as well.
+        if not info or issecretvalue(active) or active ~= true or Private.GetSpellCooldownGCDFlag(id) == true then
           SpellDetails:CheckSpellCooldown(id)
         end
       else
@@ -2486,6 +2494,15 @@ do
         if not detail or not cooldown then return end
         -- Read the shared table now; event handlers below may refill it.
         local ready, charges, maxCharges, count = cooldown.ready, cooldown.charges, cooldown.maxCharges, cooldown.count
+        local now = GetTime()
+        -- With only a global cooldown left, the spell's own cooldown ends some
+        -- time before that global cooldown does. Report ready only once the
+        -- global cooldown seen then has surely ended.
+        if ready == true then
+          local onGCD, since = Private.GetSpellCooldownGCDFlag(effectiveSpellId)
+          local info = onGCD == true and since and now - since < SECRET_MIN_COOLDOWN and C_Spell.GetSpellCooldown(effectiveSpellId)
+          if info and info.isActive == true then ready = false end
+        end
         -- The readable timers are frozen while restricted; reset them so the end
         -- of a cooldown already reported here is not reported again afterwards.
         for _, handler in ipairs(self.cdHandlers) do
@@ -2496,15 +2513,27 @@ do
         end
         -- The public flags also count the global cooldown, so only a cooldown
         -- that outlasted a global cooldown reports ready when it ends.
-        local now = GetTime()
-        if detail.ready == false and ready == true and detail.notReadySince
+        -- A spell that turned not ready during wanding, without being cast since
+        -- it was last ready, only waited for Shoot's shared cooldown.
+        local wandOnly = false
+        if detail.notReadyWand then
+          local cast = Private.GetSpellLastCast(effectiveSpellId)
+          wandOnly = not cast or (detail.lastReadyAt and cast < detail.lastReadyAt - 0.2) or false
+        end
+        -- The readable timers were reset above; their wand flags go with them.
+        detail.wandOnlyCooldown, detail.ownCooldownEnd = nil, nil
+        if detail.ready == false and ready == true and detail.notReadySince and not wandOnly
         and now - detail.notReadySince > SECRET_MIN_COOLDOWN and not ForeverAuras.IsPaused() then
           self:SendEventsForSpell(effectiveSpellId, "SPELL_COOLDOWN_READY", effectiveSpellId)
         end
         if ready == false then
-          detail.notReadySince = detail.ready == false and detail.notReadySince or now
+          if detail.ready ~= false or not detail.notReadySince then
+            detail.notReadySince = now
+            detail.notReadyWand = Private.IsWandHeldSpell(effectiveSpellId) or nil
+          end
         else
-          detail.notReadySince = nil
+          detail.notReadySince, detail.notReadyWand = nil, nil
+          if ready == true then detail.lastReadyAt = now end
         end
         -- Without readable times only these flags show a change; repeated checks
         -- from frequent events (usable updates, polling) skip unchanged states.
@@ -2536,6 +2565,10 @@ do
       local spellDetail = self.data[effectiveSpellId]
       -- Forget the restricted ready state; it goes stale while timers are readable.
       spellDetail.ready = nil
+      -- Readable and not on cooldown: casting it again starts a real cooldown.
+      if not hasanysecretvalues(startTime, duration) and (duration == 0 or startTime == 0) then
+        spellDetail.lastReadyAt = time
+      end
       local chargesChanged, chargesDifference = true, 0
       if not hasanysecretvalues(spellDetail.charges, charges, spellCount, spellDetail.count) then
         chargesChanged = spellDetail.charges ~= charges or spellDetail.count ~= spellCount
@@ -2555,6 +2588,8 @@ do
         end
       end
 
+      -- Whether the timer the handlers held until now was only Shoot's.
+      local endedWandOnly = spellDetail.wandOnlyCooldown
       local changed = false
       changed = self.spellCds:HandleSpell(effectiveSpellId, startTime, duration, unifiedModRate, paused) or changed
       if not unifiedCooldownBecauseRune then
@@ -2567,9 +2602,20 @@ do
       end
       local chargeChanged = self.spellCdsCharges:HandleSpell(effectiveSpellId, startTimeCharges, durationCharges, modRateCharges)
       changed = chargeChanged or changed
+      local wandOnly = durationCooldown > 0 and IsWandOnlyTimer(effectiveSpellId, startTimeCooldown)
+      spellDetail.wandOnlyCooldown = wandOnly or nil
+      -- A longer shot timer can replace the spell's own timer before it ends;
+      -- remember when the spell's own cooldown ends.
+      if durationCooldown > 0 and not wandOnly then
+        spellDetail.ownCooldownEnd = startTimeCooldown + durationCooldown
+      end
+      local ownEnded = spellDetail.ownCooldownEnd and spellDetail.ownCooldownEnd <= time + 0.05
 
       if not ForeverAuras.IsPaused() then
-        if nowReady then
+        -- The end of Shoot's shared cooldown is not a spell becoming ready,
+        -- unless the spell's own cooldown ended under it.
+        if nowReady and (not endedWandOnly or ownEnded) then
+          spellDetail.ownCooldownEnd = nil
           self:SendEventsForSpell(effectiveSpellId, "SPELL_COOLDOWN_READY", effectiveSpellId)
         end
 
@@ -2696,6 +2742,16 @@ do
   }
   SpellDetails.cdHandlers = {SpellDetails.spellCds, SpellDetails.spellCdsRune, SpellDetails.spellCdsOnlyCooldown,
     SpellDetails.spellCdsOnlyCooldownRune, SpellDetails.spellCdsCharges}
+  -- While casting continues, the global cooldown keeps isActive true after a
+  -- secret cooldown ends, so the poller cannot see the end. isOnGCD, read on
+  -- SPELL_UPDATE_COOLDOWN, can: only the global cooldown is left.
+  function SpellDetails:CheckSecretCooldownsOnGCD(except)
+    for id in pairs(secretPolled) do
+      if id ~= except and self.data[id] and Private.GetSpellCooldownGCDFlag(id) == true then
+        self:CheckSpellCooldown(id)
+      end
+    end
+  end
 
   local mark_ACTIONBAR_UPDATE_COOLDOWN, mark_PLAYER_ENTERING_WORLD
 
@@ -2792,6 +2848,11 @@ do
         -- Usable updates fire on every mana change; they cannot change a cooldown.
         SpellDetails.quietSecretCheck = event == "SPELL_UPDATE_USABLE" or nil
         Private.CheckCooldownReady(spellId)
+        -- A single-spell update leaves other secret cooldowns to the check above.
+        if spellId then
+          SpellDetails.quietSecretCheck = true
+          SpellDetails:CheckSecretCooldownsOnGCD(spellId)
+        end
         SpellDetails.quietSecretCheck = nil
       elseif(event == "SPELLS_CHANGED") then
         SpellDetails:CheckSpellKnown()
