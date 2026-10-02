@@ -41,7 +41,9 @@ function Private.GetSpellCooldownDurationWithoutGCD(spellID, onGCD)
   return C_Spell.GetSpellCooldownDuration(spellID, true)
 end
 
-function Private.GetSpellCooldownData(spellID, track, showGCD, showLossOfControl)
+-- into: optional table to fill instead of a new one. Only for callers that read
+-- the result straight away and keep no reference (it is refilled next call).
+function Private.GetSpellCooldownData(spellID, track, showGCD, showLossOfControl, into)
   local info = C_Spell.GetSpellCooldown(spellID)
   local charges = C_Spell.GetSpellCharges(spellID)
   if not info and not charges then return end
@@ -69,16 +71,15 @@ function Private.GetSpellCooldownData(spellID, track, showGCD, showLossOfControl
   if onCooldown == nil and info and info.isActive and gcdStates[spellID] ~= nil then
     onCooldown = not gcdStates[spellID]
   end
-  local result = {
-    cooldown = cooldown,
-    conditionOnCooldown = conditionOnCooldown,
-    -- Appearance conditions must use the selected real timer, never the GCD swipe.
-    conditionDuration = cooldown,
-    gcdOnly = info and info.isActive and info.isEnabled and zero == true or false,
-    onCooldown = onCooldown,
-    paused = info and not info.isEnabled or false,
-    count = C_Spell.GetSpellCastCount(spellID),
-  }
+  local result = into and wipe(into) or {}
+  result.cooldown = cooldown
+  result.conditionOnCooldown = conditionOnCooldown
+  -- Appearance conditions must use the selected real timer, never the GCD swipe.
+  result.conditionDuration = cooldown
+  result.gcdOnly = info and info.isActive and info.isEnabled and zero == true or false
+  result.onCooldown = onCooldown
+  result.paused = info and not info.isEnabled or false
+  result.count = C_Spell.GetSpellCastCount(spellID)
   if onCooldown ~= nil then result.ready = not onCooldown end
   if charges then
     result.charges = charges.currentCharges

@@ -27,11 +27,22 @@ local function Clear()
   if expiryTimer then expiryTimer:Cancel(); expiryTimer = nil end
 end
 
+-- Whether Shoot's shared cooldown currently holds copied timers.
+local function Holding()
+  return GetTime() - shotAt < window
+end
+
+-- Refreshes rescan every spell cooldown and CDM display, so they only run when
+-- the held timers change: a hold starts or ends, or a spell joins or leaves it.
+-- Continuous wanding inside one hold changes nothing and needs no rescan.
 local function NoteShot()
   local now = GetTime()
+  local changed = not Holding()
   -- Duplicate shot events must not clear a subsequent cast.
   if now - lastShotUpdate > 0.05 then
     shotAt = now
+    -- Spells cast since the previous shot are held again from this shot on.
+    if next(castAfterShot) then changed = true end
     wipe(castAfterShot)
   end
   lastShotUpdate = now
@@ -40,7 +51,7 @@ local function NoteShot()
     expiryTimer = nil
     Refresh()
   end)
-  Refresh()
+  if changed then Refresh() end
 end
 
 local function OnEvent(_, event, unit, baseSpellID, spellID)
@@ -48,15 +59,19 @@ local function OnEvent(_, event, unit, baseSpellID, spellID)
     Clear()
     Refresh()
   elseif event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player" then
+    -- Outside a hold no timer is copied, so casts there change nothing shown.
+    local holding = Holding()
     if not PublicSpell(spellID) then
       -- An unidentified cast cannot safely be attributed to a tracked spell.
       Clear()
+      if holding then Refresh() end
     elseif spellID == 5019 then
       NoteShot()
     else
+      local released = holding and not castAfterShot[spellID]
       castAfterShot[spellID] = true
+      if released then Refresh() end
     end
-    Refresh()
   elseif event == "SPELL_UPDATE_COOLDOWN" and ((PublicSpell(unit) and unit == 5019) or (PublicSpell(baseSpellID) and baseSpellID == 5019)) then
     -- Only an active public flag identifies a new shot rather than its expiry.
     local info = C_Spell.GetSpellCooldown(5019)
