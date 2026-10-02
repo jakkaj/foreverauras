@@ -3,6 +3,8 @@ if not ForeverAuras.IsLibsOK() then return end
 local _, Private = ...
 local expiryTimer, refreshQueued
 local snapshots, castAfterShot = {}, {}
+-- When each identified spell was last cast (kept across holds).
+local lastCast = {}
 local shotAt, lastShotUpdate = -math.huge, -math.huge
 local window = 3
 
@@ -68,6 +70,7 @@ local function OnEvent(_, event, unit, baseSpellID, spellID)
     elseif spellID == 5019 then
       NoteShot()
     else
+      lastCast[spellID] = GetTime()
       local released = holding and not castAfterShot[spellID]
       castAfterShot[spellID] = true
       if released then Refresh() end
@@ -77,6 +80,18 @@ local function OnEvent(_, event, unit, baseSpellID, spellID)
     local info = C_Spell.GetSpellCooldown(5019)
     if info and not issecretvalue(info.isActive) and info.isActive == true then NoteShot() end
   end
+end
+
+-- Shoot puts every spell on a shared cooldown that is not the global cooldown.
+-- True while that may be all that keeps spellID from being ready: a hold runs
+-- and the spell was not cast since the shot.
+function Private.IsWandHeldSpell(spellID)
+  return PublicSpell(spellID) and spellID ~= 5019 and Holding() and not castAfterShot[spellID]
+end
+
+-- When the player last cast spellID, or nil.
+function Private.GetSpellLastCast(spellID)
+  return lastCast[spellID]
 end
 
 -- Select before recharge/loss-of-control timers; Blizzard expires the copied duration.

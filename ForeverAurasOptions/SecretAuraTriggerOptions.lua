@@ -271,7 +271,9 @@ local function GetOptions(data, triggernum)
   end
   options.isFromPlayerOrPlayerPet.width = width
   options.nativePLAYER.width = width
-  options.nativePLAYER.order = options.isFromPlayerOrPlayerPet.order + 0.01
+  -- Own Only first, Cast by a Player beside it.
+  options.nativePLAYER.order = options.isFromPlayerOrPlayerPet.order
+  options.isFromPlayerOrPlayerPet.order = options.nativePLAYER.order + 0.01
   for _, field in ipairs(display.processingOptions) do options[field[1]] = nil end
   for _, fields in ipairs({display.nativeFilters, display.booleanFilters}) do
     for _, field in ipairs(fields) do

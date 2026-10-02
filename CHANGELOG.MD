@@ -1,6 +1,15 @@
 # Changelog
 
 ## Versions
+## 0.43.19
+- Yet more wand fixes affecting other events
+- Saturation wand fixes
+- Multi-frame processing on combat drop for performance
+- Allow ForeverAuras.SetSpellCooldownState
+- Fix "Own Only" for Aura (Modern).
+- Own Only: Include Vehicle -> Renamed to Own Only
+- Previous Own Only -> Renamed to Cast by a Player
+
 ## 0.43.11
 - Many backend optimizations
 - Wand handling optimizations

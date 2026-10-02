@@ -3,15 +3,30 @@ if not ForeverAuras.IsLibsOK() then return end
 local _, Private = ...
 
 local gcdStates = {}
+-- When each spell's isOnGCD flag last turned true (kept while it stays true).
+local gcdStateSince = {}
 
 -- isOnGCD is authoritative only while handling SPELL_UPDATE_COOLDOWN.
 function Private.UpdateSpellCooldownGCD(spellID)
   local info = C_Spell.GetSpellCooldown(spellID)
+  local wasOnGCD = gcdStates[spellID] == true
   gcdStates[spellID] = nil
   -- Only cache an explicit public flag; an unavailable/secret value is unknown.
   if info and not issecretvalue(info.isOnGCD) and type(info.isOnGCD) == "boolean" then
     gcdStates[spellID] = info.isOnGCD
   end
+  if gcdStates[spellID] ~= true then
+    gcdStateSince[spellID] = nil
+  elseif not wasOnGCD then
+    gcdStateSince[spellID] = GetTime()
+  end
+end
+
+-- The isOnGCD flag from the last SPELL_UPDATE_COOLDOWN, or nil if unknown, and
+-- when it turned true. It means only a global cooldown is left: the spell's own
+-- cooldown ends before that global cooldown does, not that it has ended.
+function Private.GetSpellCooldownGCDFlag(spellID)
+  return gcdStates[spellID], gcdStateSince[spellID]
 end
 
 -- Prefer the fresh filtered timer; the event-scoped flag may be stale.
@@ -27,6 +42,7 @@ end
 
 function Private.ClearSpellCooldownGCD()
   wipe(gcdStates)
+  wipe(gcdStateSince)
 end
 
 -- Clear known GCD-only displays with an owned zero duration; otherwise use Blizzard's timer.
@@ -128,6 +144,32 @@ function Private.GetSpellCooldownData(spellID, track, showGCD, showLossOfControl
 end
 
 Private.ExecEnv.GetSpellCooldownData = Private.GetSpellCooldownData
+
+-- For custom triggers: fills a state with what Cooldown Progress (Spell) shows
+-- for spellID, including the sources it uses while cooldowns are restricted, so
+-- an "onCooldown" desaturate condition and the countdown text behave as for the
+-- built-in trigger, also in combat. showGCD: the swipe includes the global
+-- cooldown. showGCDText: the text counts it (and the wand's shared cooldown) too.
+local customStateScratch = {}
+function ForeverAuras.SetSpellCooldownState(state, spellID, showGCD, showGCDText)
+  local cooldown = Private.GetSpellCooldownData(spellID, nil, showGCD, nil, customStateScratch)
+  local hideGCDText = not showGCDText
+  state.changed = true
+  state.progressType = "durationObject"
+  state.expirationTime, state.duration, state.modRate = nil, nil, nil
+  state.paused, state.remaining, state.value, state.total = nil, nil, nil, nil
+  state.durationObject = cooldown and cooldown.duration
+  state.onCooldown = cooldown and cooldown.onCooldown
+  state.spellCooldownConditionDuration = cooldown and cooldown.conditionDuration
+  state.spellCooldownConditionOnCooldown = cooldown and cooldown.conditionOnCooldown
+  state.wandAppearanceDuration = cooldown and not cooldown.paused and cooldown.wandAppearanceDuration or nil
+  state.cdmTextPreview = false
+  state.cdmHideGCDText = hideGCDText
+  state.cdmGCDOnly = cooldown and cooldown.gcdOnly or false
+  state.cdmTextDurationRequired = hideGCDText
+  state.cdmTextDurationObject = hideGCDText and cooldown and cooldown.textDuration or nil
+  state.cdmNativePaused = cooldown and cooldown.paused or false
+end
 
 -- Copied durations keep their total span after expiry. Evaluate remaining time
 -- directly into desaturation; nested condition endpoints may also be secret.
