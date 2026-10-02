@@ -91,13 +91,9 @@ function Private.GetTalentConfigID()
   return C_SpecializationInfo.GetCombatConfigIDForSpecGroup(group)
 end
 
-function Private.GetTalentData(specId)
-  local spec = Private.ExecEnv.GetSpecialization()
-  local playerSpecId = spec and Private.ExecEnv.GetSpecializationInfo(spec)
-  if specId ~= playerSpecId then
-    return {}, {}, {}
-  end
-  local configId = Private.GetTalentConfigID()
+-- Reads every talent of a trait config: the player's own (active) config, or
+-- Blizzard's view config after InitializeViewLoadout for another spec.
+local function ReadTalentConfig(configId)
   local config = configId and C_Traits.GetConfigInfo(configId)
   local talents, byNode = {}, {}
   if not config then return talents, {}, byNode end
@@ -132,6 +128,34 @@ function Private.GetTalentData(specId)
     return a[1] < b[1]
   end)
   return talents, {}, byNode
+end
+
+-- Other classes' and specs' trees, read once through the view loadout (as
+-- upstream WeakAuras does), so load conditions can pick their talents too.
+local viewedTalents = {}
+local function ViewTalentData(specId)
+  if viewedTalents[specId] then return unpack(viewedTalents[specId]) end
+  local viewId = Constants and Constants.TraitConsts and Constants.TraitConsts.VIEW_TRAIT_CONFIG_ID
+  if not (viewId and C_ClassTalents and C_ClassTalents.InitializeViewLoadout and C_ClassTalents.ViewLoadout) then
+    return {}, {}, {}
+  end
+  local level = GetMaxLevelForPlayerExpansion and GetMaxLevelForPlayerExpansion() or 60
+  local ok = pcall(C_ClassTalents.InitializeViewLoadout, specId, level)
+  ok = ok and pcall(C_ClassTalents.ViewLoadout, {})
+  if not ok then return {}, {}, {} end
+  local talents, hero, byNode = ReadTalentConfig(viewId)
+  -- An empty read (tree not available) is retried next time.
+  if #talents > 0 then viewedTalents[specId] = {talents, hero, byNode} end
+  return talents, hero, byNode
+end
+
+function Private.GetTalentData(specId)
+  local spec = Private.ExecEnv.GetSpecialization()
+  local playerSpecId = spec and Private.ExecEnv.GetSpecializationInfo(spec)
+  if specId ~= playerSpecId then
+    return ViewTalentData(specId)
+  end
+  return ReadTalentConfig(Private.GetTalentConfigID())
 end
 
 function Private.GetTalentInfo(specId)

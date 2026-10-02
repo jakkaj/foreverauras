@@ -23,7 +23,7 @@ end
 -- public; whether it has the aura is not, so this is the only case in which
 -- the trigger goes inactive. Mouseover has no event when it clears, so it
 -- stays active, as before.
-local optionalUnits = {target = true, focus = true, pet = true, targettarget = true, focustarget = true}
+local optionalUnits = {target = true, focus = true, pet = true, targettarget = true, focustarget = true, member = true}
 local function UnitMissing(trigger)
   if type(trigger) ~= "table" or not optionalUnits[trigger.unit] or trigger.unitExists then return false end
   return not Display.SingleUnitExists(trigger)
@@ -85,7 +85,11 @@ local unitChangeEvents = {
   PLAYER_FOCUS_CHANGED = {focus = true, focustarget = true},
   UNIT_TARGET = {target = {targettarget = true}, focus = {focustarget = true}},
   UNIT_PET = {player = {pet = true}},
-  PLAYER_ENTERING_WORLD = {target = true, focus = true, pet = true, targettarget = true, focustarget = true},
+  PLAYER_ENTERING_WORLD = {target = true, focus = true, pet = true, targettarget = true, focustarget = true, member = true},
+  -- Specific Unit tokens (party1, boss1, ...) appear and go with these.
+  GROUP_ROSTER_UPDATE = {member = true},
+  INSTANCE_ENCOUNTER_ENGAGE_UNIT = {member = true},
+  ARENA_OPPONENT_UPDATE = {member = true},
 }
 local unitFrame = CreateFrame("Frame")
 for event in pairs(unitChangeEvents) do unitFrame:RegisterEvent(event) end
@@ -93,7 +97,11 @@ unitFrame:SetScript("OnEvent", function(_, event, unit)
   -- The editor keeps its sample states until it closes.
   if ForeverAuras.IsOptionsOpen() then return end
   local affected = unitChangeEvents[event]
-  if event == "UNIT_TARGET" or event == "UNIT_PET" then affected = unit and affected[unit] end
+  if event == "UNIT_TARGET" then affected = unit and affected[unit] end
+  if event == "UNIT_PET" then
+    -- A party or raid pet token comes and goes with its owner's pet.
+    affected = unit == "player" and affected.player or (unit and {member = true})
+  end
   if not affected then return end
   for id in pairs(loaded) do
     local data = displays[id]
@@ -177,7 +185,7 @@ end
 
 function Trigger.GetTriggerDescription(data, triggernum, lines)
   local trigger = data.triggers[triggernum].trigger
-  lines[#lines + 1] = {"Secret Auras", Display.units[trigger.unit] or trigger.unit}
+  lines[#lines + 1] = {"Secret Auras", trigger.unit == "member" and (Display.SpecificUnit(trigger) or "Specific Unit") or Display.units[trigger.unit] or trigger.unit}
   -- What makes the display appear.
   local showOn = Display.showOnValues[Display.ShowOn(trigger)]
   local op, seconds = Display.RemainingWindow(trigger)

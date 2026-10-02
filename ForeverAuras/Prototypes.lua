@@ -2211,6 +2211,56 @@ local GetNameAndIconForSpellName = function(trigger)
   return name, icon
 end
 
+-- Cast trigger status line. In combat Blizzard keeps the cast information of
+-- every unit but the player secret (C_Secrets.ShouldUnitSpellCastingBeSecret,
+-- checked in game): such a cast still shows, with its bar and timer, but
+-- nothing can test it. Spells Blizzard marks as never secret stay
+-- readable, so a spell filter made only of those still matches.
+local castReadableArgs = {
+  {"spellNames", "Name(s)"}, {"spellIds", "Exact Spell ID(s)"}, {"spellId", "Spell ID"}, {"spell", "Spellname"},
+  {"interruptible", "Interruptible"}, {"remaining", "Remaining Time"},
+  {"empowered", "Empowered"}, {"stage", "Stage"}, {"stageTotal", "Stage Total"}, {"charged", "Charged"},
+}
+local castSpellArgs = {spellNames = true, spellIds = true}
+
+local function CastSpellNeverSecret(value)
+  if not (C_Secrets and C_Secrets.GetSpellCastSecrecy and Enum and Enum.SecrecyLevel) then return false end
+  local id = tonumber(value)
+  if not id then
+    local info = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(value)
+    id = info and info.spellID
+  end
+  if not id or issecretvalue(id) then return false end
+  local ok, secrecy = pcall(C_Secrets.GetSpellCastSecrecy, id)
+  return ok and not issecretvalue(secrecy) and secrecy == Enum.SecrecyLevel.NeverSecret
+end
+
+function Private.CastCombatStatus(trigger)
+  trigger = type(trigger) == "table" and trigger or {}
+  local unit = trigger.unit or "player"
+  if unit == "member" and type(trigger.specificUnit) == "string" and trigger.specificUnit:lower() == "player" then unit = "player" end
+  if unit == "player" then return "|cff33ff99Works in combat.|r" end
+  local blocked = {}
+  for _, entry in ipairs(castReadableArgs) do
+    local key, label = entry[1], entry[2]
+    if trigger["use_" .. key] ~= nil then
+      local readable = false
+      if castSpellArgs[key] and type(trigger[key]) == "table" and #trigger[key] > 0 then
+        readable = true
+        for _, value in ipairs(trigger[key]) do
+          if not CastSpellNeverSecret(value) then readable = false; break end
+        end
+      end
+      if not readable then blocked[#blocked + 1] = label end
+    end
+  end
+  if #blocked > 0 then
+    return "|cffff2020Won't match in combat:|r " .. table.concat(blocked, ", ")
+      .. ". |cffff9933Casts by other units are secret in combat; only your own stay readable.|r"
+  end
+  return "|cffff9933In combat, casts by other units are secret: they still show with their bar and timer, but cannot be filtered.|r"
+end
+
 Private.event_prototypes = {
   ["Blizzard Cooldown Manager"] = Private.CooldownViewerPrototype,
   ["Blizzard CDM Buff"] = Private.CooldownViewerBuffPrototype,
@@ -7859,6 +7909,8 @@ if count == nil then return false end
   },
   ["Cast"] = {
     type = "unit",
+    -- Shown at the top of the trigger: whether the chosen unit and filters
+    -- work in combat (Private.CastCombatStatus).
     events = function(trigger)
       local result = {}
       local unit = trigger.unit
@@ -7988,8 +8040,8 @@ if count == nil then return false end
     statesParameter = "unit",
     args = {
       {
-        name = "secretCastNote", type = "description", display = "",
-        text = function() return "Restricted casts can be displayed on bars and icons. Spell, interruptibility and remaining-time filters only match when Blizzard makes those values readable." end,
+        name = "castStatus", type = "description", display = "",
+        text = function(trigger) return Private.CastCombatStatus(trigger) end,
       },
       { name = "durationObject", hidden = true, init = "durationObject", store = true, test = "true" },
       {

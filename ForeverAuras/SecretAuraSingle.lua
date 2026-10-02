@@ -18,6 +18,12 @@ local Display = Private.BlizzardAuraDisplay
 
 -- Units that name one unit; group, nameplate, boss and arena are lists.
 Display.singleUnits = {player = true, target = true, focus = true, pet = true, targettarget = true, focustarget = true}
+-- A Specific Unit also names one unit, once a supported token is entered.
+function Display.IsSingleUnit(trigger)
+  if type(trigger) ~= "table" then return false end
+  if trigger.unit == "member" then return Display.SpecificUnit(trigger) ~= nil end
+  return Display.singleUnits[trigger.unit] == true
+end
 -- Stored in secret* fields, not the Aura (Legacy) ones, so auras converted from
 -- Legacy keep their behaviour.
 Display.showOnValues = {showOnActive = "Aura(s) Found", showOnMissing = "Aura(s) Missing", showAlways = "Always"}
@@ -131,6 +137,10 @@ end
 function Display.SingleUnitExists(trigger)
   local unit = trigger and trigger.unit or "player"
   if unit == "player" then return true end
+  if unit == "member" then
+    unit = Display.SpecificUnit(trigger)
+    if not unit then return false end
+  end
   local ok, exists = pcall(UnitExists, unit)
   if not ok or issecretvalue(exists) then return true end
   return exists == true
@@ -151,7 +161,7 @@ end
 -- True when the display draws one unit in its own rectangle, as a Blizzard
 -- Group needs. Several units would need one clone per unit.
 function Display.FitsOneSlot(data, trigger)
-  if not trigger or not Display.singleUnits[trigger.unit] then return false end
+  if not trigger or not Display.IsSingleUnit(trigger) then return false end
   return data.anchorFrameType ~= "UNITFRAME" and data.anchorFrameType ~= "NAMEPLATE"
 end
 
@@ -216,16 +226,19 @@ function Display.SpellIDFilterNote(trigger)
   if NeverSecret(ids) then return end
   local debuff = trigger.debuffType == "HARMFUL"
   local kind = debuff and "Debuffs" or "Buffs"
-  if (debuff and friendlyUnits[trigger.unit]) or (not debuff and hostileUnits[trigger.unit]) then
+  -- A Specific Unit follows the group it belongs to (party1: Party).
+  local category = Display.UnitCategory(trigger)
+  local label = trigger.unit == "member" and Display.SpecificUnit(trigger) or Display.units[trigger.unit] or trigger.unit
+  if (debuff and friendlyUnits[category]) or (not debuff and hostileUnits[category]) then
     -- Point to Approximate Match wherever it can help.
-    if debuff and Display.approximateUnits[trigger.unit] then
+    if debuff and Display.approximateUnits[category] then
       return "error", ("Blizzard hides debuffs on %s from spell ID filters in combat. Try Approximate Match.")
-        :format(Display.units[trigger.unit] or trigger.unit)
+        :format(label)
     end
     return "error", ("Blizzard hides %s on %s from spell ID filters in combat.")
-      :format(kind:lower(), Display.units[trigger.unit] or trigger.unit)
+      :format(kind:lower(), label)
   end
-  if not friendlyUnits[trigger.unit] and not hostileUnits[trigger.unit] then
+  if not friendlyUnits[category] and not hostileUnits[category] then
     return "note", ("%s selected by spell ID only match while the unit is %s.")
       :format(kind, debuff and "hostile" or "friendly")
   end
@@ -289,8 +302,8 @@ function Display.ValidateSingle(data, trigger)
     end
   end
   if not Display.IsSingle(trigger, data) then return end
-  if not Display.singleUnits[trigger.unit] then
-    return "Aura(s) Missing, Always and Remaining Time watch one unit: choose Player, Target, Focus, Pet, Target of Target or Target of Focus."
+  if not Display.IsSingleUnit(trigger) then
+    return "Aura(s) Missing, Always and Remaining Time watch one unit: choose Player, Target, Focus, Pet, Target of Target, Target of Focus or a Specific Unit."
   end
   local showOn = Display.ShowOn(trigger)
   local op = Display.RemainingWindow(trigger)
@@ -413,7 +426,7 @@ end
 -- with a Missing look, placed on the screen (not on unit frames, nameplates or
 -- in a Modern Aura Group), and not the Icon-only Remaining Time display.
 local function FallbackPossible(data, trigger)
-  return Display.singleUnits[trigger.unit] and missingTypes[data.regionType]
+  return Display.IsSingleUnit(trigger) and missingTypes[data.regionType]
     and not (Display.FlowGroup and Display.FlowGroup(data))
     and Display.FrameAnchorType(data) ~= "UNITFRAME" and Display.FrameAnchorType(data) ~= "NAMEPLATE"
     and not (Display.RawShowOn(trigger) == "showOnActive" and trigger.secretUseRem == true)
@@ -1222,7 +1235,7 @@ function Display.WatchAuraLearning(region, data, trigger, glow)
   local ids = Display.GetSpellIDs(trigger, true)
   local key = table.concat(ids, ",") .. tostring(approximate) .. tostring(not not glow) .. tostring(trigger.unit)
   if not learningRegions[region] or learningRegions[region].key ~= key then
-    learningRegions[region] = {ids = ids, key = key, approximate = approximate, glow = glow, group = groupUnits[trigger.unit]}
+    learningRegions[region] = {ids = ids, key = key, approximate = approximate, glow = glow, group = groupUnits[Display.UnitCategory(trigger)]}
     RebuildLearningWatches()
   end
   -- Keep learned displays subscribed so later readable changes reach them too.
@@ -1239,7 +1252,7 @@ end
 Display.approximateUnits = {player = true, pet = true, group = true, party = true, raid = true}
 
 function Display.UsesApproximate(trigger)
-  return type(trigger) == "table" and trigger.secretApproximate == true and Display.approximateUnits[trigger.unit]
+  return type(trigger) == "table" and trigger.secretApproximate == true and Display.approximateUnits[Display.UnitCategory(trigger)]
     and trigger.debuffType == "HARMFUL" and (Display.UsesSpellIDs(trigger) or Display.UsesRankSpellIDs(trigger)) or false
 end
 

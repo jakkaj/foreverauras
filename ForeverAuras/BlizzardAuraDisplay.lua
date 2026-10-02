@@ -13,7 +13,37 @@ Display.units = {
   player = "Player", target = "Target", focus = "Focus", pet = "Pet", mouseover = "Mouseover",
   targettarget = "Target of Target", focustarget = "Target of Focus", group = "Smart Group",
   party = "Party", raid = "Raid", boss = "Boss", arena = "Arena", nameplate = "Nameplate",
+  member = "Specific Unit",
 }
+
+-- Specific Unit: one numbered group or enemy unit token (trigger.specificUnit,
+-- the Legacy field). Each pattern also gives the unit group it belongs to,
+-- which decides what works with it (friendly or hostile, group learning).
+local specificUnitPatterns = {
+  {"^party[1-4]$", "party"}, {"^partypet[1-4]$", "party"},
+  {"^raid(%d+)$", "raid", 40}, {"^raidpet(%d+)$", "raid", 40},
+  {"^boss[1-8]$", "boss"}, {"^arena[1-5]$", "arena"},
+}
+
+-- The unit token and its group, or nil when the text is not a supported token.
+function Display.SpecificUnit(trigger)
+  local text = type(trigger) == "table" and type(trigger.specificUnit) == "string" and trigger.specificUnit:lower():match("^%s*(%S+)%s*$")
+  if not text then return end
+  for _, pattern in ipairs(specificUnitPatterns) do
+    local number = text:match(pattern[1])
+    if number then
+      local n = tonumber(number)
+      if not pattern[3] or (n and n >= 1 and n <= pattern[3]) then return text, pattern[2] end
+    end
+  end
+end
+
+-- The unit setting, with a Specific Unit given as the group it belongs to.
+function Display.UnitCategory(trigger)
+  if type(trigger) ~= "table" then return end
+  if trigger.unit == "member" then return select(2, Display.SpecificUnit(trigger)) end
+  return trigger.unit
+end
 
 Display.booleanFilters = {
   {"isFromPlayerOrPlayerPet", "Own Only", "Auras cast by you or your pet. Vehicle casts are not included. Use Own Only: Include Vehicle instead to include them."},
@@ -260,6 +290,10 @@ end
 local function UnitTokens(trigger)
   local unit = trigger.unit
   local result = {}
+  if unit == "member" then
+    result[1] = Display.SpecificUnit(trigger)
+    return result
+  end
   if unit == "group" then unit = IsInRaid() and "raid" or "party" end
   if unit == "party" then
     result[1] = "player"
@@ -311,6 +345,9 @@ function Display.Validate(data)
   if Display.UsesExcludedSpellIDs(trigger) and #(trigger.excludedAuraSpellIDs or {}) == 0 then return "Enter an ignored spell ID, or untick Ignored Exact Spell IDs." end
   if not Display.units[trigger.unit] or (trigger.debuffType ~= "HELPFUL" and trigger.debuffType ~= "HARMFUL") then
     return "Choose a supported unit and Buff or Debuff."
+  end
+  if trigger.unit == "member" and not Display.SpecificUnit(trigger) then
+    return "Enter a Specific Unit such as party1, raid5, boss1 or arena2."
   end
   if trigger.unit == "nameplate" and (not C_NamePlate or not C_NamePlate.GetNamePlateForUnit) then
     return "This client does not expose nameplate frames."
@@ -1481,13 +1518,14 @@ end
 
 -- Native containers watch UNIT_AURA themselves. Only rebind when their unit can change.
 local unitEvents = {
-  GROUP_ROSTER_UPDATE = {group = true, party = true, raid = true},
+  -- Specific Unit (member) tokens can change owner with the roster or encounter.
+  GROUP_ROSTER_UPDATE = {group = true, party = true, raid = true, member = true},
   PLAYER_ROLES_ASSIGNED = {group = true, party = true, raid = true},
   PLAYER_TARGET_CHANGED = {target = true, targettarget = true},
   PLAYER_FOCUS_CHANGED = {focus = true, focustarget = true},
   UPDATE_MOUSEOVER_UNIT = {mouseover = true},
-  INSTANCE_ENCOUNTER_ENGAGE_UNIT = {boss = true},
-  ARENA_OPPONENT_UPDATE = {arena = true},
+  INSTANCE_ENCOUNTER_ENGAGE_UNIT = {boss = true, member = true},
+  ARENA_OPPONENT_UPDATE = {arena = true, member = true},
   -- Names only matter to group displays filtered by player name.
   UNIT_NAME_UPDATE = {group = true, party = true, raid = true},
   -- Combat and restriction changes do not change which units are watched.
@@ -1499,7 +1537,7 @@ local function NeedsUnitRefresh(mode, event, unit)
   if event == "UNIT_TARGET" then
     return (mode == "targettarget" and unit == "target") or (mode == "focustarget" and unit == "focus")
   elseif event == "UNIT_PET" then
-    return mode == "pet" and unit == "player"
+    return (mode == "pet" and unit == "player") or mode == "member"
   end
   local modes = unitEvents[event]
   return modes == nil or modes[mode] == true

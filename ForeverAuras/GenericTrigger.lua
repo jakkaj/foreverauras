@@ -2259,6 +2259,27 @@ do
   end
 
 
+  -- Secret cooldowns have no readable end time; poll isActive while one runs.
+  local secretPolled = {}
+  local secretPoller = CreateFrame("Frame")
+  secretPoller:Hide()
+  local SECRET_POLL_INTERVAL = 0.1
+  secretPoller.elapsed = 0
+  local SpellDetails
+  secretPoller:SetScript("OnUpdate", function(self, elapsed)
+    self.elapsed = self.elapsed + elapsed
+    if self.elapsed < SECRET_POLL_INTERVAL then return end
+    self.elapsed = 0
+    for id in pairs(secretPolled) do
+      if SpellDetails.data[id] then
+        SpellDetails:CheckSpellCooldown(id)
+      else
+        secretPolled[id] = nil
+      end
+    end
+    if not next(secretPolled) then self:Hide() end
+  end)
+
   --- @class PerSpellDetails
   --- @field known boolean? whether the spell is known by the player or not
   --- @field charges number? the number of charges as returned by GetSpellCharges
@@ -2287,7 +2308,7 @@ do
   --- @field CheckSpellCooldown fun(self: SpellDetails, effectiveSpellId: number, runeDuration: number?)
   --- @field SendEventsForSpell fun(self: SpellDetails, effectiveSpellId: number, event: string, ...: any[])
   --- @field GetSpellCharges fun(self: SpellDetails, effectiveSpellId: number, ignoreSpellKnown: boolean): number?, number?, number?, number?, number?
-  local SpellDetails = {
+  SpellDetails = {
     -- The data per effective spellId
     data = {
     },
@@ -2454,6 +2475,12 @@ do
           self:SendEventsForSpell(effectiveSpellId, "SPELL_COOLDOWN_READY", effectiveSpellId)
         end
         detail.ready = cooldown.ready
+        if cooldown.ready == false then
+          secretPolled[effectiveSpellId] = true
+          secretPoller:Show()
+        else
+          secretPolled[effectiveSpellId] = nil
+        end
         detail.charges, detail.chargesMax, detail.count = cooldown.charges, cooldown.maxCharges, cooldown.count
         detail.chargeGainTime, detail.chargeLostTime = nil, nil
         if not ForeverAuras.IsPaused() then

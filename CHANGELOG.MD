@@ -1,6 +1,13 @@
 # Changelog
 
 ## Versions
+## 0.43.5-BETA
+- Add warnings to Player/Unit Info -> Cast triggers
+- Fix Spell Cooldown Ready Event trigger. Now works in combat
+
+## 0.43.0-BETA
+- Add specific unit to Aura (Modern)
+
 ## 0.42.11
 - Fixed centered horizontal anchoring for Auras that are not the same size
 - Added Layout / Font settings to the top right, allowing you to change

@@ -54,6 +54,22 @@ local function GetOptions(data, triggernum)
       values = display.units,
       get = function() return trigger.unit end, set = function(_, value) Save("unit", value) end,
     },
+    -- Specific Unit: one party, raid, boss or arena token (Legacy's field).
+    specificUnitSpace = {
+      type = "description", name = "", order = 3.02, width = width,
+      hidden = function() return trigger.unit ~= "member" end,
+    },
+    specificUnit = {
+      type = "input", name = "Specific Unit", order = 3.03, width = width,
+      desc = "party1-4, partypet1-4, raid1-40, raidpet1-40, boss1-8 or arena1-5.",
+      hidden = function() return trigger.unit ~= "member" end,
+      validate = function(_, value)
+        if display.SpecificUnit({specificUnit = value}) then return true end
+        return "Enter a unit such as party1, raid5, boss1 or arena2."
+      end,
+      get = function() return trigger.specificUnit or "" end,
+      set = function(_, value) Save("specificUnit", value:lower():match("^%s*(%S+)%s*$")) end,
+    },
     auraTypeLabel = {
       type = "toggle", name = "Aura Type", order = 4, width = width,
       disabled = true, get = function() return true end,
