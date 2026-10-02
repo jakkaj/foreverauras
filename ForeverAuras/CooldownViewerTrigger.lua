@@ -422,7 +422,10 @@ local function QueueRefresh()
   Private.QueueCDMRefresh()
 end
 
+-- Clone keys written by the current BuildCooldownViewerStates run (reused).
+local built = {}
 local function BuildCooldownViewerStates(allstates, selected, event, showGCD, track, hideGCDText, showMode, exactID, requireTarget, ignoreSpellKnown)
+  wipe(built)
   if event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_EQUIPMENT_CHANGED" or event == "PLAYER_ENTERING_WORLD" then Private.CDMResetIdentities() end
   local available = GetCatalog(CatalogRefresh(event))
   local frames = Private.CDMFrames()
@@ -440,6 +443,7 @@ local function BuildCooldownViewerStates(allstates, selected, event, showGCD, tr
     allstates.spell = {show = true, changed = true, progressType = "timed", duration = 6,
       expirationTime = GetTime() + 6, autoHide = false, name = spell.name, icon = spell.iconID,
       spellId = spell.spellID, cdmTextPreview = true, index = 1}
+    built.spell = true
     return true
   end
   if not IsAvailable() then return true end
@@ -462,13 +466,16 @@ local function BuildCooldownViewerStates(allstates, selected, event, showGCD, tr
           identity = {spellID = displaySpellID, name = spell and spell.name or identity.name, icon = spell and spell.iconID or identity.icon}
         end
         local cloneID = selected.singleClone and "spell" or tostring(cooldownID)
-        if not allstates[cloneID] then
-          allstates[cloneID] = {
-            show = true,
-            changed = true,
-          }
-        end
+        -- A reused table starts empty on its first use in this run, exactly like
+        -- a new one; later entries sharing the clone add to it as before.
         local state = allstates[cloneID]
+        if not state then
+          state = {}
+          allstates[cloneID] = state
+        elseif not built[cloneID] then
+          wipe(state)
+        end
+        built[cloneID] = true
         state.show, state.changed, state.autoHide = true, true, false
         state.index, state.name, state.icon = index, identity.name, identity.icon
         state.spellId, state.itemId, state.cooldownID = identity.spellID, identity.itemID, type(cooldownID) == "number" and cooldownID or nil
@@ -644,20 +651,31 @@ end
 
 -- Compare snapshots because the trigger engine modifies live states.
 -- Secret values and mutable aura bindings still require an update.
-local previousOutputs = setmetatable({}, {__mode = "k"})
+-- Snapshots are copies kept per trigger, so the output tables below can be
+-- reused between scans: rebuilding them on every scan created garbage that
+-- the Lua collector had to clear in visible pauses during combat.
+local snapshots = setmetatable({}, {__mode = "k"})
+local persistentOutputs = setmetatable({}, {__mode = "k"})
 local function GetOutputs(selected, event, showGCD, track, hideGCDText, showMode, exactID, requireTarget, ignoreSpellKnown)
   local batch = Private.cdmScanBatch
-  local cache, key
+  local key = (event or "") .. ":" .. tostring(showGCD) .. ":" .. tostring(track) .. ":" .. tostring(hideGCDText)
+    .. ":" .. tostring(showMode) .. ":" .. tostring(exactID) .. ":" .. tostring(requireTarget) .. ":" .. tostring(ignoreSpellKnown)
+  local cache
   if batch then
     batch.outputs = batch.outputs or {}
     cache = batch.outputs[selected]
     if not cache then cache = {}; batch.outputs[selected] = cache end
-    key = table.concat({event or "", tostring(showGCD), tostring(track), tostring(hideGCDText),
-      tostring(showMode), tostring(exactID), tostring(requireTarget), tostring(ignoreSpellKnown)}, ":")
     if cache[key] then return cache[key] end
   end
-  local outputs = {}
+  local store = persistentOutputs[selected]
+  if not store then store = {}; persistentOutputs[selected] = store end
+  local outputs = store[key]
+  if not outputs then outputs = {}; store[key] = outputs end
   BuildCooldownViewerStates(outputs, selected, event, showGCD, track, hideGCDText, showMode, exactID, requireTarget, ignoreSpellKnown)
+  -- Drop clones the selection no longer produces, as a fresh table would.
+  for cloneID in pairs(outputs) do
+    if not built[cloneID] then outputs[cloneID] = nil end
+  end
   if cache then cache[key] = outputs end
   return outputs
 end
@@ -678,30 +696,42 @@ local function SameOutput(previous, current)
 end
 
 local function CommitStates(allstates, outputs)
-  local previous = previousOutputs[allstates] or {}
+  local previous = snapshots[allstates]
+  if not previous then previous = {}; snapshots[allstates] = previous end
   local changed = false
   for key, output in pairs(outputs) do
     local state = allstates[key]
-    if not state or not SameOutput(previous[key], output) or state.show ~= output.show then
+    local snapshot = previous[key]
+    if not state or not SameOutput(snapshot, output) or state.show ~= output.show then
       if not state then state = {}; allstates[key] = state end
-      for field in pairs(previous[key] or {}) do
-        if field ~= "changed" then state[field] = nil end
+      if snapshot then
+        for field in pairs(snapshot) do
+          if field ~= "changed" then state[field] = nil end
+        end
       end
       for field, value in pairs(output) do state[field] = value end
       state.changed = true
       changed = true
     end
+    -- Keep a copy: the output table is refilled by the next scan.
+    if snapshot then wipe(snapshot) else snapshot = {}; previous[key] = snapshot end
+    for field, value in pairs(output) do snapshot[field] = value end
   end
   for key, state in pairs(allstates) do
     if not outputs[key] and state.show then
-      for field in pairs(previous[key] or {}) do
-        if field ~= "changed" then state[field] = nil end
+      local snapshot = previous[key]
+      if snapshot then
+        for field in pairs(snapshot) do
+          if field ~= "changed" then state[field] = nil end
+        end
       end
       state.show, state.changed = false, true
       changed = true
     end
   end
-  previousOutputs[allstates] = outputs
+  for key in pairs(previous) do
+    if not outputs[key] then previous[key] = nil end
+  end
   return changed
 end
 
@@ -715,8 +745,14 @@ Private.ExecEnv.UpdateCDMSpell = function(allstates, config, event, ...)
   return Private.UpdateCooldownViewerStates(allstates, selected, event, config.showGCD, config.track, config.hideGCDText, config.showMode, config.cdmExact and tonumber(config.cdmSpell) or nil, config.requireTarget, config.use_ignoreSpellKnown)
 end
 
+-- Per trigger output containers and buff clones, refilled on each scan.
+local listOutputs = setmetatable({}, {__mode = "k"})
+local listClones = setmetatable({}, {__mode = "k"})
 function Private.ExecEnv.UpdateCDMSelectionList(allstates, queries, event)
-  local outputs = {}
+  local outputs = listOutputs[allstates]
+  if outputs then wipe(outputs) else outputs = {}; listOutputs[allstates] = outputs end
+  local clones = listClones[allstates]
+  if not clones then clones = {}; listClones[allstates] = clones end
   for queryIndex, query in ipairs(queries) do
     local selected = Private.ResolveCDMSpell(query, event)
     local temporary = GetOutputs(selected, event, query.showGCD, query.track, query.hideGCDText,
@@ -726,7 +762,8 @@ function Private.ExecEnv.UpdateCDMSelectionList(allstates, queries, event)
       local key = tostring(state.cooldownID) .. ":" .. tostring(state.spellId or query.cdmSpell)
       if query.event == "Blizzard CDM Buff" then
         key = query.cdmExact and ("id:" .. tostring(tonumber(query.cdmSpell))) or ("name:" .. (selected.buffName or query.cdmSpell))
-        local clone = {}
+        local clone = clones[key]
+        if clone then wipe(clone) else clone = {}; clones[key] = clone end
         for field, value in pairs(state) do clone[field] = value end
         clone.index = queryIndex
         state = clone
@@ -982,12 +1019,20 @@ local function BuffTimeMatches(value, threshold, op)
   elseif op == ">=" then return value >= threshold end
   return false
 end
+local filterOutputs = setmetatable({}, {__mode = "k"})
 function Private.ExecEnv.UpdateCDMBuffFilters(allstates, rawStates, event, value, op, stackValue, stackOp, totalValue, totalOp, elapsedValue, elapsedOp)
   value, stackValue = tonumber(value), tonumber(stackValue)
   totalValue, elapsedValue = tonumber(totalValue), tonumber(elapsedValue)
-  local outputs, nextCheck = {}, nil
+  -- Output tables are refilled on each scan (see GetOutputs).
+  local outputs = filterOutputs[rawStates]
+  if not outputs then outputs = {}; filterOutputs[rawStates] = outputs end
+  for key in pairs(outputs) do
+    if not rawStates[key] then outputs[key] = nil end
+  end
+  local nextCheck
   for key, state in pairs(rawStates) do
-    local output = {}
+    local output = outputs[key]
+    if output then wipe(output) else output = {} end
     for field, entry in pairs(state) do output[field] = entry end
     if event ~= "OPTIONS" then
       if value then

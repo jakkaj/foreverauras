@@ -1,6 +1,11 @@
 # Changelog
 
 ## Versions
+## 0.43.11
+- Many backend optimizations
+- Wand handling optimizations
+- SPELL_COOLDOWN_READY fixes
+
 ## 0.43.7
 - Fixed spell cooldown ready
 
