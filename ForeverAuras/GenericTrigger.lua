@@ -2264,12 +2264,16 @@ do
   local secretPoller = CreateFrame("Frame")
   secretPoller:Hide()
   local SECRET_POLL_INTERVAL = 0.1
+  -- Longer than any global cooldown (1.5 s at most).
+  local SECRET_MIN_COOLDOWN = 1.6
   secretPoller.elapsed = 0
   local SpellDetails
   secretPoller:SetScript("OnUpdate", function(self, elapsed)
     self.elapsed = self.elapsed + elapsed
     if self.elapsed < SECRET_POLL_INTERVAL then return end
     self.elapsed = 0
+    -- Polls only look for the end of a cooldown; unchanged states stay quiet.
+    SpellDetails.quietSecretCheck = true
     for id in pairs(secretPolled) do
       if SpellDetails.data[id] then
         SpellDetails:CheckSpellCooldown(id)
@@ -2277,6 +2281,7 @@ do
         secretPolled[id] = nil
       end
     end
+    SpellDetails.quietSecretCheck = nil
     if not next(secretPolled) then self:Hide() end
   end)
 
@@ -2471,9 +2476,32 @@ do
         local detail = self.data[effectiveSpellId]
         local cooldown = Private.GetSpellCooldownData(effectiveSpellId, "cooldown")
         if not detail or not cooldown then return end
-        if detail.ready == false and cooldown.ready == true and not ForeverAuras.IsPaused() then
+        -- The readable timers are frozen while restricted; reset them so the end
+        -- of a cooldown already reported here is not reported again afterwards.
+        for _, handler in ipairs(self.cdHandlers) do
+          if handler.expirationTime[effectiveSpellId] then
+            handler.expirationTime[effectiveSpellId] = 0
+            handler.duration[effectiveSpellId] = 0
+          end
+        end
+        -- The public flags also count the global cooldown, so only a cooldown
+        -- that outlasted a global cooldown reports ready when it ends.
+        local now = GetTime()
+        if detail.ready == false and cooldown.ready == true and detail.notReadySince
+        and now - detail.notReadySince > SECRET_MIN_COOLDOWN and not ForeverAuras.IsPaused() then
           self:SendEventsForSpell(effectiveSpellId, "SPELL_COOLDOWN_READY", effectiveSpellId)
         end
+        if cooldown.ready == false then
+          detail.notReadySince = detail.ready == false and detail.notReadySince or now
+        else
+          detail.notReadySince = nil
+        end
+        -- Without readable times only these flags show a change; repeated checks
+        -- from frequent events (usable updates, polling) skip unchanged states.
+        -- Secret charge counts change with SPELL_UPDATE_CHARGES, which is never quiet.
+        local stateChanged = detail.ready ~= cooldown.ready
+          or (not hasanysecretvalues(detail.charges, detail.chargesMax, detail.count, cooldown.charges, cooldown.maxCharges, cooldown.count)
+            and (detail.charges ~= cooldown.charges or detail.chargesMax ~= cooldown.maxCharges or detail.count ~= cooldown.count))
         detail.ready = cooldown.ready
         if cooldown.ready == false then
           secretPolled[effectiveSpellId] = true
@@ -2483,7 +2511,7 @@ do
         end
         detail.charges, detail.chargesMax, detail.count = cooldown.charges, cooldown.maxCharges, cooldown.count
         detail.chargeGainTime, detail.chargeLostTime = nil, nil
-        if not ForeverAuras.IsPaused() then
+        if (stateChanged or not self.quietSecretCheck) and not ForeverAuras.IsPaused() then
           self:SendEventsForSpell(effectiveSpellId, "SPELL_COOLDOWN_CHANGED", effectiveSpellId)
         end
         return
@@ -2496,6 +2524,8 @@ do
       local time = GetTime();
 
       local spellDetail = self.data[effectiveSpellId]
+      -- Forget the restricted ready state; it goes stale while timers are readable.
+      spellDetail.ready = nil
       local chargesChanged, chargesDifference = true, 0
       if not hasanysecretvalues(spellDetail.charges, charges, spellCount, spellDetail.count) then
         chargesChanged = spellDetail.charges ~= charges or spellDetail.count ~= spellCount
@@ -2654,6 +2684,8 @@ do
       return startTime, duration, gcdCooldown, readyTime, modRate, false
     end
   }
+  SpellDetails.cdHandlers = {SpellDetails.spellCds, SpellDetails.spellCdsRune, SpellDetails.spellCdsOnlyCooldown,
+    SpellDetails.spellCdsOnlyCooldownRune, SpellDetails.spellCdsCharges}
 
   local mark_ACTIONBAR_UPDATE_COOLDOWN, mark_PLAYER_ENTERING_WORLD
 
@@ -2744,7 +2776,10 @@ do
           mark_ACTIONBAR_UPDATE_COOLDOWN = nil
         end
         if spellId and not SpellDetails.data[spellId] then spellId = nil end
+        -- Usable updates fire on every mana change; they cannot change a cooldown.
+        SpellDetails.quietSecretCheck = event == "SPELL_UPDATE_USABLE" or nil
         Private.CheckCooldownReady(spellId)
+        SpellDetails.quietSecretCheck = nil
       elseif(event == "SPELLS_CHANGED") then
         SpellDetails:CheckSpellKnown()
         Private.CheckCooldownReady()
