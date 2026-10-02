@@ -1,6 +1,9 @@
 # Changelog
 
 ## Versions
+## 0.43.7
+- Fixed spell cooldown ready
+
 ## 0.43.5-BETA
 - Add warnings to Player/Unit Info -> Cast triggers
 - Fix Spell Cooldown Ready Event trigger. Now works in combat
