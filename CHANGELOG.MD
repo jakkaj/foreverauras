@@ -1,6 +1,11 @@
 # Changelog
 
 ## Versions
+## 0.44.2
+- Added Pixel Perfect Border option to Group Borders
+- Pixel Perfect Borders is default on for New Auras
+- When entering lots of spell IDs into a single Aura, we only display 20, with a "Show All" button. This improves performance throughout the addon window.
+
 ## 0.44.0
 - Fix Health values being displayed as Text
 - Totem Trigger is functional again, and works in Combat

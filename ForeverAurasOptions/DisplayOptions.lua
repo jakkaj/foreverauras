@@ -26,6 +26,7 @@ local function AddSubRegion(data, subRegionName, detached)
         local default = OptionsPrivate.Private.subRegionTypes[subRegionName].default
         local subRegionData = type(default) == "function" and default(data.regionType) or CopyTable(default)
         subRegionData.type = subRegionName
+        if subRegionName == "subborder" then subRegionData.border_ppscale = true end
         if detached then subRegionData.secretAuraDetached = true end
         if OptionsPrivate.Private.BlizzardAuraDisplay.Enabled(data) then
           if subRegionName == "subglow" then subRegionData.glowType = "Proc"

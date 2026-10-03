@@ -17,6 +17,27 @@ function Private.regionPrototype.AddAlphaToDefault(default)
   default.alpha = 1.0;
 end
 
+function Private.SetBorderPixelPerfect(frame, enabled)
+  enabled = enabled == true
+  local scale = enabled and PixelUtil.GetPixelToUIUnitFactor() or 1
+  frame:ForEachPiece(function(_, piece)
+    piece:SetSnapToPixelGrid(not enabled)
+    if enabled and piece:GetTexelSnappingBias() ~= 0 then
+      piece.originalSnappingBias = piece:GetTexelSnappingBias()
+      piece:SetTexelSnappingBias(0)
+    elseif not enabled and piece.originalSnappingBias then
+      piece:SetTexelSnappingBias(piece.originalSnappingBias)
+      piece.originalSnappingBias = nil
+    end
+  end)
+  frame:SetIgnoreParentScale(enabled)
+  frame:SetScale(scale)
+end
+
+function Private.BorderUnits(frame, relative)
+  return relative:GetEffectiveScale() / frame:GetEffectiveScale()
+end
+
 -- Progress Sources
 function Private.regionPrototype.AddProgressSourceToDefault(default)
   default.progressSource = {-1, ""}

@@ -1094,6 +1094,7 @@ local function modify(parent, region, data)
                                       data.borderColor[3], data.borderColor[4]);
     background:SetBackdropColor(data.backdropColor[1], data.backdropColor[2],
                                 data.backdropColor[3], data.backdropColor[4]);
+    Private.SetBorderPixelPerfect(background, data.borderPixelPerfect)
 
     background:ClearAllPoints();
     background:SetPoint("bottomleft", region, "bottomleft", -1 * data.borderOffset, -1 * data.borderOffset)
@@ -1614,9 +1615,10 @@ local function modify(parent, region, data)
           local regionLeft = SafeGetPos(region, region.GetLeft) or minX
           local regionBottom = SafeGetPos(region, region.GetBottom) or minY
           if regionLeft and regionBottom then
+            local units = Private.BorderUnits(self.background, region)
             self.background:ClearAllPoints()
-            self.background:SetPoint("BOTTOMLEFT", region, "BOTTOMLEFT", minX + -1 * data.borderOffset - regionLeft, minY + -1 * data.borderOffset - regionBottom)
-            self.background:SetPoint("TOPRIGHT", region, "BOTTOMLEFT", maxX + data.borderOffset - regionLeft, maxY + data.borderOffset - regionBottom)
+            self.background:SetPoint("BOTTOMLEFT", region, "BOTTOMLEFT", (minX - regionLeft) * units - data.borderOffset, (minY - regionBottom) * units - data.borderOffset)
+            self.background:SetPoint("TOPRIGHT", region, "BOTTOMLEFT", (maxX - regionLeft) * units + data.borderOffset, (maxY - regionBottom) * units + data.borderOffset)
           end
         end
       else

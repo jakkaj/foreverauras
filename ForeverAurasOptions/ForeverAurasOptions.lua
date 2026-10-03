@@ -2012,6 +2012,13 @@ function ForeverAuras.NewAura(sourceData, regionType, targetId)
 
   AddDefaultSubRegions(data)
 
+  if (regionType == "group" or regionType == "dynamicgroup" or regionType == "model") and data.borderPixelPerfect == nil then
+    data.borderPixelPerfect = true
+  end
+  for _, subRegion in ipairs(data.subRegions) do
+    if subRegion.type == "subborder" and subRegion.border_ppscale == nil then subRegion.border_ppscale = true end
+  end
+
   if not sourceData or not sourceData.triggers then
     data.triggers[1].trigger.auraTracking = "readable"
     OptionsPrivate.AuraEditor.Resolve(data, 1)
