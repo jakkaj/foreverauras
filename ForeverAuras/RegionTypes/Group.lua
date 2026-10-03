@@ -179,10 +179,12 @@ local function modify(parent, region, data)
           });
           border:SetBackdropBorderColor(data.borderColor[1], data.borderColor[2], data.borderColor[3], data.borderColor[4]);
           border:SetBackdropColor(data.backdropColor[1], data.backdropColor[2], data.backdropColor[3], data.backdropColor[4]);
+          Private.SetBorderPixelPerfect(border, data.borderPixelPerfect)
+          local units = Private.BorderUnits(border, region)
 
           border:ClearAllPoints();
-          border:SetPoint("bottomleft", region, "bottomleft", blx - data.borderOffset, bly - data.borderOffset);
-          border:SetPoint("topright",   region, "topright",   trx + data.borderOffset, try + data.borderOffset);
+          border:SetPoint("bottomleft", region, "bottomleft", blx * units - data.borderOffset, bly * units - data.borderOffset);
+          border:SetPoint("topright",   region, "topright",   trx * units + data.borderOffset, try * units + data.borderOffset);
           border:Show();
         else
           border:Hide();

@@ -1861,12 +1861,13 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
       bigStep = 1,
       hidden = function() return hiddenFunc and hiddenFunc() or not data.border end,
     },
-    border_spacer = {
-      type = "description",
-      name = "",
+    borderPixelPerfect = {
+      type = "toggle",
       width = ForeverAuras.normalWidth,
+      name = L["Force pixel perfect scale"],
+      desc = L["Keep border size, offset and inset in screen pixels, whatever the UI or group scale."],
+      order = order + 0.6,
       hidden = function() return hiddenFunc and hiddenFunc() or not data.border end,
-      order = order + 0.6
     },
     borderColor = {
       type = "color",

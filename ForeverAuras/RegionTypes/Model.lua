@@ -242,6 +242,7 @@ local function modify(parent, region, data)
     });
     border:SetBackdropBorderColor(data.borderColor[1], data.borderColor[2], data.borderColor[3], data.borderColor[4]);
     border:SetBackdropColor(data.backdropColor[1], data.backdropColor[2], data.backdropColor[3], data.backdropColor[4]);
+    Private.SetBorderPixelPerfect(border, data.borderPixelPerfect)
 
     border:SetPoint("bottomleft", region, "bottomleft", -data.borderOffset, -data.borderOffset);
     border:SetPoint("topright",   region, "topright",    data.borderOffset,  data.borderOffset);

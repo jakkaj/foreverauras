@@ -132,25 +132,55 @@ local function CanHaveMatchCheck(trigger)
   return trigger.showClones
 end
 
+local COLLAPSED_ROWS = 20
+local expandedNameLists = {}
+
 local function CreateNameOptions(aura_options, data, triggernum, size, isExactSpellId, isIgnoreList, prefix, baseOrder, useKey, optionKey, name, desc, inverse, enabled, onChanged)
   local trigger = data.triggers[triggernum].trigger
 
   local spellCache = ForeverAuras.spellCache
 
+  local step = math.min(0.01, 0.9 / (size + 1))
+  local listKey = tostring(data.uid or data.id) .. ":" .. triggernum .. ":" .. optionKey
+  local collapsible = size > COLLAPSED_ROWS + 1
+  local function Collapsed(i)
+    return collapsible and not expandedNameLists[listKey] and i > COLLAPSED_ROWS and i < size
+  end
+
   for i = 1, size do
-    local hiddenFunction
+    local listHidden
     if enabled then
-      hiddenFunction = function()
+      listHidden = function()
         return not (enabled() and (i == 1 or trigger[optionKey] and trigger[optionKey][i - 1]))
       end
     elseif isIgnoreList then
-      hiddenFunction = function()
+      listHidden = function()
         return not (trigger.type == "aura2" and trigger[useKey] and (i == 1 or trigger[optionKey] and trigger[optionKey][i - 1]) and trigger.unit ~= "multi" and CanHaveMatchCheck(trigger))
       end
     else
-      hiddenFunction = function()
+      listHidden = function()
         return not (trigger.type == "aura2" and trigger[useKey] and (i == 1 or trigger[optionKey] and trigger[optionKey][i - 1]))
       end
+    end
+    local hiddenFunction = listHidden
+    if Collapsed(i) then
+      hiddenFunction = function() return Collapsed(i) or listHidden() end
+    end
+
+    if collapsible and i == COLLAPSED_ROWS + 1 then
+      aura_options[prefix .. "expand"] = {
+        type = "execute",
+        width = ForeverAuras.normalWidth,
+        name = function()
+          return expandedNameLists[listKey] and L["Show Fewer"] or (L["Show All (%d)"]):format(size - 1)
+        end,
+        order = baseOrder + i * step,
+        hidden = listHidden,
+        func = function()
+          expandedNameLists[listKey] = not expandedNameLists[listKey] or nil
+          ForeverAuras.ClearAndUpdateOptions(data.id)
+        end,
+      }
     end
 
     if i ~= 1 then
@@ -159,7 +189,7 @@ local function CreateNameOptions(aura_options, data, triggernum, size, isExactSp
         name = inverse and L["and"] or L["or"],
         width = ForeverAuras.normalWidth - 0.2,
         image = function() return "", 0, 0 end,
-        order = baseOrder + i / 100 + 0.0001,
+        order = baseOrder + i * step + step * 0.1,
         hidden = hiddenFunction
       }
     end
@@ -168,7 +198,7 @@ local function CreateNameOptions(aura_options, data, triggernum, size, isExactSp
     aura_options[iconOption] = {
       type = "execute",
       width = 0.2,
-      order = baseOrder + i / 100 + 0.0002,
+      order = baseOrder + i * step + step * 0.2,
       hidden = hiddenFunction,
       control = "ForeverAurasIcon"
     }
@@ -247,7 +277,7 @@ local function CreateNameOptions(aura_options, data, triggernum, size, isExactSp
       width = ForeverAuras.normalWidth,
       name = name,
       desc = desc,
-      order = baseOrder + i / 100 + 0.0003,
+      order = baseOrder + i * step + step * 0.3,
       hidden = hiddenFunction,
       get = function(info)
         local rawString = trigger[optionKey] and trigger[optionKey][i]
