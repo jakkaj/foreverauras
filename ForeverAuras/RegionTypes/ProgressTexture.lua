@@ -1,15 +1,15 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 local Native = Private.ProgressTextureNative
 
-local defaultFont = ForeverAuras.defaultFont
-local defaultFontSize = ForeverAuras.defaultFontSize
+local defaultFont = WeakAuras.defaultFont
+local defaultFontSize = WeakAuras.defaultFontSize
 
 -- Credit to CommanderSirow for taking the time to properly craft the TransformPoint function
 -- to the enhance the abilities of Progress Textures.

@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local function createOptions(parentData, data, index, subIndex)
   local hiddentickextras = function()
@@ -16,13 +16,13 @@ local function createOptions(parentData, data, index, subIndex)
     __order = 1,
     tick_visible = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Show Tick"],
       order = 1,
     },
     tick_color = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Color"],
       order = 2,
       hasAlpha = true,
@@ -30,8 +30,8 @@ local function createOptions(parentData, data, index, subIndex)
 
     tick_thickness = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Thickness"],
       order = 2.5,
       min = 0,
@@ -43,12 +43,12 @@ local function createOptions(parentData, data, index, subIndex)
       type = "description",
       name = "",
       order = 3,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
     },
 
     tick_placement_mode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Tick Mode"],
       order = 3.1,
       values = OptionsPrivate.Private.tick_placement_modes,
@@ -59,24 +59,24 @@ local function createOptions(parentData, data, index, subIndex)
       type = "description",
       name = "",
       order = 3.2,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
     },
 
     tick_add = {
       type = "execute",
       name = L["Add"],
       order = 5,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       func = function()
         tinsert(data.tick_placements, 0)
-        ForeverAuras.Add(parentData)
-        ForeverAuras.ClearAndUpdateOptions(parentData.id)
+        WeakAuras.Add(parentData)
+        WeakAuras.ClearAndUpdateOptions(parentData.id)
       end
     },
 
     tick_extrasDescription = {
       type = "execute",
-      control = "ForeverAurasExpandSmall",
+      control = "WeakAurasExpandSmall",
       name = function()
         local lengthtext = ""
         if data.automatic_length then
@@ -105,7 +105,7 @@ local function createOptions(parentData, data, index, subIndex)
 
         return description
       end,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = 7,
       func = function(info, button)
         local collapsed = OptionsPrivate.IsCollapsed("subtext", "subtext", "tickextras" .. index, true)
@@ -123,7 +123,7 @@ local function createOptions(parentData, data, index, subIndex)
     },
     automatic_length = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Automatic length"],
       order = 8,
       desc = L["Matches the height setting of a horizontal bar or width for a vertical bar."],
@@ -131,8 +131,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     tick_length = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Length"],
       order = 9,
       min = 0,
@@ -143,14 +143,14 @@ local function createOptions(parentData, data, index, subIndex)
     },
     use_texture = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Use Texture"],
       order = 10,
       hidden = hiddentickextras,
     },
     tick_blend_mode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Blend Mode"],
       order = 11,
       values = OptionsPrivate.Private.blend_types,
@@ -161,7 +161,7 @@ local function createOptions(parentData, data, index, subIndex)
       type = "input",
       name = L["Texture"],
       order = 12,
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       disabled = function() return not data.use_texture end,
       hidden = hiddentickextras,
     },
@@ -186,20 +186,20 @@ local function createOptions(parentData, data, index, subIndex)
       hidden = hiddentickextras,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     tick_desaturate = {
       type = "toggle",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Desaturate"],
       order = 13,
       hidden = hiddentickextras,
     },
     tick_rotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Rotation"],
       min = 0,
       max = 360,
@@ -209,7 +209,7 @@ local function createOptions(parentData, data, index, subIndex)
     },
     tick_mirror = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Mirror"],
       order = 15,
       disabled = function() return not data.use_texture end,
@@ -217,8 +217,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     tick_xOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["x-Offset"],
       order = 16,
       softMin = -200,
@@ -228,8 +228,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     tick_yOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["y-Offset"],
       order = 17,
       softMin = -200,
@@ -243,7 +243,7 @@ local function createOptions(parentData, data, index, subIndex)
       name = "",
       order = 18,
       hidden = hiddentickextras,
-      control = "ForeverAurasExpandAnchor",
+      control = "WeakAurasExpandAnchor",
       arg = {
         expanderName = "tick" .. index .. "#" .. subIndex
       }
@@ -254,10 +254,10 @@ local function createOptions(parentData, data, index, subIndex)
     for i in ipairs(data.tick_placements) do
       options["tick_progress_source" .. i] = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Progress Source"],
         order = 4 + i / 100,
-        control = "ForeverAurasTwoColumnDropdown",
+        control = "WeakAurasTwoColumnDropdown",
         values = OptionsPrivate.Private.GetProgressSourcesForUi(parentData, true),
         get = function(info)
           return OptionsPrivate.Private.GetProgressValueConstant(data.progressSources[i] or {-2, ""})
@@ -272,7 +272,7 @@ local function createOptions(parentData, data, index, subIndex)
           else
             data.progressSources[i] = nil
           end
-          ForeverAuras.Add(parentData)
+          WeakAuras.Add(parentData)
         end,
         hidden = function()
           return not(data.tick_placement_mode == "ValueOffset")
@@ -281,17 +281,17 @@ local function createOptions(parentData, data, index, subIndex)
 
       options["tick_placement" .. i] = {
         type = "input",
-        width = ForeverAuras.normalWidth - 0.15,
+        width = WeakAuras.normalWidth - 0.15,
         name = L["Tick Placement"],
         order = 4 + i / 100 + 0.001,
-        validate = ForeverAuras.ValidateNumeric,
+        validate = WeakAuras.ValidateNumeric,
         desc = L["Enter in a value for the tick's placement."],
         get = function(info)
           return data.tick_placements[i] or ""
         end,
         set = function(info, value)
           data.tick_placements[i] = value
-          ForeverAuras.Add(parentData)
+          WeakAuras.Add(parentData)
         end
       }
 
@@ -302,13 +302,13 @@ local function createOptions(parentData, data, index, subIndex)
         order = 4 + i / 100 + 0.002,
         func = function()
           tremove(data.tick_placements, i)
-          ForeverAuras.Add(parentData)
-          ForeverAuras.ClearAndUpdateOptions(parentData.id)
+          WeakAuras.Add(parentData)
+          WeakAuras.ClearAndUpdateOptions(parentData.id)
         end,
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\delete",
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         disabled = function()
           return #data.tick_placements < 2
         end
@@ -336,4 +336,4 @@ local getAnchors = function(data)
   return anchors
 end
 
-ForeverAuras.RegisterSubRegionOptions("subtick", createOptions, L["Places a tick on the bar"], getAnchors)
+WeakAuras.RegisterSubRegionOptions("subtick", createOptions, L["Places a tick on the bar"], getAnchors)

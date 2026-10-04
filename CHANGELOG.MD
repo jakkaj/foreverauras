@@ -1,6 +1,16 @@
 # Changelog
 
 ## Versions
+## 0.50.3
+- Add Weapon Charges for Show Always Weapon Enchant Trigger
+- Importing auras from other game versions kept talent data loaded in the backend. This will now retro-fix talent data stored with Auras, and properly clear them when importing from other versions.
+- Fix Fire Totems not being picked up by the Totem Trigger
+- You can now use a Modern Aura as a secondary trigger, and use its %s and %p text to display to another trigger
+- Aura (Legacy) picks up name again
+- You can now use Grid as an option in Modern Aura Groups.
+- Adding **NON** Modern Aura trigger sources to Modern Aura Groups will now display a warning. It is only intended for purely Modern Aura driven triggers to be placed in Modern Aura groups.
+- Icon changes
+
 ## 0.44.2
 - Added Pixel Perfect Border option to Group Borders
 - Pixel Perfect Borders is default on for New Auras

@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 ---@type string
 local AddonName = ...
@@ -52,17 +52,17 @@ if LibSpec then
     if IsInRaid() then
       local max = GetNumGroupMembers()
       for i = 1, max do
-        if not C_Secrets.ShouldUnitIdentityBeSecret(ForeverAuras.raidUnits[i]) then
-          local name = GetUnitName(ForeverAuras.raidUnits[i], true)
-          nameToUnitMap[name] = ForeverAuras.raidUnits[i]
+        if not C_Secrets.ShouldUnitIdentityBeSecret(WeakAuras.raidUnits[i]) then
+          local name = GetUnitName(WeakAuras.raidUnits[i], true)
+          nameToUnitMap[name] = WeakAuras.raidUnits[i]
         end
       end
     else
       local max = GetNumSubgroupMembers()
       for i = 1, max do
-        if not C_Secrets.ShouldUnitIdentityBeSecret(ForeverAuras.partyUnits[i]) then
-          local name = GetUnitName(ForeverAuras.partyUnits[i], true)
-          nameToUnitMap[name] = ForeverAuras.partyUnits[i]
+        if not C_Secrets.ShouldUnitIdentityBeSecret(WeakAuras.partyUnits[i]) then
+          local name = GetUnitName(WeakAuras.partyUnits[i], true)
+          nameToUnitMap[name] = WeakAuras.partyUnits[i]
         end
       end
     end
@@ -164,7 +164,7 @@ if LibSpec then
   do
     function Private.LibSpecWrapper.CheckTalentForUnit(unit, talentId)
       if Private.ExecEnv.UnitIsUnit(unit, "player") then
-        return select(4, ForeverAuras.GetTalentById(talentId))
+        return select(4, WeakAuras.GetTalentById(talentId))
       end
       if C_Secrets.ShouldUnitIdentityBeSecret(unit) then
         return nil
@@ -259,12 +259,12 @@ if LibSpec then
 end
 
 -- Export for GenericTrigger
-ForeverAuras.SpecForUnit = Private.LibSpecWrapper.SpecForUnit
-ForeverAuras.SpecRolePositionForUnit = Private.LibSpecWrapper.SpecRolePositionForUnit
-ForeverAuras.CheckTalentForUnit = Private.LibSpecWrapper.CheckTalentForUnit
+WeakAuras.SpecForUnit = Private.LibSpecWrapper.SpecForUnit
+WeakAuras.SpecRolePositionForUnit = Private.LibSpecWrapper.SpecRolePositionForUnit
+WeakAuras.CheckTalentForUnit = Private.LibSpecWrapper.CheckTalentForUnit
 
 if Private.LibSpecWrapper.CheckGlyphForUnit then
-  ForeverAuras.CheckGlyphForUnit = Private.LibSpecWrapper.CheckGlyphForUnit
+  WeakAuras.CheckGlyphForUnit = Private.LibSpecWrapper.CheckGlyphForUnit
 else
-  ForeverAuras.CheckGlyphForUnit = function() return nil end
+  WeakAuras.CheckGlyphForUnit = function() return nil end
 end

@@ -6,7 +6,7 @@
 -- AnimationGroups (FlipBook, Path, Alpha) registered with
 -- AddAuraShownAnimation, and Blizzard plays them while the aura is shown.
 -- Editor samples and the Missing icon use the same code.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local Display = Private.BlizzardAuraDisplay
 

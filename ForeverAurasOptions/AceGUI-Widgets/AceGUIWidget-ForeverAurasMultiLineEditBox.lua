@@ -1,10 +1,10 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local Type, Version = "ForeverAurasMultiLineEditBox", 39
+local Type, Version = "WeakAurasMultiLineEditBox", 39
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -20,14 +20,14 @@ local _G = _G
 Support functions
 -------------------------------------------------------------------------------]]
 
-if not AceGUIForeverAurasMultiLineEditBoxInsertLink then
+if not AceGUIWeakAurasMultiLineEditBoxInsertLink then
   -- upgradeable hook
-  hooksecurefunc("ChatEdit_InsertLink", function(...) return _G.AceGUIForeverAurasMultiLineEditBoxInsertLink(...) end)
+  hooksecurefunc("ChatEdit_InsertLink", function(...) return _G.AceGUIWeakAurasMultiLineEditBoxInsertLink(...) end)
 end
 
-function _G.AceGUIForeverAurasMultiLineEditBoxInsertLink(text)
+function _G.AceGUIWeakAurasMultiLineEditBoxInsertLink(text)
   for i = 1, AceGUI:GetWidgetCount(Type) do
-    local editbox = _G[("ForeverAurasMultiLineEditBox%uEdit"):format(i)]
+    local editbox = _G[("WeakAurasMultiLineEditBox%uEdit"):format(i)]
     if editbox and editbox:IsVisible() and editbox:HasFocus() then
       text = text:gsub("|", "||")
       editbox:Insert(text)
@@ -338,7 +338,7 @@ local function Constructor()
   local extraButtons = {};
   extraButtons[0] = button;
 
-  local scrollBG = CreateFrame("Frame", nil, frame, "BackdropTemplateForeverAuras")
+  local scrollBG = CreateFrame("Frame", nil, frame, "BackdropTemplateWeakAuras")
   scrollBG:SetBackdrop(backdrop)
   scrollBG:SetBackdropColor(0, 0, 0)
   scrollBG:SetBackdropBorderColor(0.4, 0.4, 0.4)

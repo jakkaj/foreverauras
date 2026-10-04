@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local function createOptions(parentData, data, index, subIndex)
   local pointAnchors = {}
@@ -20,13 +20,13 @@ local function createOptions(parentData, data, index, subIndex)
     __order = 1,
     linearTextureVisible = {
       type = "toggle",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Show Linear Texture"],
       order = 1,
     },
     linearTextureTexture = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Texture"],
       order = 2,
     },
@@ -49,59 +49,59 @@ local function createOptions(parentData, data, index, subIndex)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     linearTextureOrientation = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Orientation"],
       order = 4,
       values = OptionsPrivate.Private.orientation_types
     },
     linearTextureWrapMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Texture Wrap"],
       order = 5,
       values = OptionsPrivate.Private.texture_wrap_types
     },
     linearTextureInverse = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Inverse"],
       order = 5.5,
     },
     linearTextureMirror = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Mirror"],
       order = 6,
     },
     linearTextureDesaturate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Desaturate"],
       order = 7,
     },
     linearTextureColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Color"],
       hasAlpha = true,
       order = 8,
     },
     linearTextureBlendMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Blend Mode"],
       order = 9,
       values = OptionsPrivate.Private.blend_types
     },
     linearTextureUser_x = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       order = 11,
       name = L["Re-center X"],
       min = -0.5,
@@ -110,8 +110,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     linearTextureUser_y = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       order = 12,
       name = L["Re-center Y"],
       min = -0.5,
@@ -120,8 +120,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     linearTextureCrop_x = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Crop X"],
       order = 13,
       min = 0,
@@ -131,8 +131,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     linearTextureCrop_y = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Crop Y"],
       order = 14,
       min = 0,
@@ -143,8 +143,8 @@ local function createOptions(parentData, data, index, subIndex)
     -- Doesn't appear to work
     linearTextureRotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Texture Rotation"],
       desc = L["Uses Texture Coordinates to rotate the texture."],
       order = 15,
@@ -155,8 +155,8 @@ local function createOptions(parentData, data, index, subIndex)
     -- Doesn't appear to work
     linearTextureAuraRotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Rotation"],
       order = 16,
       min = 0,
@@ -175,4 +175,4 @@ local function createOptions(parentData, data, index, subIndex)
   return options
 end
 
-  ForeverAuras.RegisterSubRegionOptions("sublineartexture", createOptions, L["Shows a Linear Progress Texture"]);
+  WeakAuras.RegisterSubRegionOptions("sublineartexture", createOptions, L["Shows a Linear Progress Texture"]);

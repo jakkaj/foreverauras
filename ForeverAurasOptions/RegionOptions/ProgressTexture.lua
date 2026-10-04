@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 local GetAtlasInfo = C_Texture.GetAtlasInfo
 
 local function createOptions(id, data)
@@ -13,7 +13,7 @@ local function createOptions(id, data)
     __title = L["Progress Texture Settings"],
     __order = 1,
     foregroundTexture = {
-      width = ForeverAuras.normalWidth - 0.15,
+      width = WeakAuras.normalWidth - 0.15,
       type = "input",
       name = L["Foreground Texture"],
       order = 1
@@ -40,12 +40,12 @@ local function createOptions(id, data)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     backgroundTexture = {
       type = "input",
-      width = ForeverAuras.normalWidth - 0.15,
+      width = WeakAuras.normalWidth - 0.15,
       name = L["Background Texture"],
       order = 5,
       disabled = function() return data.sameTexture; end,
@@ -74,12 +74,12 @@ local function createOptions(id, data)
       disabled = function() return data.sameTexture; end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     mirror = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Mirror"],
       order = 10,
       disabled = function() return data.orientation == "CLOCKWISE" or data.orientation == "ANTICLOCKWISE"; end
@@ -87,32 +87,32 @@ local function createOptions(id, data)
     sameTexture = {
       type = "toggle",
       name = L["Same"],
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = 15
     },
     desaturateForeground = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Desaturate"],
       order = 17.5,
     },
     desaturateBackground = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Desaturate"],
       order = 17.6,
     },
     blendMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Blend Mode"],
       order = 20,
       values = OptionsPrivate.Private.blend_types
     },
     backgroundOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Background Offset"],
       min = 0,
       softMax = 25,
@@ -121,7 +121,7 @@ local function createOptions(id, data)
     },
     orientation = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Orientation"],
       order = 35,
       values = function()
@@ -132,35 +132,35 @@ local function createOptions(id, data)
     },
     compress = {
       type = "toggle",
-      width = ForeverAuras.halfWidth,
+      width = WeakAuras.halfWidth,
       name = L["Compress"],
       order = 40,
       disabled = function() return data.orientation == "CLOCKWISE" or data.orientation == "ANTICLOCKWISE"; end
     },
     inverse = {
       type = "toggle",
-      width = ForeverAuras.halfWidth,
+      width = WeakAuras.halfWidth,
       name = L["Inverse"],
       order = 41
     },
     foregroundColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Foreground Color"],
       hasAlpha = true,
       order = 30
     },
     backgroundColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Background Color"],
       hasAlpha = true,
       order = 37
     },
     user_x = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       order = 42,
       name = L["Re-center X"],
       min = -0.5,
@@ -170,8 +170,8 @@ local function createOptions(id, data)
     },
     user_y = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       order = 44,
       name = L["Re-center Y"],
       min = -0.5,
@@ -181,8 +181,8 @@ local function createOptions(id, data)
     },
     startAngle = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       order = 42,
       name = L["Start Angle"],
       min = 0,
@@ -192,8 +192,8 @@ local function createOptions(id, data)
     },
     endAngle = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       order = 44,
       name = L["End Angle"],
       min = 0,
@@ -203,8 +203,8 @@ local function createOptions(id, data)
     },
     crop_x = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Crop X"],
       order = 46,
       min = 0,
@@ -214,15 +214,15 @@ local function createOptions(id, data)
       set = function(info, v)
         data.width = data.width * ((1 + data.crop_x) / (1 + v));
         data.crop_x = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.ResetMoverSizer();
       end,
     },
     crop_y = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Crop Y"],
       order = 47,
       min = 0,
@@ -232,15 +232,15 @@ local function createOptions(id, data)
       set = function(info, v)
         data.height = data.height * ((1 + data.crop_y) / (1 + v));
         data.crop_y = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.ResetMoverSizer();
       end,
     },
     alpha = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Alpha"],
       order = 48,
       min = 0,
@@ -250,8 +250,8 @@ local function createOptions(id, data)
     },
     rotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Texture Rotation"],
       desc = L["Uses Texture Coordinates to rotate the texture."],
       order = 52,
@@ -261,8 +261,8 @@ local function createOptions(id, data)
     },
     auraRotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Rotation"],
       order = 53,
       min = 0,
@@ -271,29 +271,29 @@ local function createOptions(id, data)
     },
     smoothProgress = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Smooth Progress"],
       desc = L["Animates progress changes"],
       order = 55.1
     },
     textureWrapMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Texture Wrap"],
       order = 55.2,
       values = OptionsPrivate.Private.texture_wrap_types
     },
     slanted = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Slanted"],
       order = 55.3,
       hidden = function() return data.orientation == "CLOCKWISE" or data.orientation == "ANTICLOCKWISE"; end
     },
     slant = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Slant Amount"],
       order = 55.4,
       min = 0,
@@ -303,14 +303,14 @@ local function createOptions(id, data)
     },
     slantFirst = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Inverse Slant"],
       order = 55.5,
       hidden = function() return not data.slanted or data.orientation == "CLOCKWISE" or data.orientation == "ANTICLOCKWISE" end
     },
     slantMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Slant Mode"],
       order = 55.6,
       hidden = function() return not data.slanted or data.orientation == "CLOCKWISE" or data.orientation == "ANTICLOCKWISE" end,
@@ -334,7 +334,7 @@ local function createOptions(id, data)
     for id, display in ipairs(overlayInfo) do
       options["overlaycolor" .. id] = {
         type = "color",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = string.format(L["%s Color"], display),
         hasAlpha = true,
         order = index,
@@ -349,7 +349,7 @@ local function createOptions(id, data)
             data.overlays = {};
           end
           data.overlays[id] = { r, g, b, a};
-          ForeverAuras.Add(data);
+          WeakAuras.Add(data);
         end
       }
       index = index + 0.01
@@ -357,7 +357,7 @@ local function createOptions(id, data)
 
     options["overlayclip"] = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Clip Overlays"],
       order = index
     }

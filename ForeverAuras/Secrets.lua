@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
@@ -42,6 +42,6 @@ for event in pairs(knownEvents) do
 end
 
 
-function ForeverAuras.IsSecretStateActive()
+function WeakAuras.IsSecretStateActive()
   return secretState
 end

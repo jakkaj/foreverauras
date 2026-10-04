@@ -1,12 +1,12 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
 local SharedMedia = LibStub("LibSharedMedia-3.0");
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 -- Default settings
 local default = {
@@ -97,7 +97,7 @@ local function create(parent)
   region:SetResizeBounds(1, 1)
 
   -- Border region
-  local border = CreateFrame("Frame", nil, region, "BackdropTemplateForeverAuras");
+  local border = CreateFrame("Frame", nil, region, "BackdropTemplateWeakAuras");
   region.border = border;
 
   Private.regionPrototype.create(region);
@@ -135,7 +135,7 @@ local function ConfigureModel(region, model, data)
   model:Show()
 
   -- Adjust model
-  ForeverAuras.SetModel(model, nil, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
+  WeakAuras.SetModel(model, nil, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
   model:SetPortraitZoom(data.portraitZoom and 1 or 0);
   model:ClearTransform()
   if data.api then
@@ -160,7 +160,7 @@ local function ConfigureModel(region, model, data)
     model:SetScript("OnEvent", function(self, event, unitId)
       Private.StartProfileSystem("model");
       if (event ~= "UNIT_MODEL_CHANGED" or Private.ExecEnv.UnitIsUnit(unitId, unit)) then
-        ForeverAuras.SetModel(model, nil, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
+        WeakAuras.SetModel(model, nil, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
         if data.advance then
           model:SetAnimation(data.sequence)
         else

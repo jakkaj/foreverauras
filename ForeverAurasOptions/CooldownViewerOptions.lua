@@ -1,4 +1,4 @@
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, OptionsPrivate = ...
 local views = setmetatable({}, {__mode = "k"})
 function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
@@ -12,12 +12,12 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
   for key in pairs(options) do
     if key:find("cdmSpells", 1, true) or key:find("cdmShowGCD", 1, true) then options[key] = nil end
   end
-  local function Refresh() ForeverAuras.ClearAndUpdateOptions(data.id) end
+  local function Refresh() WeakAuras.ClearAndUpdateOptions(data.id) end
   local function Save(key, value)
     trigger[key] = value
-    ForeverAuras.Add(data)
+    WeakAuras.Add(data)
     Private.ScanForLoads({[data.id] = true})
-    ForeverAuras.UpdateThumbnail(data)
+    WeakAuras.UpdateThumbnail(data)
     Private.UpdateFakeStatesFor(data.id)
     Refresh()
   end
@@ -50,26 +50,26 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
       end
     end
     trigger.cdmSpell, trigger.cdmExact = nil, nil
-    C_Timer.After(0, function() ForeverAuras.Add(data); Private.UpdateFakeStatesFor(data.id) end)
+    C_Timer.After(0, function() WeakAuras.Add(data); Private.UpdateFakeStatesFor(data.id) end)
   end
   Add("typeSpacer", {type = "description", name = " ", width = "full"})
   Add("help", {type = "description", name = "Spells must be active in the CDM to be displayed. Type /cdm and add them.", width = "full"})
-  Add("open", {type = "execute", name = "Open CDM", width = ForeverAuras.normalWidth,
+  Add("open", {type = "execute", name = "Open CDM", width = WeakAuras.normalWidth,
     disabled = function() return InCombatLockdown() or not C_CooldownViewer end,
     func = function()
       if not C_AddOns.IsAddOnLoaded("Blizzard_CooldownViewer") then C_AddOns.LoadAddOn("Blizzard_CooldownViewer") end
       if CooldownViewerSettings then ShowUIPanel(CooldownViewerSettings) end
     end})
-  Add("refresh", {type = "execute", name = "Refresh from Blizzard CDM", width = ForeverAuras.normalWidth, func = Refresh})
+  Add("refresh", {type = "execute", name = "Refresh from Blizzard CDM", width = WeakAuras.normalWidth, func = Refresh})
   Add("display", {type = "header", name = "Display", hidden = function() return trigger.event == "Blizzard CDM Item" end})
-  Add("show", {type = "select", name = "Show", width = ForeverAuras.normalWidth, desc = "Usable checks Blizzard's spell requirements, including reactive abilities and resources. It does not replace cooldown or range checks. If usability is unavailable, neither usability mode matches.", values = {always = "Always", cooldown = "On Cooldown", ready = "Not on Cooldown", usable = "Usable", unusable = "Not Usable"}, hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" end, get = function() return trigger.cdmShow or "always" end, set = function(_, value) Save("cdmShow", value) end})
-  Add("buffShow", {type = "select", name = "Show", width = ForeverAuras.normalWidth, values = {always = "Always", active = "Aura Active", missing = "Aura Missing"}, hidden = function() return trigger.cdmSource ~= "buff" end, get = function() return trigger.cdmBuffShow or "active" end, set = function(_, value) Save("cdmBuffShow", value) end})
-  Add("requireTarget", {type = "toggle", name = "Require attackable target", width = ForeverAuras.normalWidth,
+  Add("show", {type = "select", name = "Show", width = WeakAuras.normalWidth, desc = "Usable checks Blizzard's spell requirements, including reactive abilities and resources. It does not replace cooldown or range checks. If usability is unavailable, neither usability mode matches.", values = {always = "Always", cooldown = "On Cooldown", ready = "Not on Cooldown", usable = "Usable", unusable = "Not Usable"}, hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" end, get = function() return trigger.cdmShow or "always" end, set = function(_, value) Save("cdmShow", value) end})
+  Add("buffShow", {type = "select", name = "Show", width = WeakAuras.normalWidth, values = {always = "Always", active = "Aura Active", missing = "Aura Missing"}, hidden = function() return trigger.cdmSource ~= "buff" end, get = function() return trigger.cdmBuffShow or "active" end, set = function(_, value) Save("cdmBuffShow", value) end})
+  Add("requireTarget", {type = "toggle", name = "Require attackable target", width = WeakAuras.normalWidth,
     hidden = function() return trigger.cdmSource ~= "buff" end,
     desc = "Only show this trigger's auras while you have a target you can attack. Applies to all selected entries and all Show modes.",
     get = function() return trigger.cdmRequireTarget or false end,
     set = function(_, value) Save("cdmRequireTarget", value) end})
-  Add("remainingEnabled", {type = "toggle", name = "Remaining Time", width = ForeverAuras.normalWidth,
+  Add("remainingEnabled", {type = "toggle", name = "Remaining Time", width = WeakAuras.normalWidth,
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" end,
     desc = "Filters active, timed auras using readable CDM remaining time. Missing, permanent, or secret timers do not match.",
     get = function() return trigger.cdmUseRemaining or false end,
@@ -79,7 +79,7 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" or not trigger.cdmUseRemaining end,
     get = function() return trigger.cdmRemainingOperator or "<" end,
     set = function(_, value) Save("cdmRemainingOperator", value) end})
-  Add("remainingSeconds", {type = "input", name = "Seconds", width = ForeverAuras.normalWidth - 0.5,
+  Add("remainingSeconds", {type = "input", name = "Seconds", width = WeakAuras.normalWidth - 0.5,
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" or not trigger.cdmUseRemaining end,
     get = function() return tostring(trigger.cdmRemainingTime or 10) end,
     validate = function(_, value)
@@ -87,7 +87,7 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
       return (number and number >= 0 and number < math.huge) or "Enter a non-negative number of seconds."
     end,
     set = function(_, value) Save("cdmRemainingTime", tonumber(value)) end})
-  Add("totalEnabled", {type = "toggle", name = "Total Duration", width = ForeverAuras.normalWidth,
+  Add("totalEnabled", {type = "toggle", name = "Total Duration", width = WeakAuras.normalWidth,
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" end,
     desc = "Filters active, timed auras using readable CDM total time. Missing, permanent, or secret timers do not match.",
     get = function() return trigger.cdmUseTotal or false end,
@@ -97,7 +97,7 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" or not trigger.cdmUseTotal end,
     get = function() return trigger.cdmTotalOperator or "<" end,
     set = function(_, value) Save("cdmTotalOperator", value) end})
-  Add("totalSeconds", {type = "input", name = "Seconds", width = ForeverAuras.normalWidth - 0.5,
+  Add("totalSeconds", {type = "input", name = "Seconds", width = WeakAuras.normalWidth - 0.5,
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" or not trigger.cdmUseTotal end,
     get = function() return tostring(trigger.cdmTotalTime or 10) end,
     validate = function(_, value)
@@ -105,7 +105,7 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
       return (number and number >= 0 and number < math.huge) or "Enter a non-negative number of seconds."
     end,
     set = function(_, value) Save("cdmTotalTime", tonumber(value)) end})
-  Add("elapsedEnabled", {type = "toggle", name = "Elapsed Time", width = ForeverAuras.normalWidth,
+  Add("elapsedEnabled", {type = "toggle", name = "Elapsed Time", width = WeakAuras.normalWidth,
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" end,
     desc = "Filters active, timed auras using readable CDM elapsed time. Missing, permanent, or secret timers do not match.",
     get = function() return trigger.cdmUseElapsed or false end,
@@ -115,7 +115,7 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" or not trigger.cdmUseElapsed end,
     get = function() return trigger.cdmElapsedOperator or ">=" end,
     set = function(_, value) Save("cdmElapsedOperator", value) end})
-  Add("elapsedSeconds", {type = "input", name = "Seconds", width = ForeverAuras.normalWidth - 0.5,
+  Add("elapsedSeconds", {type = "input", name = "Seconds", width = WeakAuras.normalWidth - 0.5,
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" or not trigger.cdmUseElapsed end,
     get = function() return tostring(trigger.cdmElapsedTime or 10) end,
     validate = function(_, value)
@@ -123,7 +123,7 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
       return (number and number >= 0 and number < math.huge) or "Enter a non-negative number of seconds."
     end,
     set = function(_, value) Save("cdmElapsedTime", tonumber(value)) end})
-  Add("stacksEnabled", {type = "toggle", name = "Stack Count", width = ForeverAuras.normalWidth,
+  Add("stacksEnabled", {type = "toggle", name = "Stack Count", width = WeakAuras.normalWidth,
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" end,
     desc = "Filters active auras using readable CDM stack counts. Missing or secret stack counts do not match. All enabled filters must match.",
     get = function() return trigger.cdmUseStacks or false end,
@@ -133,7 +133,7 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" or not trigger.cdmUseStacks end,
     get = function() return trigger.cdmStackOperator or ">=" end,
     set = function(_, value) Save("cdmStackOperator", value) end})
-  Add("stacksCount", {type = "input", name = "Stacks", width = ForeverAuras.normalWidth - 0.5,
+  Add("stacksCount", {type = "input", name = "Stacks", width = WeakAuras.normalWidth - 0.5,
     hidden = function() return trigger.event ~= "Blizzard CDM Buff" or not trigger.cdmUseStacks end,
     get = function() return tostring(trigger.cdmStackCount or 1) end,
     validate = function(_, value)
@@ -142,7 +142,7 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
     end,
     set = function(_, value) Save("cdmStackCount", tonumber(value)) end})
   Add("extra", {
-    type = "execute", control = "ForeverAurasExpandSmall", width = "full", hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" end,
+    type = "execute", control = "WeakAurasExpandSmall", width = "full", hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" end,
     name = function()
       local settings = {}
       if trigger.cdmTrack == "cooldown" then settings[#settings + 1] = "Cooldown" elseif trigger.cdmTrack == "charges" then settings[#settings + 1] = "Charge recharge" end
@@ -154,8 +154,8 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
     image = function() return view.extra and "expanded" or "collapsed" end, imageWidth = 15, imageHeight = 15,
     func = function() view.extra = not view.extra; Refresh() end,
   })
-  Add("track", {type = "select", name = "Track cooldowns", width = ForeverAuras.normalWidth, hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" or not view.extra end, values = {auto = "Auto", cooldown = "Cooldown", charges = "Charge recharge"}, get = function() return trigger.cdmTrack or "auto" end, set = function(_, value) Save("cdmTrack", value) end})
-  Add("trackSpacer", {type = "description", name = "", width = ForeverAuras.normalWidth, hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" or not view.extra end})
+  Add("track", {type = "select", name = "Track cooldowns", width = WeakAuras.normalWidth, hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" or not view.extra end, values = {auto = "Auto", cooldown = "Cooldown", charges = "Charge recharge"}, get = function() return trigger.cdmTrack or "auto" end, set = function(_, value) Save("cdmTrack", value) end})
+  Add("trackSpacer", {type = "description", name = "", width = WeakAuras.normalWidth, hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" or not view.extra end})
   Add("includeGCD", {type = "toggle", name = "Show global cooldown", width = "full", hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" or not view.extra end, get = function() return trigger.use_cdmShowGCD or false end, set = function(_, value) Save("use_cdmShowGCD", value) end})
   Add("hideGCDText", {type = "toggle", name = "Hide global cooldown text", width = "full", hidden = function() return trigger.cdmSource == "buff" or trigger.event == "Blizzard CDM Item" or not view.extra end, desc = "Hides GCD countdown numbers, including %p and %t text. Spell cooldown and charge recharge text remain visible while the GCD swipe is shown.", get = function() return trigger.cdmHideGCDText ~= false end, set = function(_, value) Save("cdmHideGCDText", value) end})
   Add("ignoreSpellKnown", {type = "toggle", name = "Disable Spell Known Check", width = "full",
@@ -169,12 +169,12 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
     Add("spellSelection", {type = "header", name = "Spell Selection Filters"})
     local function Selector(title, label, prefix, flag, storage, exact, baseOrder, itemID)
       options[prefix .. "Toggle"] = {
-        type = "toggle", name = title, width = ForeverAuras.normalWidth - 0.2, order = baseOrder,
+        type = "toggle", name = title, width = WeakAuras.normalWidth - 0.2, order = baseOrder,
         get = function() return trigger[flag] or false end,
         set = function(_, value) Save(flag, value) end,
       }
       options[prefix .. "DisabledSpace"] = {
-        type = "description", name = "", width = ForeverAuras.normalWidth + 0.2, order = baseOrder + 0.001,
+        type = "description", name = "", width = WeakAuras.normalWidth + 0.2, order = baseOrder + 0.001,
         hidden = function() return trigger[flag] == true end,
       }
       local size = #(trigger[storage] or {}) + 1
@@ -222,9 +222,9 @@ function OptionsPrivate.AddCooldownViewerOptions(options, data, triggernum)
   Add("filters", {type = "header", name = "Blizzard CDM Filters"})
   Add("search", {type = "input", name = "Search", width = "full", get = function() return view.search or "" end,
     set = function(_, value) view.search = value; Refresh() end})
-  Add("available", {type = "toggle", name = "Show only available", width = ForeverAuras.normalWidth,
+  Add("available", {type = "toggle", name = "Show only available", width = WeakAuras.normalWidth,
     get = function() return view.availableOnly or false end, set = function(_, value) view.availableOnly = value; Refresh() end})
-  Add("maxRank", {type = "toggle", name = "Show only max rank", width = ForeverAuras.normalWidth,
+  Add("maxRank", {type = "toggle", name = "Show only max rank", width = WeakAuras.normalWidth,
     get = function() return view.maxRank or false end, set = function(_, value) view.maxRank = value; Refresh() end})
   Add("entries", {type = "header", name = "Blizzard CDM Entries"})
   local catalog = C_CooldownViewer and Private.CDMCatalog() or {}

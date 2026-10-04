@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 
 local gcdStates = {}
@@ -139,7 +139,7 @@ end
 Private.ExecEnv.GetSpellCooldownData = Private.GetSpellCooldownData
 
 local customStateScratch = {}
-function ForeverAuras.SetSpellCooldownState(state, spellID, showGCD, showGCDText)
+function WeakAuras.SetSpellCooldownState(state, spellID, showGCD, showGCDText)
   local cooldown = Private.GetSpellCooldownData(spellID, nil, showGCD, nil, customStateScratch)
   local hideGCDText = not showGCDText
   state.changed = true

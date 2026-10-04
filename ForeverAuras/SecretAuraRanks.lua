@@ -2,7 +2,7 @@
 -- Source: https://talentsforever.com/data.json, generated 2026-09-24.
 -- Adapted under CC BY 4.0: beta IDs grouped by class, spell, and rank; named variants kept separate.
 -- See SpellRankData-LICENSE.txt for attribution and license.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local families = {
   {2893}, -- Druid / Abolish Poison

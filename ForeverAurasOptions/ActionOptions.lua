@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local removeFuncs = OptionsPrivate.commonOptions.removeFuncs
 local replaceNameDescFuncs = OptionsPrivate.commonOptions.replaceNameDescFuncs
@@ -81,9 +81,9 @@ function OptionsPrivate.GetActionOptions(data)
           lastPlayedSoundFromSet = GetTime()
         end
       end
-      ForeverAuras.Add(data);
+      WeakAuras.Add(data);
       if(value == "message") then
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     end,
     args = {
@@ -96,19 +96,19 @@ function OptionsPrivate.GetActionOptions(data)
         type = "toggle",
         name = L["Custom Init"],
         order = 0.2,
-        width = ForeverAuras.doubleWidth
+        width = WeakAuras.doubleWidth
       },
       init_do_custom_load = {
         type = "toggle",
         name = L["Custom Load"],
         order = 0.3,
-        width = ForeverAuras.doubleWidth
+        width = WeakAuras.doubleWidth
       },
       init_do_custom_unload = {
         type = "toggle",
         name = L["Custom Unload"],
         order = 0.4,
-        width = ForeverAuras.doubleWidth
+        width = WeakAuras.doubleWidth
       },
       -- texteditor added here by AddCodeOption
       start_header = {
@@ -118,13 +118,13 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_do_message = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Chat Message"],
         order = 1
       },
       start_message_type = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Message Type"],
         order = 2,
         values = OptionsPrivate.Private.send_chat_message_types,
@@ -133,14 +133,14 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_message_warning = {
         type = "description",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Note: Automated Messages to SAY and YELL are blocked outside of Instances."],
         order = 2.5,
         hidden = function() return not RestrictedChannelCheck(data.actions.start) end
       },
       start_message_space = {
         type = "execute",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = "",
         order = 3,
         image = function() return "", 0, 0 end,
@@ -151,7 +151,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_message_color = {
         type = "color",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Color"],
         order = 3,
         hasAlpha = false,
@@ -165,17 +165,17 @@ function OptionsPrivate.GetActionOptions(data)
           data.actions.start.r = r;
           data.actions.start.g = g;
           data.actions.start.b = b;
-          ForeverAuras.Add(data);
+          WeakAuras.Add(data);
         end
       },
       start_message_dest = {
         type = "input",
-        width = ForeverAuras.normalWidth - 0.15,
+        width = WeakAuras.normalWidth - 0.15,
         name = L["Send To"],
         order = 3.1,
         disabled = function() return not data.actions.start.do_message end,
         hidden = function() return data.actions.start.message_type ~= "WHISPER" end,
-        control = "ForeverAurasInput",
+        control = "WeakAurasInput",
         callbacks = {
           OnEditFocusGained = function(self)
             local widget = dynamicTextInputs["start_message_dest"]
@@ -206,12 +206,12 @@ function OptionsPrivate.GetActionOptions(data)
         end,
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\sidebar",
       },
       start_message_dest_isunit = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Is Unit"],
         order = 3.15,
         hidden = function()
@@ -220,7 +220,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_message_tts_space = {
         type = "execute",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = "",
         order = 3.19,
         image = function() return "", 0, 0 end,
@@ -228,7 +228,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_message_tts_settings = {
         type = "execute",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         func = function()
           ShowUIPanel(ChatConfigFrame)
           ChatConfigFrameChatTabManager:UpdateSelection(VOICE_WINDOW_ID)
@@ -240,11 +240,11 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_message = {
         type = "input",
-        width = ForeverAuras.doubleWidth - 0.15,
+        width = WeakAuras.doubleWidth - 0.15,
         name = L["Message"],
         order = 4,
         disabled = function() return not data.actions.start.do_message end,
-        control = "ForeverAurasInput",
+        control = "WeakAurasInput",
         callbacks = {
           OnEditFocusGained = function(self)
             local widget = dynamicTextInputs["start_message"]
@@ -274,27 +274,27 @@ function OptionsPrivate.GetActionOptions(data)
         end,
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\sidebar",
       },
       -- texteditor added later
       start_do_sound = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Play Sound"],
         order = 8
       },
       start_do_loop = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Loop"],
         order = 8.1,
         disabled = function() return not data.actions.start.do_sound end,
       },
       start_sound_repeat = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Repeat After"],
         order = 8.2,
         hidden = function() return not data.actions.start.do_loop end,
@@ -304,24 +304,24 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_sound_repeat_space = {
         type = "description",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         order = 8.3,
         name = "",
         hidden = function() return not data.actions.start.do_loop end,
       },
       start_sound = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Sound"],
         order = 8.4,
-        itemControl = "ForeverAurasMediaSound",
+        itemControl = "WeakAurasMediaSound",
         values = OptionsPrivate.Private.sound_types,
         sorting = OptionsPrivate.Private.SortOrderForValues(OptionsPrivate.Private.sound_types),
         disabled = function() return not data.actions.start.do_sound end,
       },
       start_sound_channel = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Sound Channel"],
         order = 8.5,
         values = OptionsPrivate.Private.sound_channel_types,
@@ -330,7 +330,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_sound_path = {
         type = "input",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Sound File Path"],
         order = 9,
         hidden = function() return data.actions.start.sound ~= " custom" end,
@@ -338,7 +338,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_sound_kit_id = {
         type = "input",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Sound Kit ID"],
         order = 9,
         hidden = function() return data.actions.start.sound ~= " KitID" end,
@@ -346,13 +346,13 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_do_glow = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow External Element"],
         order = 10.1
       },
       start_glow_action = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow Action"],
         order = 10.2,
         values = OptionsPrivate.Private.glow_action_types,
@@ -360,7 +360,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_frame_type = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         desc = function()
           return (
             data.actions.start.glow_frame_type == "UNITFRAME"
@@ -378,7 +378,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_type_spacer = {
         type = "description",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = "",
         order = 10.35,
         hidden = function()
@@ -388,7 +388,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_type = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow Type"],
         order = 10.4,
         values = OptionsPrivate.Private.glow_types,
@@ -400,7 +400,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_frame = {
         type = "input",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Frame"],
         order = 10.5,
         hidden = function()
@@ -410,14 +410,14 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_choose_glow_frame = {
         type = "execute",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Choose"],
         order = 10.55,
         hidden = function() return not data.actions.start.do_glow or data.actions.start.glow_frame_type ~= "FRAMESELECTOR" end,
         func = function()
           if(data.controlledChildren and data.controlledChildren[1]) then
-            ForeverAuras.PickDisplay(data.controlledChildren[1]);
-            OptionsPrivate.StartFrameChooser(ForeverAuras.GetData(data.controlledChildren[1]), {"actions", "start", "glow_frame"});
+            WeakAuras.PickDisplay(data.controlledChildren[1]);
+            OptionsPrivate.StartFrameChooser(WeakAuras.GetData(data.controlledChildren[1]), {"actions", "start", "glow_frame"});
           else
             OptionsPrivate.StartFrameChooser(data, {"actions", "start", "glow_frame"});
           end
@@ -425,7 +425,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_use_glow_color = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow Color"],
         order = 10.7,
         hidden = function()
@@ -438,7 +438,7 @@ function OptionsPrivate.GetActionOptions(data)
       start_glow_color = {
         type = "color",
         hasAlpha = true,
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow Color"],
         order = 10.8,
         hidden = function()
@@ -451,7 +451,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_startAnim = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Start Animation"],
         order = 10.801,
         get = function()
@@ -466,8 +466,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_duration = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Duration"],
         order = 10.802,
         softMin = 0.01,
@@ -485,8 +485,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_lines = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Lines & Particles"],
         order = 10.81,
         min = 1,
@@ -506,8 +506,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_frequency = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Frequency"],
         order = 10.82,
         softMin = -2,
@@ -527,8 +527,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_length = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Length"],
         order = 10.83,
         min = 0.05,
@@ -546,8 +546,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_thickness = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Thickness"],
         order = 10.84,
         min = 0.05,
@@ -565,8 +565,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_XOffset = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["X-Offset"],
         order = 10.85,
         softMin = -100,
@@ -582,8 +582,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_YOffset = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Y-Offset"],
         order = 10.86,
         softMin = -100,
@@ -599,8 +599,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_scale = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Scale"],
         order = 10.87,
         min = 0.05,
@@ -619,7 +619,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_glow_border = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Border"],
         order = 10.88,
         hidden = function()
@@ -631,7 +631,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       start_do_custom = {
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Custom"],
         order = 11,
       },
@@ -643,13 +643,13 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_do_message = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Chat Message"],
         order = 21
       },
       finish_message_type = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Message Type"],
         order = 22,
         values = OptionsPrivate.Private.send_chat_message_types,
@@ -658,14 +658,14 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_message_warning = {
         type = "description",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Note: Automated Messages to SAY and YELL are blocked outside of Instances."],
         order = 22.5,
         hidden = function() return not RestrictedChannelCheck(data.actions.finish) end
       },
       finish_message_space = {
         type = "execute",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = "",
         order = 23,
         image = function() return "", 0, 0 end,
@@ -676,7 +676,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_message_color = {
         type = "color",
-        width = ForeverAuras.normalWidth - 0.15,
+        width = WeakAuras.normalWidth - 0.15,
         name = L["Color"],
         order = 23,
         hasAlpha = false,
@@ -690,17 +690,17 @@ function OptionsPrivate.GetActionOptions(data)
           data.actions.finish.r = r;
           data.actions.finish.g = g;
           data.actions.finish.b = b;
-          ForeverAuras.Add(data);
+          WeakAuras.Add(data);
         end
       },
       finish_message_dest = {
         type = "input",
-        width = ForeverAuras.normalWidth - 0.15,
+        width = WeakAuras.normalWidth - 0.15,
         name = L["Send To"],
         order = 23.1,
         disabled = function() return not data.actions.finish.do_message end,
         hidden = function() return data.actions.finish.message_type ~= "WHISPER" end,
-        control = "ForeverAurasInput",
+        control = "WeakAurasInput",
         callbacks = {
           OnEditFocusGained = function(self)
             local widget = dynamicTextInputs["finish_message_dest"]
@@ -731,12 +731,12 @@ function OptionsPrivate.GetActionOptions(data)
         end,
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\sidebar",
       },
       finish_message_dest_isunit = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Is Unit"],
         order = 23.15,
         hidden = function()
@@ -745,7 +745,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_message_tts_space = {
         type = "execute",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = "",
         order = 23.19,
         image = function() return "", 0, 0 end,
@@ -753,7 +753,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_message_tts_settings = {
         type = "execute",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         func = function()
           ShowUIPanel(ChatConfigFrame)
           ChatConfigFrameChatTabManager:UpdateSelection(VOICE_WINDOW_ID)
@@ -765,11 +765,11 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_message = {
         type = "input",
-        width = ForeverAuras.doubleWidth - 0.15,
+        width = WeakAuras.doubleWidth - 0.15,
         name = L["Message"],
         order = 24,
         disabled = function() return not data.actions.finish.do_message end,
-        control = "ForeverAurasInput",
+        control = "WeakAurasInput",
         callbacks = {
           OnEditFocusGained = function(self)
             local widget = dynamicTextInputs["finish_message"]
@@ -799,29 +799,29 @@ function OptionsPrivate.GetActionOptions(data)
         end,
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\sidebar",
       },
       -- texteditor added below
       finish_do_sound = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Play Sound"],
         order = 28
       },
       finish_sound = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Sound"],
         order = 28.1,
-        itemControl = "ForeverAurasMediaSound",
+        itemControl = "WeakAurasMediaSound",
         values = OptionsPrivate.Private.sound_types,
         sorting = OptionsPrivate.Private.SortOrderForValues(OptionsPrivate.Private.sound_types),
         disabled = function() return not data.actions.finish.do_sound end,
       },
       finish_sound_channel = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Sound Channel"],
         order = 28.5,
         values = OptionsPrivate.Private.sound_channel_types,
@@ -830,7 +830,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_sound_path = {
         type = "input",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Sound File Path"],
         order = 29,
         hidden = function() return data.actions.finish.sound ~= " custom" end,
@@ -838,7 +838,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_sound_kit_id = {
         type = "input",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Sound Kit ID"],
         order = 29,
         hidden = function() return data.actions.finish.sound ~= " KitID" end,
@@ -846,21 +846,21 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_stop_sound = {
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Stop Sound"],
         order = 29.1,
       },
       finish_do_sound_fade = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Fadeout Sound"],
         order = 29.2,
         disabled = function() return not data.actions.finish.stop_sound end,
       },
       finish_stop_sound_fade = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Fadeout Time (seconds)"],
         order = 29.3,
         hidden = function() return not data.actions.finish.do_sound_fade end,
@@ -871,19 +871,19 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_stop_sound_fade_space = {
         type = "description",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         order = 29.4,
         name = "",
       },
       finish_do_glow = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow External Element"],
         order = 30.1
       },
       finish_glow_action = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow Action"],
         order = 30.2,
         values = OptionsPrivate.Private.glow_action_types,
@@ -891,7 +891,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_frame_type = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         desc = function()
           return (
             data.actions.finish.glow_frame_type == "UNITFRAME"
@@ -909,7 +909,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_type_spacer = {
         type = "description",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = "",
         order = 30.35,
         hidden = function()
@@ -919,7 +919,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_type = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow Type"],
         order = 30.4,
         values = OptionsPrivate.Private.glow_types,
@@ -931,7 +931,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_frame = {
         type = "input",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Frame"],
         order = 30.5,
         hidden = function()
@@ -941,14 +941,14 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_choose_glow_frame = {
         type = "execute",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Choose"],
         order = 30.55,
         hidden = function() return not data.actions.finish.do_glow or data.actions.finish.glow_frame_type ~= "FRAMESELECTOR" end,
         func = function()
           if(data.controlledChildren and data.controlledChildren[1]) then
-            ForeverAuras.PickDisplay(data.controlledChildren[1]);
-            OptionsPrivate.StartFrameChooser(ForeverAuras.GetData(data.controlledChildren[1]), {"actions", "finish", "glow_frame"});
+            WeakAuras.PickDisplay(data.controlledChildren[1]);
+            OptionsPrivate.StartFrameChooser(WeakAuras.GetData(data.controlledChildren[1]), {"actions", "finish", "glow_frame"});
           else
             OptionsPrivate.StartFrameChooser(data, {"actions", "finish", "glow_frame"});
           end
@@ -956,7 +956,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_use_glow_color = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow Color"],
         order = 30.7,
         hidden = function()
@@ -969,7 +969,7 @@ function OptionsPrivate.GetActionOptions(data)
       finish_glow_color = {
         type = "color",
         hasAlpha = true,
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Glow Color"],
         order = 30.8,
         hidden = function()
@@ -982,7 +982,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_startAnim = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Start Animation"],
         order = 10.801,
         get = function()
@@ -997,8 +997,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_duration = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Duration"],
         order = 10.802,
         softMin = 0.01,
@@ -1016,8 +1016,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_lines = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Lines & Particles"],
         order = 30.81,
         min = 1,
@@ -1037,8 +1037,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_frequency = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Frequency"],
         order = 30.82,
         softMin = -2,
@@ -1058,8 +1058,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_length = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Length"],
         order = 30.83,
         min = 0.05,
@@ -1077,8 +1077,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_thickness = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Thickness"],
         order = 30.84,
         min = 0.05,
@@ -1096,8 +1096,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_XOffset = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["X-Offset"],
         order = 30.85,
         softMin = -100,
@@ -1113,8 +1113,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_YOffset = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Y-Offset"],
         order = 30.86,
         softMin = -100,
@@ -1130,8 +1130,8 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_scale = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Scale"],
         order = 30.87,
         min = 0.05,
@@ -1150,7 +1150,7 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_glow_border = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Border"],
         order = 30.88,
         hidden = function()
@@ -1162,14 +1162,14 @@ function OptionsPrivate.GetActionOptions(data)
       },
       finish_hide_all_glows = {
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Hide Glows applied by this aura"],
         desc = "Also clears unit-frame glows from Display > Aura (Modern) Settings. Secret glows additionally stop when no aura matches or the display unloads.",
         order = 31,
       },
       finish_do_custom = {
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Custom"],
         order = 32,
       },
@@ -1215,9 +1215,9 @@ function OptionsPrivate.GetActionOptions(data)
     option.reloadOptions = nil
     option.set = function(info, v)
       data.actions.start["message_format_" .. key] = v
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
       if reload then
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     end
 
@@ -1278,9 +1278,9 @@ function OptionsPrivate.GetActionOptions(data)
     option.reloadOptions = nil
     option.set = function(info, v)
       data.actions.finish["message_format_" .. key] = v
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
       if reload then
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     end
 
@@ -1333,8 +1333,8 @@ function OptionsPrivate.GetActionOptions(data)
     action.set = function(info, ...)
       setAll(data, info, ...);
       if(type(data.id) == "string") then
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.ResetMoverSizer();
       end
     end

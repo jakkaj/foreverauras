@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local selfPoints = {
   default = "CENTER",
@@ -94,7 +94,7 @@ local function createOptions(id, data)
     __order = 1,
     groupIcon = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Group Icon"],
       desc = L["Set Thumbnail Icon"],
       order = 0.5,
@@ -103,8 +103,8 @@ local function createOptions(id, data)
       end,
       set = function(info, v)
         data.groupIcon = v
-        ForeverAuras.Add(data)
-        ForeverAuras.UpdateThumbnail(data)
+        WeakAuras.Add(data)
+        WeakAuras.UpdateThumbnail(data)
       end
     },
     chooseIcon = {
@@ -117,13 +117,13 @@ local function createOptions(id, data)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     -- grow options
     grow = {
       type = "select",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Grow"],
       order = 1,
       values = OptionsPrivate.Private.grow_types,
@@ -138,14 +138,14 @@ local function createOptions(id, data)
           end
           data.selfPoint = selfPoint
         end
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
         OptionsPrivate.ResetMoverSizer()
       end,
     },
     growOn = {
       type = "input",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Run on..."],
       desc = L["You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Grow Code on.\n\nForeverAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered."],
       order = 2 - 0.1,
@@ -155,22 +155,22 @@ local function createOptions(id, data)
       hidden = function() return data.grow ~= "CUSTOM" end,
       set = function(info, v)
         data.growOn = v
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
         OptionsPrivate.ResetMoverSizer()
       end
     },
     useAnchorPerUnit = {
       type = "toggle",
       order = 1.5,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Group by Frame"],
       desc = L["Group and anchor each auras by frame.\n\n- Nameplates: attach to nameplates per unit.\n- Unit Frames: attach to unit frame buttons per unit.\n- Custom Frames: choose which frame each region should be anchored to."],
       hidden = function() return data.grow == "CUSTOM" end,
     },
     anchorPerUnit = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Group by Frame"],
       order = 1.6,
       values = {
@@ -183,7 +183,7 @@ local function createOptions(id, data)
     },
     anchorOn = {
       type = "input",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Run on..."],
       desc = L["You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Anchor Code on.\n\nForeverAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered."],
       order = 1.61,
@@ -195,15 +195,15 @@ local function createOptions(id, data)
       end,
       set = function(info, v)
         data.anchorOn = v
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
         OptionsPrivate.ResetMoverSizer()
       end
     },
     -- custom grow option added below
     align = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Align"],
       order = 2,
       values = OptionsPrivate.Private.align_types,
@@ -214,8 +214,8 @@ local function createOptions(id, data)
           selfPoint = selfPoint(data)
         end
         data.selfPoint = selfPoint
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
         OptionsPrivate.ResetMoverSizer()
       end,
       hidden = function() return (data.grow == "CUSTOM" or data.grow == "LEFT" or data.grow == "RIGHT" or data.grow == "HORIZONTAL" or data.grow == "CIRCLE" or data.grow == "COUNTERCIRCLE" or data.grow == "GRID") end,
@@ -223,7 +223,7 @@ local function createOptions(id, data)
     },
     rotated_align = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Align"],
       order = 3,
       values = OptionsPrivate.Private.rotated_align_types,
@@ -236,14 +236,14 @@ local function createOptions(id, data)
           selfPoint = selfPoint(data)
         end
         data.selfPoint = selfPoint
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
         OptionsPrivate.ResetMoverSizer()
       end,
     },
     centerType = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Aura Order"],
       order = 3,
       values = function()
@@ -258,7 +258,7 @@ local function createOptions(id, data)
     -- circle grow options
     constantFactor = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Constant Factor"],
       order = 4,
       values = OptionsPrivate.Private.circular_group_constant_factor_types,
@@ -266,8 +266,8 @@ local function createOptions(id, data)
     },
     rotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Start Angle"],
       order = 5,
       min = 0,
@@ -277,7 +277,7 @@ local function createOptions(id, data)
     },
     fullCircle = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Full Circle"],
       order = 7,
       hidden = function()
@@ -288,8 +288,8 @@ local function createOptions(id, data)
     },
     stepAngle = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Angle Between Auras"],
       order = 12,
       min = 0,
@@ -301,8 +301,8 @@ local function createOptions(id, data)
     },
     arcLength = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Total Angle"],
       order = 8,
       min = 0,
@@ -317,8 +317,8 @@ local function createOptions(id, data)
     },
     radius = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Radius"],
       order = 9,
       softMin = 0,
@@ -333,7 +333,7 @@ local function createOptions(id, data)
     -- grid grow options
     gridType = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Grid direction"],
       order = 8,
       values = OptionsPrivate.Private.grid_types,
@@ -341,14 +341,14 @@ local function createOptions(id, data)
       set = function(info, value)
         data.selfPoint = gridSelfPoints[value]
         data.gridType = value
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
         OptionsPrivate.ResetMoverSizer()
       end,
     },
     gridWidth = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = function()
         if not data.gridType then return "" end
         if data.gridType:find("^[RLH]") then
@@ -365,9 +365,9 @@ local function createOptions(id, data)
     },
     rowSpace = {
       type = "range",
-      control = "ForeverAurasSpinBox",
+      control = "WeakAurasSpinBox",
       name = L["Row Space"],
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = 10,
       softMin = 0,
       softMax = 300,
@@ -376,9 +376,9 @@ local function createOptions(id, data)
     },
     columnSpace = {
       type = "range",
-      control = "ForeverAurasSpinBox",
+      control = "WeakAurasSpinBox",
       name = L["Column Space"],
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = 11,
       softMin = 0,
       softMax = 300,
@@ -388,8 +388,8 @@ local function createOptions(id, data)
     -- generic grow options
     space = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Space"],
       order = 7,
       softMin = 0,
@@ -406,8 +406,8 @@ local function createOptions(id, data)
     },
     stagger = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Stagger"],
       order = 8,
       min = -50,
@@ -424,14 +424,14 @@ local function createOptions(id, data)
     -- sort options
     sort = {
       type = "select",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Sort"],
       order = 20,
       values = OptionsPrivate.Private.group_sort_types
     },
     sortOn = {
       type = "input",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Run on..."],
       desc = L["You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the sort code on.ForeverAuras will always run custom sort code if you include 'changed' in this list, or when a region is added, removed."],
       order = 21 - 0.1,
@@ -441,15 +441,15 @@ local function createOptions(id, data)
       hidden = function() return data.sort ~= "custom" end,
       set = function(info, v)
         data.sortOn = v
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
         OptionsPrivate.ResetMoverSizer()
       end
     },
     -- custom sort option added below
     hybridPosition = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Hybrid Position"],
       order = 21,
       values = OptionsPrivate.Private.group_hybrid_position_types,
@@ -457,7 +457,7 @@ local function createOptions(id, data)
     },
     hybridSortMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Hybrid Sort Mode"],
       order = 22,
       values = OptionsPrivate.Private.group_hybrid_sort_types,
@@ -486,22 +486,22 @@ local function createOptions(id, data)
     sortSpace = {
       type = "description",
       name = "",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = 24,
       hidden = function() return data.sort == "hybrid" end
     },
     useLimit = {
       type = "toggle",
       order = 25,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Limit"],
       hidden = function() return data.grow == "CUSTOM" end,
     },
     limit = {
       type = "range",
-      control = "ForeverAurasSpinBox",
+      control = "WeakAurasSpinBox",
       order = 26,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Limit"],
       min = 0,
       softMax = 20,
@@ -511,20 +511,20 @@ local function createOptions(id, data)
     },
     animate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Animated Expand and Collapse"],
       order = 27
     },
     spacer = {
       type = "description",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = "",
       order = 27.5
     },
     scale = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Group Scale"],
       order = 28,
       min = 0.05,
@@ -540,14 +540,14 @@ local function createOptions(id, data)
         data.xOffset = data.xOffset/(1-change)
         data.yOffset = data.yOffset/(1-change)
         data.scale = v
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.ResetMoverSizer();
       end
     },
     alpha = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Group Alpha"],
       order = 29,
       min = 0,
@@ -557,15 +557,15 @@ local function createOptions(id, data)
     },
     sharedFrameLevel = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Flat Framelevels"],
       desc = L["The group and all direct children will share the same base frame level."],
       order = 30,
       set = function(info, v)
         data.sharedFrameLevel = v
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
         for parent in OptionsPrivate.Private.TraverseParents(data) do
-          ForeverAuras.Add(parent)
+          WeakAuras.Add(parent)
         end
       end
     },

@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then
+if not WeakAuras.IsLibsOK() then
   return
 end
 
@@ -7,21 +7,21 @@ end
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- Takes as input a table of display data and attempts to update it to be compatible with the current version
 --- Modernizes the aura data
 ---@param data auraData
 function Private.Modernize(data, oldSnapshot)
   if not data.internalVersion or data.internalVersion < 2 then
-    ForeverAuras.prettyPrint(string.format("Data for '%s' is too old, can't modernize.", data.id))
+    WeakAuras.prettyPrint(string.format("Data for '%s' is too old, can't modernize.", data.id))
     data.internalVersion = 2
   end
 
   -- Version 3 was introduced April 2018 in Legion
   if data.internalVersion < 3 then
     if data.parent then
-      local parentData = ForeverAuras.GetData(data.parent)
+      local parentData = WeakAuras.GetData(data.parent)
       if parentData and parentData.regionType == "dynamicgroup" then
         -- Version 3 allowed for offsets for dynamic groups, before that they were ignored
         -- Thus reset them in the V2 to V3 upgrade
@@ -1104,7 +1104,7 @@ function Private.Modernize(data, oldSnapshot)
         if newType then
           triggerData.trigger.type = newType
         else
-          ForeverAuras.prettyPrint("Unknown trigger type found in, please report: ", data.id, triggerData.trigger.event)
+          WeakAuras.prettyPrint("Unknown trigger type found in, please report: ", data.id, triggerData.trigger.event)
         end
       end
     end
@@ -1381,7 +1381,7 @@ function Private.Modernize(data, oldSnapshot)
       end
     end
     if broken then
-      ForeverAuras.prettyPrint(L["Trying to repair broken conditions in %s likely caused by a ForeverAuras bug."]:format(data.id))
+      WeakAuras.prettyPrint(L["Trying to repair broken conditions in %s likely caused by a ForeverAuras bug."]:format(data.id))
     end
   end
 
@@ -1962,7 +1962,7 @@ function Private.Modernize(data, oldSnapshot)
 
   if data.internalVersion < 68 then
     if data.parent then
-      local parentData = ForeverAuras.GetData(data.parent)
+      local parentData = WeakAuras.GetData(data.parent)
       if parentData and parentData.regionType == "dynamicgroup" then
         if data.anchorFrameParent == nil then
           data.anchorFrameParent = false
@@ -2516,7 +2516,7 @@ function Private.Modernize(data, oldSnapshot)
     Private.MigrateCDMCooldownTrigger(entry.trigger)
   end
 
-  data.internalVersion = max(data.internalVersion or 0, ForeverAuras.InternalVersion())
+  data.internalVersion = max(data.internalVersion or 0, WeakAuras.InternalVersion())
 end
 
 --- Returns true if Modernize will use data from last snapshot before a new one is done

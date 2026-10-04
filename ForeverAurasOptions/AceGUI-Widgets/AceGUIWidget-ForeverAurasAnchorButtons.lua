@@ -1,7 +1,7 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
-local Type, Version = "ForeverAurasAnchorButtons", 2
+local Type, Version = "WeakAurasAnchorButtons", 2
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -72,7 +72,7 @@ local function buttonClicked(self)
 end
 
 local function Constructor()
-  local name = "ForeverAurasAnchorButtons" .. AceGUI:GetNextWidgetNum(Type)
+  local name = "WeakAurasAnchorButtons" .. AceGUI:GetNextWidgetNum(Type)
   local frame = CreateFrame("Frame", name, UIParent)
   frame:SetSize(frameWidth, frameHeight)
   frame:SetFrameStrata("FULLSCREEN_DIALOG")
@@ -82,7 +82,7 @@ local function Constructor()
   label:SetJustifyH("CENTER");
   label:SetPoint("TOP", frame, "TOP");
 
-  local background = CreateFrame("Frame", nil, frame, "BackdropTemplateForeverAuras")
+  local background = CreateFrame("Frame", nil, frame, "BackdropTemplateWeakAuras")
   background:SetSize(frameWidth, frameHeight)
   background:SetPoint("TOP", frame, "TOP", 0, -(titleHeight + 4))
   background:SetBackdrop({

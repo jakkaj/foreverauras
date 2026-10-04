@@ -3,7 +3,7 @@ if (GAME_LOCALE or GetLocale()) ~= "koKR" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- ForeverAuras
 L[ [=[ Filter formats: 'Name', 'Name-Realm', '-Realm'.
@@ -71,8 +71,8 @@ L["25 Player Raid (Normal)"] = "25인 공격대 (일반)"
 L["40 Man Raid"] = "40인 공격대"
 L["40 Player Raid"] = "40인 공격대"
 L["5 Man Dungeon"] = "5인 던전"
-L[ [=[A detailed overview of your auras and ForeverAuras systems
-Copy the whole text to Weakaura's Discord if you need assistance.]=] ] = [=[당신의 위크오라와 ForeverAuras 시스템 전반에 대한 상세 정보입니다
+L[ [=[A detailed overview of your auras and WeakAuras systems
+Copy the whole text to Weakaura's Discord if you need assistance.]=] ] = [=[당신의 위크오라와 WeakAuras 시스템 전반에 대한 상세 정보입니다
 도움이 필요하다면 이 텍스트를 모두 복사해서 WeakAura의 Discord로 가져오세요.]=]
 L["A trigger in this aura is set up to track a soft target unit, but you don't have the CVars set up for this to work correctly. Consider either changing the unit tracked, or configuring the Soft Target CVars."] = "이 위크오라의 활성 조건은 액션 전투 유닛을 추적하도록 설정되어 있으나 CVar 설정이 제대로 작동하도록 되어있지 않습니다. 추적할 유닛을 바꾸거나 액션 전투 관련 CVar를 설정해야 합니다."
 L["Abbreviate"] = "글자 수 줄임"
@@ -1486,8 +1486,8 @@ L["Use Legacy floor rounding"] = "구식 내림 계산 사용"
 L["Use Texture"] = "텍스처 사용"
 L["Use Watched Faction"] = "추적중인 평판 사용"
 L["Uses UnitInRange() to check if in range. Matches default raid frames out of range behavior, which is between 25 to 40 yards depending on your class and spec."] = "유효 거리 안에 있는지 검사를 위해 UnitInRange()를 사용합니다. 기본 공격대 프레임의 유효 거리 검사 방식과 마찬가지로 직업과 전문화에 따라 25~40미터 사이를 감지합니다."
-L["Using ForeverAuras.clones is deprecated. Use ForeverAuras.GetRegion(id, cloneId) instead."] = "ForeverAuras.clones는 더이상 사용할 수 없습니다. ForeverAuras.GetRegion(id, cloneId)를 사용하세요."
-L["Using ForeverAuras.regions is deprecated. Use ForeverAuras.GetRegion(id) instead."] = "ForeverAuras.regions는 더이상 사용할 수 없습니다. ForeverAuras.GetRegion(id)를 사용하세요."
+L["Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."] = "WeakAuras.clones는 더이상 사용할 수 없습니다. WeakAuras.GetRegion(id, cloneId)를 사용하세요."
+L["Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."] = "WeakAuras.regions는 더이상 사용할 수 없습니다. WeakAuras.GetRegion(id)를 사용하세요."
 L["Vaelastrasz the Corrupt"] = "타락한 밸라스트라즈"
 L["Versatility (%)"] = "유연성 (%)"
 L["Versatility Rating"] = "유연성 수치"
@@ -1508,12 +1508,12 @@ L["Warning: Full Scan auras checking for both name and spell id can't be convert
 L["Warning: Name info is now available via %affected, %unaffected. Number of affected group members via %unitCount. Some options behave differently now. This is not automatically adjusted."] = "경고: 이제부터 %affected, %unaffected를 통해 이름 정보를 사용할 수 있습니다. 오라에 걸린 그룹원 수는 %unitCount를 사용합니다. 일부 옵션이 지금부터 다르게 작용합니다. 이것은 자동으로 조정되지 않습니다."
 L["Warning: Tooltip values are now available via %tooltip1, %tooltip2, %tooltip3 instead of %s. This is not automatically adjusted."] = "경고: 툴팁 값은 이제 %s 대신 %tooltip1, %tooltip2, %tooltip3으로 사용할 수 있습니다. 이것은 자동으로 조정되지 않습니다."
 L["ForeverAuras Built-In (63:42 | 3:07 | 10 | 2.4)"] = "ForeverAuras 내장 (63:42 | 3:07 | 10 | 2.4)"
-L[ [=[ForeverAuras has detected that it has been downgraded.
+L[ [=[WeakAuras has detected that it has been downgraded.
 Your saved auras may no longer work properly.
 Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
 Last upgrade: %s
 
-|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[ForeverAuras가 다운그레이드를 감지했습니다.
+|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[WeakAuras가 다운그레이드를 감지했습니다.
 저장된 위크오라들이 제대로 작동하지 않을 수 있습니다.
 |cffff0000실험용|r 복구 도구를 실행해 보시겠습니까? 이 도구는 마지막 데이터베이스 업그레이드 이후 모든 변경점을 덮어씌우게 됩니다.
 마지막 업그레이드: %s

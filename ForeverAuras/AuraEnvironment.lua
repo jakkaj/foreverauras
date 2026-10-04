@@ -1,13 +1,13 @@
 -- Modified for ForeverAuras, 2026-09-30.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local LibSerialize = LibStub("LibSerialize")
 local LibDeflate = LibStub:GetLibrary("LibDeflate")
@@ -111,12 +111,12 @@ local WA_Utf8Sub = function(input, size)
   return output
 end
 
-ForeverAuras.WA_Utf8Sub = WA_Utf8Sub
+WeakAuras.WA_Utf8Sub = WA_Utf8Sub
 
 -- Wrapping a unit's name in its class colour is very common in custom Auras
 local WA_ClassColorName = function(unit, maxlen)
   if unit and UnitExists(unit) then
-    local name = ForeverAuras.UnitName(unit)
+    local name = WeakAuras.UnitName(unit)
     if issecretvalue(name) then
       local _, class = UnitClass(unit)
       if not class then
@@ -142,9 +142,9 @@ local WA_ClassColorName = function(unit, maxlen)
   end
 end
 
-ForeverAuras.WA_ClassColorName = WA_ClassColorName
+WeakAuras.WA_ClassColorName = WA_ClassColorName
 
-ForeverAuras.PadString = function(input, padMode, padLength)
+WeakAuras.PadString = function(input, padMode, padLength)
   -- Secret text cannot be measured, so it is not padded.
   if issecretvalue(input) then return input end
   input = tostring(input)
@@ -167,11 +167,11 @@ ForeverAuras.PadString = function(input, padMode, padLength)
 end
 
 local LCG = LibStub("LibCustomGlow-1.0-foreverauras")
-ForeverAuras.ShowOverlayGlow = LCG.ButtonGlow_Start
-ForeverAuras.HideOverlayGlow = LCG.ButtonGlow_Stop
+WeakAuras.ShowOverlayGlow = LCG.ButtonGlow_Start
+WeakAuras.HideOverlayGlow = LCG.ButtonGlow_Stop
 
 local LGF = LibStub("LibGetFrame-1.0")
-ForeverAuras.GetUnitFrame = LGF.GetUnitFrame
+WeakAuras.GetUnitFrame = LGF.GetUnitFrame
 -- Name-only player plates have no visible health bar. Keep one frame per
 -- native name region so Set Parent to Anchor also works, without reading its
 -- potentially secret bounds or changing Blizzard's nameplate layout.
@@ -202,7 +202,7 @@ local function GetNameOnlyAnchor(nameplate)
   return anchor
 end
 
-ForeverAuras.GetUnitNameplate = function(unit)
+WeakAuras.GetUnitNameplate = function(unit)
   if Private.multiUnitUnits.nameplate[unit] then
     -- Match Ellesmere's current plate before using a pooled health bar.
     local ns = EllesmereNameplates_NS
@@ -335,7 +335,7 @@ local function UpdateSavedDataWarning(uid, size)
 end
 
 function Private.SaveAuraEnvironment(id)
-  local data = ForeverAuras.GetData(id)
+  local data = WeakAuras.GetData(id)
   if not data then
     return
   end
@@ -355,7 +355,7 @@ function Private.SaveAuraEnvironment(id)
 end
 
 function Private.RestoreAuraEnvironment(id)
-  local data = ForeverAuras.GetData(id)
+  local data = WeakAuras.GetData(id)
   if not data then
     return
   end
@@ -397,14 +397,14 @@ function Private.ActivateAuraEnvironmentForRegion(region, onlyConfig)
 end
 
 function Private.ActivateAuraEnvironment(id, cloneId, state, states, onlyConfig)
-  local data = id and ForeverAuras.GetData(id)
+  local data = id and WeakAuras.GetData(id)
   if not data then
     -- Pop the last aura_env from the stack, and update current_aura_env appropriately.
     PopAuraEnvironment()
   else
     -- Existing config is initialized to a high enough value
     if environment_initialized[id] == 2 or (onlyConfig and environment_initialized[id] == 1) then
-      local region = ForeverAuras.GetRegion(id, cloneId)
+      local region = WeakAuras.GetRegion(id, cloneId)
       -- Point the current environment to the correct table
       current_uid = data.uid
       current_aura_env = aura_environments[id]
@@ -450,7 +450,7 @@ function Private.ActivateAuraEnvironment(id, cloneId, state, states, onlyConfig)
       if data.controlledChildren then
         current_aura_env.child_envs = {}
         for dataIndex, childID in ipairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childID)
+          local childData = WeakAuras.GetData(childID)
           if childData then
             if not environment_initialized[childID] then
               Private.ActivateAuraEnvironment(childID, nil, nil, nil, true)
@@ -484,11 +484,11 @@ EventRegistry:RegisterCallback("SetItemRef", function(_, link, text, button, cha
   if linkType == "addon" and addonName == "ForeverAuras" then
     waID = waID and C_EncodingUtil.DecodeBase64(waID)
     if button == "RightButton" then
-      if (not Private.LoadOptions() or not ForeverAuras.IsOptionsOpen()) then
-        ForeverAuras.ToggleOptions(nil, Private)
-        C_Timer.After(1, function() ForeverAuras.PickDisplay(waID) end)
+      if (not Private.LoadOptions() or not WeakAuras.IsOptionsOpen()) then
+        WeakAuras.ToggleOptions(nil, Private)
+        C_Timer.After(1, function() WeakAuras.PickDisplay(waID) end)
       else
-        ForeverAuras.PickDisplay(waID)
+        WeakAuras.PickDisplay(waID)
       end
     else
       print("Print from WA:", [["]]..waID..[["]], "|n|cff999999(right click the link above to open in config, /wa trackprint to toggle the hyperlink display)|r")
@@ -556,7 +556,7 @@ local function MakeDeprecated(input, name, warningMsg)
   })
 end
 
-local FakeForeverAurasMixin = {
+local FakeWeakAurasMixin = {
   blockedFunctions = {
     -- Other addons might use these, so before moving them to the Private space, we need
     -- to discuss these. But Auras have no purpose for calling these
@@ -612,16 +612,16 @@ local FakeForeverAurasMixin = {
       local currentId = Private.UIDtoID(current_uid)
       getDataCallCounts[currentId] = getDataCallCounts[currentId] + 1
       if getDataCallCounts[currentId] > 99 then
-        Private.AuraWarnings.UpdateWarning(current_uid, "FakeForeverAurasGetData", "warning",
+        Private.AuraWarnings.UpdateWarning(current_uid, "FakeWeakAurasGetData", "warning",
                   L["This aura calls GetData a lot, which is a slow function."])
       end
-      local data = ForeverAuras.GetData(id)
+      local data = WeakAuras.GetData(id)
       return data and CopyTable(data) or nil
     end,
     clones = MakeDeprecated(Private.clones, "clones",
-                L["Using ForeverAuras.clones is deprecated. Use ForeverAuras.GetRegion(id, cloneId) instead."]),
+                L["Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."]),
     regions = MakeDeprecated(Private.regions, "regions",
-                L["Using ForeverAuras.regions is deprecated. Use ForeverAuras.GetRegion(id) instead."]),
+                L["Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."]),
     GetAllDBMTimers = function() return Private.ExecEnv.BossMods.DBM:GetAllTimers() end,
     GetDBMTimerById = function(...) return Private.ExecEnv.BossMods.DBM:GetTimerById(...) end,
     GetDBMTimer = function(...) return Private.ExecEnv.BossMods.DBM:GetTimer(...) end,
@@ -634,12 +634,12 @@ local FakeForeverAurasMixin = {
   },
   blocked = blocked,
   setBlocked = function()
-    Private.AuraWarnings.UpdateWarning(current_uid, "FakeForeverAurasSet", "error",
+    Private.AuraWarnings.UpdateWarning(current_uid, "FakeWeakAurasSet", "error",
                   L["Writing to the ForeverAuras table is not allowed."], true)
   end
 }
 
-local FakeForeverAuras = MakeReadOnly(ForeverAuras, FakeForeverAurasMixin)
+local FakeWeakAuras = MakeReadOnly(WeakAuras, FakeWeakAurasMixin)
 
 local overridden = {
   WA_GetUnitAura = WA_GetUnitAura,
@@ -648,10 +648,10 @@ local overridden = {
   WA_IterateGroupMembers = WA_IterateGroupMembers,
   WA_ClassColorName = WA_ClassColorName,
   WA_Utf8Sub = WA_Utf8Sub,
-  ActionButton_ShowOverlayGlow = ForeverAuras.ShowOverlayGlow,
-  ActionButton_HideOverlayGlow = ForeverAuras.HideOverlayGlow,
-  ForeverAuras = FakeForeverAuras,
-  WeakAuras = FakeForeverAuras,
+  ActionButton_ShowOverlayGlow = WeakAuras.ShowOverlayGlow,
+  ActionButton_HideOverlayGlow = WeakAuras.HideOverlayGlow,
+  WeakAuras = FakeWeakAuras,
+  ForeverAuras = FakeWeakAuras,
 }
 
 -- WORKAROUND API which return Mixin'd values need those mixin "rawgettable" in caller's fenv #5071
@@ -816,7 +816,7 @@ end
 local function_cache_custom = CreateFunctionCache(exec_env_custom)
 local function_cache_builtin = CreateFunctionCache(exec_env_builtin)
 
-function ForeverAuras.LoadFunction(string, id)
+function WeakAuras.LoadFunction(string, id)
   return function_cache_custom:Load(string, id)
 end
 

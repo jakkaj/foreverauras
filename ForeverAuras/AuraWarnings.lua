@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
@@ -12,9 +12,9 @@ local Private = select(2, ...)
 --- | "warning"
 --- | "error"
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 --- @type table<uid, table<string, {severity: AuraWarningSeverity, message: string}>>
 local warnings = {}
@@ -40,13 +40,13 @@ Private.AuraWarnings = {
 
 function Private.AuraWarnings.UpdateWarning(uid, key, severity, message, printOnConsole)
   if not uid then
-    ForeverAuras.prettyPrint(L["Warning for unknown aura:"], message)
+    WeakAuras.prettyPrint(L["Warning for unknown aura:"], message)
     return
   end
   if printOnConsole then
     printedWarnings[uid] = printedWarnings[uid] or {}
     if printedWarnings[uid][key] == nil then
-      ForeverAuras.prettyPrint(string.format(L["Aura '%s': %s"], Private.UIDtoID(uid), message))
+      WeakAuras.prettyPrint(string.format(L["Aura '%s': %s"], Private.UIDtoID(uid), message))
       printedWarnings[uid][key] = true
     end
   end

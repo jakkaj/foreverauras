@@ -1,10 +1,10 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 do
   local function subSupports(regionType)
@@ -26,7 +26,7 @@ do
     region.parent = parent
   end
 
-  ForeverAuras.RegisterSubRegionType("subbackground", L["Background"], subSupports, subCreate, subModify,
+  WeakAuras.RegisterSubRegionType("subbackground", L["Background"], subSupports, subCreate, subModify,
                                   noop, noop, {}, nil, {}, false)
 end
 
@@ -57,6 +57,6 @@ do
     region.parent = parent
   end
 
-  ForeverAuras.RegisterSubRegionType("subforeground", L["Foreground"], subSupports, subCreate, subModify,
+  WeakAuras.RegisterSubRegionType("subforeground", L["Foreground"], subSupports, subCreate, subModify,
                                   noop, noop, {}, nil, {}, false)
 end

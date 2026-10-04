@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local function GetCustomTriggerOptions(data, triggernum)
   local trigger = data.triggers[triggernum].trigger
@@ -31,7 +31,7 @@ local function GetCustomTriggerOptions(data, triggernum)
       type = "select",
       name = L["Event Type"],
       order = 7,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       values = OptionsPrivate.Private.custom_trigger_types,
       hidden = function() return not (trigger.type == "custom") end,
       get = function()
@@ -39,15 +39,15 @@ local function GetCustomTriggerOptions(data, triggernum)
       end,
       set = function(info, v)
         trigger.custom_type = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
-        ForeverAuras.ClearAndUpdateOptions(data.id);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
+        WeakAuras.ClearAndUpdateOptions(data.id);
       end
     },
     check = {
       type = "select",
       name = L["Check On..."],
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = 8,
       values = OptionsPrivate.Private.check_types,
       hidden = function() return not (trigger.type == "custom"
@@ -57,14 +57,14 @@ local function GetCustomTriggerOptions(data, triggernum)
       get = function() return trigger.check end,
       set = function(info, v)
         trigger.check = v;
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
       end
     },
     check2 = {
       type = "select",
       name = L["Check On..."],
       order = 9,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       values = OptionsPrivate.Private.check_types,
       hidden = function() return not (trigger.type == "custom"
         and (trigger.custom_type == "status" or trigger.custom_type == "stateupdate")
@@ -73,17 +73,17 @@ local function GetCustomTriggerOptions(data, triggernum)
       get = function() return trigger.check end,
       set = function(info, v)
         trigger.check = v;
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
       end
     },
     onUpdateThrottle = {
       type = "range",
-      control = "ForeverAurasSpinBox",
+      control = "WeakAurasSpinBox",
       softMin = 0,
       softMax = 5,
       bigStep = 0.1,
       min = 0,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Custom trigger Update Throttle"],
       order = 9.01,
       get = function() return trigger.onUpdateThrottle or 0 end,
@@ -93,7 +93,7 @@ local function GetCustomTriggerOptions(data, triggernum)
           v = 0
         end
         trigger.onUpdateThrottle = v
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
       end,
       hidden = function() return not (
         trigger.type == "custom"
@@ -110,7 +110,7 @@ local function GetCustomTriggerOptions(data, triggernum)
       multiline = true,
       control = "ForeverAuras-MultiLineEditBoxWithEnter",
       LAAC = { disableFunctions = true, disableSystems = true },
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Event(s)"],
       desc = L["Custom trigger status tooltip"],
       order = 8.1,
@@ -120,7 +120,7 @@ local function GetCustomTriggerOptions(data, triggernum)
       get = function() return trigger.events end,
       set = function(info, v)
         trigger.events = v;
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
       end
     },
     events2 = {
@@ -130,13 +130,13 @@ local function GetCustomTriggerOptions(data, triggernum)
       LAAC = { disableFunctions = true, disableSystems = true },
       name = L["Event(s)"],
       desc = L["Custom trigger event tooltip"],
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = 9.1,
       hidden = function() return not (trigger.type == "custom" and trigger.custom_type == "event") end,
       get = function() return trigger.events end,
       set = function(info, v)
         trigger.events = v;
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
       end
     },
     event_customError = {
@@ -144,7 +144,7 @@ local function GetCustomTriggerOptions(data, triggernum)
       name = function()
         local events = trigger.custom_type == "event" and trigger.events2 or trigger.events
         -- Check for errors
-        for _, event in pairs(ForeverAuras.split(events)) do
+        for _, event in pairs(WeakAuras.split(events)) do
           local trueEvent
           for i in event:gmatch("[^:]+") do
             if not trueEvent then
@@ -169,7 +169,7 @@ local function GetCustomTriggerOptions(data, triggernum)
 
         return ""
       end,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = 9.201,
       hidden = function()
         if not (
@@ -182,7 +182,7 @@ local function GetCustomTriggerOptions(data, triggernum)
         end
         local events = trigger.custom_type == "event" and trigger.events2 or trigger.events
         -- Check for errors
-        for _, event in pairs(ForeverAuras.split(events)) do
+        for _, event in pairs(WeakAuras.split(events)) do
           local trueEvent
           for i in event:gmatch("[^:]+") do
             if not trueEvent then
@@ -211,7 +211,7 @@ local function GetCustomTriggerOptions(data, triggernum)
     -- texteditor below
     custom_hide = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Hide"],
       order = 12,
       hidden = function() return not (trigger.type == "custom" and trigger.custom_type == "event" and trigger.custom_hide ~= "custom") end,
@@ -219,25 +219,25 @@ local function GetCustomTriggerOptions(data, triggernum)
       get = function() trigger.custom_hide = trigger.custom_hide or "timed"; return trigger.custom_hide end,
       set = function(info, v)
         trigger.custom_hide = v;
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
       end
     },
     custom_hide2 = {
       type = "select",
       name = L["Hide"],
       order = 12,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       hidden = function() return not (trigger.type == "custom" and trigger.custom_type == "event" and trigger.custom_hide == "custom") end,
       values = OptionsPrivate.Private.eventend_types,
       get = function() return trigger.custom_hide end,
       set = function(info, v)
         trigger.custom_hide = v;
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
       end
     },
     dynamicDuration = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Dynamic Duration"],
       order = 12.5,
       hidden = function() return not (trigger.type == "custom" and trigger.custom_type == "event" and trigger.custom_hide ~= "custom") end,
@@ -246,13 +246,13 @@ local function GetCustomTriggerOptions(data, triggernum)
       end,
       set = function(info, v)
         trigger.dynamicDuration = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.ClearAndUpdateOptions(data.id);
+        WeakAuras.Add(data);
+        WeakAuras.ClearAndUpdateOptions(data.id);
       end
     },
     duration = {
       type = "input",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Duration (s)"],
       order = 13,
       hidden = function() return not (trigger.type == "custom" and trigger.custom_type == "event" and trigger.custom_hide ~= "custom" and not trigger.dynamicDuration) end,
@@ -261,15 +261,15 @@ local function GetCustomTriggerOptions(data, triggernum)
       end,
       set = function(info, v)
         trigger.duration = v
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     },
     addOverlayFunction = {
       type = "execute",
       name = L["Add Overlay"],
       order = 17.9,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       hidden = function()
         if (trigger.type ~= "custom") then
           return true;
@@ -292,19 +292,19 @@ local function GetCustomTriggerOptions(data, triggernum)
             break;
           end
         end
-        ForeverAuras.Add(data);
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data);
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     }
   };
 
   local function extraSetFunction()
-    ForeverAuras.UpdateThumbnail(data);
+    WeakAuras.UpdateThumbnail(data);
   end
 
   local function extraSetFunctionReload()
     extraSetFunction();
-    ForeverAuras.ClearAndUpdateOptions(data.id);
+    WeakAuras.ClearAndUpdateOptions(data.id);
   end
 
   local function hideCustomTrigger()
@@ -405,9 +405,9 @@ local function GetCustomTriggerOptions(data, triggernum)
       for j = i, 7 do
         trigger["customOverlay" .. j] = trigger["customOverlay" .. (j +1)];
       end
-      ForeverAuras.Add(data);
-      ForeverAuras.ClearAndUpdateOptions(data.id)
-      ForeverAuras.FillOptions()
+      WeakAuras.Add(data);
+      WeakAuras.ClearAndUpdateOptions(data.id)
+      WeakAuras.FillOptions()
     end
 
     local extraFunctions = {
@@ -458,7 +458,7 @@ local function GetGenericTriggerOptions(data, triggernum)
       type = "select",
       name = "",
       order = 7.1,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       values = subtypes,
       sorting = triggerType == "cdm" and {"Blizzard Cooldown Manager", "Blizzard CDM Buff", "Blizzard CDM Item"}
         or OptionsPrivate.Private.SortOrderForValues(subtypes),
@@ -468,9 +468,9 @@ local function GetGenericTriggerOptions(data, triggernum)
       set = function(info, v)
         trigger.event = v
         if trigger.type == "cdm" then trigger.cdmSource = v == "Blizzard CDM Buff" and "buff" or "cooldown" end
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
         if trigger.type == "cdm" then OptionsPrivate.Private.UpdateFakeStatesFor(data.id) end
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end,
     }
   end
@@ -478,13 +478,13 @@ local function GetGenericTriggerOptions(data, triggernum)
   OptionsPrivate.commonOptions.AddCommonTriggerOptions(options, data, triggernum, not needsTypeSelection)
   OptionsPrivate.AddTriggerMetaFunctions(options, data, triggernum)
 
-  local combatLogCategory = ForeverAuras.GetTriggerCategoryFor("Combat Log")
+  local combatLogCategory = WeakAuras.GetTriggerCategoryFor("Combat Log")
   local combatLogOptions =
   {
     subeventPrefix = {
       type = "select",
       name = L["Subevent"],
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = 8,
       values = OptionsPrivate.Private.subevent_prefix_types,
       sorting = OptionsPrivate.Private.SortOrderForValues(OptionsPrivate.Private.subevent_prefix_types),
@@ -494,12 +494,12 @@ local function GetGenericTriggerOptions(data, triggernum)
       end,
       set = function(info, v)
         trigger.subeventPrefix = v
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
       end
     },
     subeventSuffix = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Subevent Suffix"],
       order = 9,
       values = OptionsPrivate.Private.subevent_suffix_types,
@@ -510,7 +510,7 @@ local function GetGenericTriggerOptions(data, triggernum)
       end,
       set = function(info, v)
         trigger.subeventSuffix = v
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
       end
     },
     spacer_suffix = {
@@ -555,4 +555,4 @@ local function GetGenericTriggerOptions(data, triggernum)
   }
 end
 
-ForeverAuras.RegisterTriggerSystemOptions(ForeverAuras.genericTriggerTypes, GetGenericTriggerOptions);
+WeakAuras.RegisterTriggerSystemOptions(WeakAuras.genericTriggerTypes, GetGenericTriggerOptions);

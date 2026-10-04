@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-29.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -18,9 +18,9 @@ local pairs = pairs
 -- WoW APIs
 local IsShiftKeyDown, CreateFrame =  IsShiftKeyDown, CreateFrame
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local moversizer
 local mover
@@ -60,11 +60,11 @@ local function moveOnePxl(direction)
       elseif direction == "right" then
         data.xOffset = data.xOffset + oneX
       end
-      ForeverAuras.Add(data, true)
-      ForeverAuras.UpdateThumbnail(data)
+      WeakAuras.Add(data, true)
+      WeakAuras.UpdateThumbnail(data)
       OptionsPrivate.ResetMoverSizer()
       OptionsPrivate.Private.AddParents(data)
-      ForeverAuras.FillOptions()
+      WeakAuras.FillOptions()
     end
   end
 end
@@ -539,7 +539,7 @@ local LineInformationFuncs = {
   UpdateHighlight = function(self)
     if self.highlight then
       for _, data in ipairs(self.references) do
-        local region = ForeverAuras.GetRegion(data.id)
+        local region = WeakAuras.GetRegion(data.id)
         local texture = HighlightFrame.texturePool:Acquire()
         texture:SetAllPoints(region)
         texture:SetDrawLayer("ARTWORK", 7)
@@ -699,7 +699,7 @@ AlignmentLines.CreateLineInformation = function(self, data, sizerPoint)
   end
 
   for id, v in pairs(OptionsPrivate.displayButtons) do
-    local region = ForeverAuras.GetRegion(v.data.id)
+    local region = WeakAuras.GetRegion(v.data.id)
     if not skipIds[id]
        and v.view.visibility >= 1
        and region and not region:IsAnchoringRestricted()
@@ -1026,7 +1026,7 @@ AlignmentLines.ShowLinesFor = function(self, ctrlKey, region, sizePoint)
 end
 
 local function ConstructMoverSizer(parent)
-  local frame = CreateFrame("Frame", nil, parent, "BackdropTemplateForeverAuras")
+  local frame = CreateFrame("Frame", nil, parent, "BackdropTemplateWeakAuras")
   frame:SetBackdrop({
     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
     edgeSize = 12,
@@ -1120,7 +1120,7 @@ local function ConstructMoverSizer(parent)
 
     local parent = data.parent
     if parent then
-      local parentData = ForeverAuras.GetData(parent)
+      local parentData = WeakAuras.GetData(parent)
       if parentData == "dynamicgroup" then
         -- If the aura is in a dynamic group then we don't want to set xOffset/yOffset at all.
         -- These settings ensure that
@@ -1307,9 +1307,9 @@ local function ConstructMoverSizer(parent)
         data.yOffset = dY / scale + yDelta / scale
       end
       region:ResetPosition()
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
       OptionsPrivate.Private.AddParents(data)
-      ForeverAuras.UpdateThumbnail(data)
+      WeakAuras.UpdateThumbnail(data)
 
       local xOff, yOff
       mover.selfPoint, mover.anchor, mover.anchorPoint, xOff, yOff = region:GetPoint(1)
@@ -1329,7 +1329,7 @@ local function ConstructMoverSizer(parent)
       frame.text:Hide()
       frame:SetScript("OnUpdate", nil)
 
-      ForeverAuras.FillOptions()
+      WeakAuras.FillOptions()
       OptionsPrivate.Private.Animate("display", data.uid, "main", data.animation.main,
                                      OptionsPrivate.Private.EnsureRegion(data.id), false, nil, true)
     end
@@ -1365,9 +1365,9 @@ local function ConstructMoverSizer(parent)
             frame:SizingSetData(data, region:GetWidth(), region:GetHeight(), 0, 0, scale)
           end
           region:ResetPosition()
-          ForeverAuras.Add(data, true)
+          WeakAuras.Add(data, true)
           frame:ScaleCorners(region:GetWidth(), region:GetHeight())
-          ForeverAuras.FillOptions()
+          WeakAuras.FillOptions()
         end)
 
         AlignmentLines:CreateLines(mover.moving.data, point)
@@ -1403,9 +1403,9 @@ local function ConstructMoverSizer(parent)
         frame:SizingSetData(data, width, height, deltaX, deltaY, scale)
 
         region:ResetPosition()
-        ForeverAuras.Add(data, true)
+        WeakAuras.Add(data, true)
         OptionsPrivate.Private.AddParents(data)
-        ForeverAuras.UpdateThumbnail(data)
+        WeakAuras.UpdateThumbnail(data)
 
         frame:ScaleCorners(region:GetWidth(), region:GetHeight())
         local xOff, yOff
@@ -1426,7 +1426,7 @@ local function ConstructMoverSizer(parent)
         end
         frame.text:Hide()
         frame:SetScript("OnUpdate", nil)
-        ForeverAuras.FillOptions()
+        WeakAuras.FillOptions()
         OptionsPrivate.Private.Animate("display", data.uid, "main", data.animation.main,
                                        OptionsPrivate.Private.EnsureRegion(data.id), false, nil, true)
         mover.sizePoint = nil

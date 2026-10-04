@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -19,9 +19,9 @@ local LAAC = LibStub("LibAPIAutoComplete-1.0")
 
 local IndentationLib = IndentationLib
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local textEditor
 
@@ -156,7 +156,7 @@ end]=]
 }
 
 local function ConstructTextEditor(frame)
-  local group = AceGUI:Create("ForeverAurasInlineGroup")
+  local group = AceGUI:Create("WeakAurasInlineGroup")
   group.frame:SetParent(frame)
   group.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", 17, -63);
   group.frame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -17, 46);
@@ -277,7 +277,7 @@ local function ConstructTextEditor(frame)
       level)
       LibDD:UIDropDownMenu_AddButton(
         {
-          text = ForeverAuras.newFeatureString .. L["Font Size"],
+          text = WeakAuras.newFeatureString .. L["Font Size"],
           hasArrow = true,
           notCheckable = true,
           menuList = "sizes"
@@ -361,7 +361,7 @@ local function ConstructTextEditor(frame)
 
     -- Iterate premade snippets and make buttons for them
     for order, snippet in ipairs(premadeSnippets) do
-      local button = AceGUI:Create("ForeverAurasSnippetButton")
+      local button = AceGUI:Create("WeakAurasSnippetButton")
       button:SetTitle(snippet.name)
       button:SetDescription(snippet.snippet)
       button:SetCallback(
@@ -382,7 +382,7 @@ local function ConstructTextEditor(frame)
 
     -- iterate saved snippets and make buttons
     for order, snippet in ipairs(savedSnippets) do
-      local button = AceGUI:Create("ForeverAurasSnippetButton")
+      local button = AceGUI:Create("WeakAurasSnippetButton")
       local snippetInsert = gsub(snippet.snippet, "|", "||")
       button:SetTitle(snippet.name)
       button:SetDescription(snippetInsert)
@@ -430,7 +430,7 @@ local function ConstructTextEditor(frame)
   local apiSearchFrame
 
   -- Make sidebar for snippets
-  local snippetsFrame = CreateFrame("Frame", "ForeverAurasSnippets", group.frame, "PortraitFrameTemplate")
+  local snippetsFrame = CreateFrame("Frame", "WeakAurasSnippets", group.frame, "PortraitFrameTemplate")
   ButtonFrameTemplate_HidePortrait(snippetsFrame)
   snippetsFrame:SetPoint("TOPLEFT", group.frame, "TOPRIGHT", 20, 0)
   snippetsFrame:SetPoint("BOTTOMLEFT", group.frame, "BOTTOMRIGHT", 20, 0)
@@ -520,7 +520,7 @@ local function ConstructTextEditor(frame)
   apiSearchButton:RegisterForClicks("LeftButtonUp")
 
   -- Make sidebar for apiSearch
-  apiSearchFrame = CreateFrame("Frame", "ForeverAurasAPISearchFrame", group.frame, "PortraitFrameTemplate")
+  apiSearchFrame = CreateFrame("Frame", "WeakAurasAPISearchFrame", group.frame, "PortraitFrameTemplate")
   ButtonFrameTemplate_HidePortrait(apiSearchFrame)
   apiSearchFrame:SetWidth(350)
   if apiSearchFrame.Bg then
@@ -534,7 +534,7 @@ local function ConstructTextEditor(frame)
   local APISearchCTimer
 
   -- filter line
-  local filterInput = CreateFrame("EditBox", "ForeverAurasAPISearchFilterInput", apiSearchFrame, "SearchBoxTemplate")
+  local filterInput = CreateFrame("EditBox", "WeakAurasAPISearchFilterInput", apiSearchFrame, "SearchBoxTemplate")
   filterInput:SetScript("OnTextChanged", function(self)
     SearchBoxTemplate_OnTextChanged(self)
     if APISearchCTimer then
@@ -680,7 +680,7 @@ local function ConstructTextEditor(frame)
     for _, element in ipairs(results) do
       local apiInfo = element.apiInfo
       if apiInfo then
-        local button = AceGUI:Create("ForeverAurasSnippetButton")
+        local button = AceGUI:Create("WeakAurasSnippetButton")
         button:SetTitle(element.name)
         button:SetEditable(false)
         button:SetHeight(20)
@@ -1021,24 +1021,24 @@ local function ConstructTextEditor(frame)
   function group.Close(self)
     if self.setOnParent then
       OptionsPrivate.Private.ValueToPath(self.data, self.path, editor:GetText())
-      ForeverAuras.Add(self.data)
+      WeakAuras.Add(self.data)
     else
       local textById = editor.combinedText and extractTexts(editor:GetText())
       for child in OptionsPrivate.Private.TraverseLeafsOrAura(self.data) do
         local text = editor.combinedText and (textById[child.id] or "") or editor:GetText()
         OptionsPrivate.Private.ValueToPath(child, self.multipath and self.path[child.id] or self.path, text)
-        ForeverAuras.Add(child)
+        WeakAuras.Add(child)
         OptionsPrivate.ClearOptions(child.id)
       end
     end
 
-    ForeverAuras.ClearAndUpdateOptions(self.data.id)
+    WeakAuras.ClearAndUpdateOptions(self.data.id)
 
     editor:ClearFocus()
 
     frame.window = "default"
     frame:UpdateFrameVisible()
-    ForeverAuras.FillOptions()
+    WeakAuras.FillOptions()
   end
 
   return group

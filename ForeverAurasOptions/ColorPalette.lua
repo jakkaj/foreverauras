@@ -1,5 +1,5 @@
 -- ForeverAuras colour palette, 2026-09-18. The native picker owns preview, opacity and cancellation.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, OptionsPrivate = ...
 local panel, session
 -- Alpha is opacity: expose percentages without changing the stored 0..1 value.
@@ -34,7 +34,7 @@ local function Remember(list, color, limit)
 end
 
 function OptionsPrivate.UseColorPalette(options)
-  if options.type == "color" and not options.control and not options.dialogControl then options.control = "ForeverAurasColorPicker" end
+  if options.type == "color" and not options.control and not options.dialogControl then options.control = "WeakAurasColorPicker" end
   for _, child in pairs(options.args or {}) do OptionsPrivate.UseColorPalette(child) end
 end
 

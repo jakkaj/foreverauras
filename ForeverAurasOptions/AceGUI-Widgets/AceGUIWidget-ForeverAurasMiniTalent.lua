@@ -4,18 +4,18 @@ local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-if not ForeverAuras.IsLibsOK() then
+if not WeakAuras.IsLibsOK() then
   return
 end
 
 local keepOpenForReload = {}
 
-local widgetType, widgetVersion = "ForeverAurasMiniTalent", 4
+local widgetType, widgetVersion = "WeakAurasMiniTalent", 4
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(widgetType) or 0) >= widgetVersion then
   return
 end
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local buttonSize = 32
 local buttonSizePadded = 45
@@ -357,7 +357,7 @@ local function Constructor()
   local background = talentFrame:CreateTexture(nil, "BACKGROUND")
   background:SetAllPoints(talentFrame)
 
-  local toggle = AceGUI:Create("ForeverAurasToolbarButton")
+  local toggle = AceGUI:Create("WeakAurasToolbarButton")
   toggle:SetText(L["Select Talent"])
   toggle:SetTexture("interface/buttons/ui-microbutton-talents-up")
   toggle.icon:ClearAllPoints()

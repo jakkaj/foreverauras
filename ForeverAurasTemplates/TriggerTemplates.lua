@@ -6,9 +6,9 @@ local AddonName, TemplatePrivate = ...
 local AceGUI = LibStub("AceGUI-3.0");
 local floor, ceil, tinsert = floor, ceil, tinsert;
 local CreateFrame = CreateFrame;
----@class ForeverAuras
-local ForeverAuras = ForeverAuras;
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras;
+local L = WeakAuras.L
 
 AceGUI:RegisterLayout("WATemplateTriggerLayoutFlyout", function(content, children)
   local width = content.width or content:GetWidth() or 0
@@ -309,7 +309,7 @@ end
 local function createDurationTrigger(triggers, position, item)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Combat Log"),
+      type = WeakAuras.GetTriggerCategoryFor("Combat Log"),
       event = "Combat Log",
       subeventSuffix = "_CAST_SUCCESS",
       use_sourceUnit = true,
@@ -324,7 +324,7 @@ end
 local function createTotemTrigger(triggers, position, item)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Totem"),
+      type = WeakAuras.GetTriggerCategoryFor("Totem"),
       event = "Totem",
       use_totemName = item.totemNumber == nil,
       totemName = TemplatePrivate.Private.ExecEnv.GetSpellInfo(item.spell),
@@ -339,7 +339,7 @@ end
 local function createPowerTrigger(triggers, position, item)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Power"),
+      type = WeakAuras.GetTriggerCategoryFor("Power"),
       event = "Power",
       use_unit = true,
       unit = "player",
@@ -353,7 +353,7 @@ end
 local function createHealthTrigger(triggers, position, item)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Health"),
+      type = WeakAuras.GetTriggerCategoryFor("Health"),
       event = "Health",
       unit = "player",
       use_unit = true,
@@ -367,7 +367,7 @@ end
 local function createCastTrigger(triggers, position, item)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Cast"),
+      type = WeakAuras.GetTriggerCategoryFor("Cast"),
       event = "Cast",
       use_unit = true,
       unit = item.unit or "player",
@@ -378,7 +378,7 @@ end
 local function createAbilityTrigger(triggers, position, item, genericShowOn)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Cooldown Progress (Spell)"),
+      type = WeakAuras.GetTriggerCategoryFor("Cooldown Progress (Spell)"),
       event = "Cooldown Progress (Spell)",
       spellName = item.spell,
       use_genericShowOn = true,
@@ -395,7 +395,7 @@ end
 local function createItemTrigger(triggers, position, item, genericShowOn)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Cooldown Progress (Item)"),
+      type = WeakAuras.GetTriggerCategoryFor("Cooldown Progress (Item)"),
       event = "Cooldown Progress (Item)",
       use_genericShowOn = true,
       genericShowOn = genericShowOn,
@@ -407,7 +407,7 @@ end
 local function createOverlayGlowTrigger(triggers, position, item)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Spell Activation Overlay"),
+      type = WeakAuras.GetTriggerCategoryFor("Spell Activation Overlay"),
       event = "Spell Activation Overlay",
       spellName = item.spell,
     }
@@ -417,7 +417,7 @@ end
 local function createWeaponEnchantTrigger(triggers, position, item, showOn)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Weapon Enchant"),
+      type = WeakAuras.GetTriggerCategoryFor("Weapon Enchant"),
       event = "Weapon Enchant",
       use_enchant = true,
       enchant = tostring(item.enchant),
@@ -430,7 +430,7 @@ end
 local function createQueuedActionTrigger(triggers, position, item)
   triggers[position] = {
     trigger = {
-      type = ForeverAuras.GetTriggerCategoryFor("Queued Action"),
+      type = WeakAuras.GetTriggerCategoryFor("Queued Action"),
       event = "Queued Action",
       spellName = item.spell
     }
@@ -517,7 +517,7 @@ local function subTypesFor(item, regionType)
       local t1 = thumbnail:CreateTexture(nil, "ARTWORK");
       t1:SetTexture(134376);
       t1:SetAllPoints(thumbnail);
-      ForeverAuras.ShowOverlayGlow(thumbnail); -- where to call HideOverlayGlow() ?
+      WeakAuras.ShowOverlayGlow(thumbnail); -- where to call HideOverlayGlow() ?
       return thumbnail;
     end, -- 571554
     charges = function()
@@ -1219,7 +1219,7 @@ local function subTypesFor(item, regionType)
   return fallbacks
 end
 
-function ForeverAuras.CreateTemplateView(Private, frame)
+function WeakAuras.CreateTemplateView(Private, frame)
   TemplatePrivate.Private = Private
 
   -- Enrich Display templates with default values
@@ -1358,7 +1358,7 @@ function ForeverAuras.CreateTemplateView(Private, frame)
   local createButtons;
 
   local function createRegionButton(regionType, regionData, selectedItem)
-    local button = AceGUI:Create("ForeverAurasNewButton");
+    local button = AceGUI:Create("WeakAurasNewButton");
     button:SetTitle(regionData.displayName);
     if(type(regionData.icon) == "string" or type(regionData.icon) == "table") then
       button:SetIcon(regionData.templateIcon);
@@ -1375,11 +1375,11 @@ function ForeverAuras.CreateTemplateView(Private, frame)
   end
 
   local function createRegionFlyout(regionType, regionData)
-    local group = AceGUI:Create("ForeverAurasTemplateGroup");
+    local group = AceGUI:Create("WeakAurasTemplateGroup");
     group:SetFullWidth(true);
     group:SetLayout("WATemplateTriggerLayoutFlyout");
     for _, item in ipairs(regionData.templates) do
-      local templateButton = AceGUI:Create("ForeverAurasNewButton");
+      local templateButton = AceGUI:Create("WeakAurasNewButton");
       if (item.icon) then
         templateButton:SetIcon(item.icon);
       else
@@ -1391,7 +1391,7 @@ function ForeverAuras.CreateTemplateView(Private, frame)
       templateButton:SetClick(function()
         newView.data = CopyTable(item.data);
         TemplatePrivate.Private.validate(newView.data, TemplatePrivate.Private.data_stub);
-        newView.data.internalVersion = ForeverAuras.InternalVersion();
+        newView.data.internalVersion = WeakAuras.InternalVersion();
         newView.data.regionType = regionType;
         createButtons();
       end);
@@ -1401,14 +1401,14 @@ function ForeverAuras.CreateTemplateView(Private, frame)
   end
 
   local function createTriggerFlyout(section, fullWidth)
-    local group = AceGUI:Create("ForeverAurasTemplateGroup");
+    local group = AceGUI:Create("WeakAurasTemplateGroup");
     group:SetFullWidth(true);
     newView.chosenItemBatch = {};
     newView.chosenItemButtonsBatch = {};
     group:SetLayout("WATemplateTriggerLayoutFlyout");
     if (section) then
       for j, item in sortedPairs(section, createSortFunctionFor(section)) do
-        local button = AceGUI:Create("ForeverAurasNewButton");
+        local button = AceGUI:Create("WeakAurasNewButton");
         button:SetTitle(item.title);
         button:SetDescription(item.description);
         if (fullWidth) then
@@ -1460,10 +1460,10 @@ function ForeverAuras.CreateTemplateView(Private, frame)
                   newView.data.load = CopyTable(item.load);
                 end
                 if (subType.data) then
-                  ForeverAuras.DeepMixin(newView.data, subType.data)
+                  WeakAuras.DeepMixin(newView.data, subType.data)
                 end
                 newView:CancelClose();
-                ForeverAuras.NewAura(newView.data, newView.data.regionType, newView.targetId);
+                WeakAuras.NewAura(newView.data, newView.data.regionType, newView.targetId);
               end
             else
               -- create trigger type selection
@@ -1480,13 +1480,13 @@ function ForeverAuras.CreateTemplateView(Private, frame)
 
   local function createTriggerTypeButtons()
     local item = newView.chosenItem;
-    local group = AceGUI:Create("ForeverAurasTemplateGroup");
+    local group = AceGUI:Create("WeakAurasTemplateGroup");
     group:SetFullWidth(true);
     local subTypes = subTypesFor(item, newView.data.regionType);
     local subTypesButtons = {}
     local lastButton
     for k, subType in pairs(subTypes) do
-      local button = AceGUI:Create("ForeverAurasNewButton");
+      local button = AceGUI:Create("WeakAurasNewButton");
       subTypesButtons[k] = button;
       button:SetTitle(subType.title);
       button:SetDescription(subType.description);
@@ -1521,10 +1521,10 @@ function ForeverAuras.CreateTemplateView(Private, frame)
             newView.data.load = CopyTable(item.load);
           end
           if (subType.data) then
-            ForeverAuras.DeepMixin(newView.data, subType.data)
+            WeakAuras.DeepMixin(newView.data, subType.data)
           end
           newView:CancelClose();
-          ForeverAuras.NewAura(newView.data, newView.data.regionType, newView.targetId);
+          WeakAuras.NewAura(newView.data, newView.data.regionType, newView.targetId);
         end
       end);
       if newView.batchStep then
@@ -1541,7 +1541,7 @@ function ForeverAuras.CreateTemplateView(Private, frame)
   end
 
   local function createTriggerButton(section, selectedItem, fullWidth)
-    local button = AceGUI:Create("ForeverAurasNewButton");
+    local button = AceGUI:Create("WeakAurasNewButton");
     button:SetTitle(section.title);
     button:SetDescription(section.description);
     if (section.icon) then
@@ -1563,16 +1563,16 @@ function ForeverAuras.CreateTemplateView(Private, frame)
       replaceTrigger(data, item, subType);
       replaceCondition(data, item, subType);
       newView:CancelClose();
-      ForeverAuras.Add(data);
-      ForeverAuras.ClearAndUpdateOptions(data.id)
-      ForeverAuras.FillOptions()
-      ForeverAuras.NewDisplayButton(data);
-      ForeverAuras.UpdateThumbnail(data);
+      WeakAuras.Add(data);
+      WeakAuras.ClearAndUpdateOptions(data.id)
+      WeakAuras.FillOptions()
+      WeakAuras.NewDisplayButton(data);
+      WeakAuras.UpdateThumbnail(data);
     end
     for child in TemplatePrivate.Private.TraverseLeafsOrAura(data) do
       handle(child, item, subType);
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id)
+    WeakAuras.ClearAndUpdateOptions(data.id)
   end
 
   local function addTriggers(data, item, subType)
@@ -1581,20 +1581,20 @@ function ForeverAuras.CreateTemplateView(Private, frame)
       addTrigger(data, item, subType);
       addCondition(data, item, subType, prevNumTriggers);
       newView:CancelClose();
-      ForeverAuras.Add(data);
-      ForeverAuras.ClearAndUpdateOptions(data.id)
-      ForeverAuras.FillOptions()
-      ForeverAuras.NewDisplayButton(data);
-      ForeverAuras.UpdateThumbnail(data);
+      WeakAuras.Add(data);
+      WeakAuras.ClearAndUpdateOptions(data.id)
+      WeakAuras.FillOptions()
+      WeakAuras.NewDisplayButton(data);
+      WeakAuras.UpdateThumbnail(data);
     end
     for child in TemplatePrivate.Private.TraverseLeafsOrAura(data) do
       handle(child, item, subType);
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id)
+    WeakAuras.ClearAndUpdateOptions(data.id)
   end
 
   local function createLastPage()
-    local replaceButton = AceGUI:Create("ForeverAurasNewButton");
+    local replaceButton = AceGUI:Create("WeakAurasNewButton");
     replaceButton:SetTitle(L["Replace Triggers"]);
     replaceButton:SetDescription(L["Replace all existing triggers"]);
     replaceButton:SetIcon("Interface\\Icons\\Spell_ChargeNegative");
@@ -1608,12 +1608,12 @@ function ForeverAuras.CreateTemplateView(Private, frame)
       newView.data.load.class = CopyTable(TemplatePrivate.Private.data_stub.load.class);
       newView.data.load.spec = CopyTable(TemplatePrivate.Private.data_stub.load.spec);
       if (newView.chosenItem.load) then
-        ForeverAuras.DeepMixin(newView.data.load, newView.chosenItem.load)
+        WeakAuras.DeepMixin(newView.data.load, newView.chosenItem.load)
       end
     end);
     newViewScroll:AddChild(replaceButton);
 
-    local addButton = AceGUI:Create("ForeverAurasNewButton");
+    local addButton = AceGUI:Create("WeakAurasNewButton");
     addButton:SetTitle(L["Add Triggers"]);
     addButton:SetDescription(L["Keeps existing triggers intact"]);
     addButton:SetIcon("Interface\\Icons\\Spell_ChargePositive");
@@ -1651,7 +1651,7 @@ function ForeverAuras.CreateTemplateView(Private, frame)
           classHeader:SetFullWidth(true);
           newViewScroll:AddChild(classHeader);
 
-          local button = AceGUI:Create("ForeverAurasNewButton");
+          local button = AceGUI:Create("WeakAurasNewButton");
           button:SetTitle(item.title);
           button:SetDescription(item.description);
           button:SetFullWidth(true);
@@ -1726,10 +1726,10 @@ function ForeverAuras.CreateTemplateView(Private, frame)
         newView.data.load = CopyTable(item.load);
       end
       if (subType.data) then
-        ForeverAuras.DeepMixin(newView.data, subType.data)
+        WeakAuras.DeepMixin(newView.data, subType.data)
       end
       -- create aura
-      ForeverAuras.NewAura(newView.data, newView.data.regionType, newView.targetId);
+      WeakAuras.NewAura(newView.data, newView.data.regionType, newView.targetId);
     end
     newView:CancelClose();
   end);

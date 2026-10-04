@@ -1,4 +1,4 @@
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 
 -- Reuse the Essential event identifier for both cooldown viewers.
@@ -183,7 +183,7 @@ function Private.ResolveCDMSpell(trigger, event)
       -- Rank/known checks are lazy: unrelated names never need them. Duplicate
       -- linked IDs share this record, but each entry keeps its own tie-breakers.
       if spell.known == nil then
-        spell.known = ForeverAuras.IsSpellKnownIncludingPet(spell.id) == true
+        spell.known = WeakAuras.IsSpellKnownIncludingPet(spell.id) == true
         if spell.known then spell.rank = SpellRank(spell.id) or 0 end
       end
       if spell.known then
@@ -624,7 +624,7 @@ local function BuildCooldownViewerStates(allstates, selected, event, showGCD, tr
             local known = false
             for _, id in pairs({identity.spellID, info.spellID, info.overrideSpellID, info.linkedSpellID}) do
               if IsReadable(id) and type(id) == "number" and id > 0 and id < 2147483647
-                  and ForeverAuras.IsSpellKnownIncludingPet(id) then known = true; break end
+                  and WeakAuras.IsSpellKnownIncludingPet(id) then known = true; break end
             end
             if not known then state.show = false end
           end

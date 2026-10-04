@@ -1,12 +1,12 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
-local L = ForeverAuras.L
-local timer = ForeverAuras.timer
+local L = WeakAuras.L
+local timer = WeakAuras.timer
 
 -- Dynamic Condition functions to run. keyed on event and uid
 local dynamicConditions = {};
@@ -274,7 +274,7 @@ end
 
 function Private.ExecEnv.GetConditionValue(state, variable)
   if not state then return nil end
-  if state.progressType == "durationObject" and ForeverAuras.IsDurationObject(state.durationObject) then
+  if state.progressType == "durationObject" and WeakAuras.IsDurationObject(state.durationObject) then
     if variable == "expirationTime" then
       return state.durationObject:GetEndTime()
     elseif variable == "duration" then
@@ -368,7 +368,7 @@ local function CreateTestForCondition(data, input, allConditionsTemplate, usedSt
       end
     elseif (cType == "customcheck") then
       if value then
-        local customCheck = ForeverAuras.LoadFunction("return " .. value, data.id)
+        local customCheck = WeakAuras.LoadFunction("return " .. value, data.id)
         if customCheck then
           Private.ExecEnv.conditionHelpers[uid] = Private.ExecEnv.conditionHelpers[uid] or {}
           Private.ExecEnv.conditionHelpers[uid].customTestFunctions
@@ -432,7 +432,7 @@ local function CreateTestForCondition(data, input, allConditionsTemplate, usedSt
             local op = %q
             local range = %s
             for unit in WA_IterateGroupMembers() do
-              if not Private.ExecEnv.UnitIsUnit(unit, "player") and ForeverAuras.CheckRange(unit, range, op) then
+              if not Private.ExecEnv.UnitIsUnit(unit, "player") and WeakAuras.CheckRange(unit, range, op) then
                 found = found + 1
               end
             end
@@ -448,7 +448,7 @@ local function CreateTestForCondition(data, input, allConditionsTemplate, usedSt
             local range = %s
             for i = 1, 40 do
               local unit = "nameplate" .. i
-              if UnitExists(unit) and UnitCanAttack("player", unit) and ForeverAuras.CheckRange(unit, range, op) then
+              if UnitExists(unit) and UnitCanAttack("player", unit) and WeakAuras.CheckRange(unit, range, op) then
                 found = found + 1
               end
             end
@@ -458,7 +458,7 @@ local function CreateTestForCondition(data, input, allConditionsTemplate, usedSt
         fn = fn:format(input.op_range, input.range, op, value)
       end
       if fn then
-        local customCheck = ForeverAuras.LoadFunction(fn, data.id)
+        local customCheck = WeakAuras.LoadFunction(fn, data.id)
         if customCheck then
           Private.ExecEnv.conditionHelpers[uid] = Private.ExecEnv.conditionHelpers[uid] or {}
           Private.ExecEnv.conditionHelpers[uid].customTestFunctions
@@ -883,7 +883,7 @@ function Private.LoadConditionPropertyFunctions(data)
             else
               prefix, suffix = "return function()", "\nend";
             end
-            local customFunc = ForeverAuras.LoadFunction(prefix .. custom .. suffix, data.id);
+            local customFunc = WeakAuras.LoadFunction(prefix .. custom .. suffix, data.id);
             if (customFunc) then
               Private.ExecEnv.customConditionsFunctions[id][conditionNumber] = Private.ExecEnv.customConditionsFunctions[id][conditionNumber] or {};
               Private.ExecEnv.customConditionsFunctions[id][conditionNumber].changes = Private.ExecEnv.customConditionsFunctions[id][conditionNumber].changes or {};
@@ -918,7 +918,7 @@ local globalConditions =
     values = Private.instance_types,
     events = {"PLAYER_ENTERING_WORLD", "ZONE_CHANGED_NEW_AREA", "PLAYER_DIFFICULTY_CHANGED"},
     globalStateUpdate = function(state)
-      state.instance_size = ForeverAuras.InstanceType();
+      state.instance_size = WeakAuras.InstanceType();
     end
   },
   ["instance_difficulty"] = {
@@ -927,7 +927,7 @@ local globalConditions =
     values = Private.difficulty_types,
     events = {"PLAYER_ENTERING_WORLD", "ZONE_CHANGED_NEW_AREA", "PLAYER_DIFFICULTY_CHANGED"},
     globalStateUpdate = function(state)
-      state.instance_difficulty = ForeverAuras.InstanceDifficulty();
+      state.instance_difficulty = WeakAuras.InstanceDifficulty();
     end
   },
   ["instance_type"] = {
@@ -936,7 +936,7 @@ local globalConditions =
     values = Private.instance_difficulty_types,
     events = {"PLAYER_ENTERING_WORLD", "ZONE_CHANGED_NEW_AREA", "PLAYER_DIFFICULTY_CHANGED"},
     globalStateUpdate = function(state)
-      state.instance_type = ForeverAuras.InstanceTypeRaw();
+      state.instance_type = WeakAuras.InstanceTypeRaw();
     end
   },
   ["incombat"] = {
@@ -956,9 +956,9 @@ local globalConditions =
     end
   },
   ["rangecheck"] = {
-    display = ForeverAuras.newFeatureString .. L["Range Check"],
+    display = WeakAuras.newFeatureString .. L["Range Check"],
     type = "range",
-    control = "ForeverAurasSpinBox",
+    control = "WeakAurasSpinBox",
     events = {"WA_SPELL_RANGECHECK"}
   },
   ["attackabletarget"] = {
@@ -1094,7 +1094,7 @@ local function ConstructConditionFunction(data)
   table.insert(ret, "  local id = region.id\n")
   table.insert(ret, "  local cloneId = region.cloneId or ''\n")
   table.insert(ret, "  local state = region.states\n")
-  table.insert(ret, "  local activatedConditions = ForeverAuras.GetActiveConditions(id, cloneId)\n")
+  table.insert(ret, "  local activatedConditions = WeakAuras.GetActiveConditions(id, cloneId)\n")
   table.insert(ret, "  wipe(newActiveConditions)\n")
   table.insert(ret, "  local recheckTime;\n")
   table.insert(ret, "  local now = GetTime();\n")
@@ -1244,9 +1244,9 @@ local function runDynamicConditionFunctions(funcs)
     local id = Private.UIDtoID(uid)
     Private.StartProfileAura(id)
     if (Private.IsAuraActive(uid) and checkConditions[uid]) then
-      local activeStates = ForeverAuras.GetActiveStates(id)
+      local activeStates = WeakAuras.GetActiveStates(id)
       for cloneId, state in pairs(activeStates) do
-        local region = ForeverAuras.GetRegion(id, cloneId)
+        local region = WeakAuras.GetRegion(id, cloneId)
         Private.ActivateAuraEnvironmentForRegion(region)
         checkConditions[uid](region, false)
         Private.ActivateAuraEnvironment()

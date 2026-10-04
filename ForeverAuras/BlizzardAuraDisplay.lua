@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-30.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 local Display = {}
@@ -320,7 +320,7 @@ function Display.GetPreviewUnit(data)
   local trigger = Display.GetTrigger(data)
   if not trigger then return "player" end
   for _, unit in ipairs(UnitTokens(trigger)) do
-    if UnitExists(unit) and (data.anchorFrameType ~= "UNITFRAME" or ForeverAuras.GetUnitFrame(unit)) then return unit end
+    if UnitExists(unit) and (data.anchorFrameType ~= "UNITFRAME" or WeakAuras.GetUnitFrame(unit)) then return unit end
   end
   return "player"
 end
@@ -469,7 +469,7 @@ function Display.MigrateSounds(data)
 end
 
 local function IsPreview()
-  return ForeverAuras.IsOptionsOpen() and not InCombatLockdown()
+  return WeakAuras.IsOptionsOpen() and not InCombatLockdown()
 end
 
 local function SyncSounds(region)
@@ -693,6 +693,7 @@ function Display.Release(region)
     SyncSounds(region)
     -- The next display in a Modern Aura Group starts where this one did.
     Display.RechainFlow(Display.FlowGroup(native.data))
+    Display.RefreshGridFor(region)
   end
 end
 
@@ -918,6 +919,57 @@ local function CompactUnits(data)
     and Capacity(Display.GetTrigger(data)) > 1
 end
 
+function Display.IconsPerRow(data)
+  if Display.FlowGroup(data) or Display.DrawsOne(data) or Display.UsesGate(data) or CompactUnits(data) then return end
+  local count = tonumber(data.blizzardAuraDisplay and data.blizzardAuraDisplay.perRow)
+  if count and count >= 1 then return math.floor(count) end
+end
+
+-- direction: RIGHT, LEFT, UP, DOWN, CENTER_HORIZONTAL or CENTER_VERTICAL.
+-- rows: where new rows go (UP or DOWN for rows, LEFT or RIGHT for columns).
+-- Returns the corner the flow starts from, the point that places the
+-- container, and the horizontal and vertical directions.
+function Display.WrapLayout(direction, rows)
+  local vertical = direction == "UP" or direction == "DOWN" or direction == "CENTER_VERTICAL"
+  local horizontal, verticalDirection
+  if vertical then
+    horizontal = rows == "LEFT" and "LEFT" or "RIGHT"
+    verticalDirection = direction == "UP" and "UP" or "DOWN"
+  else
+    horizontal = direction == "LEFT" and "LEFT" or "RIGHT"
+    verticalDirection = rows == "UP" and "UP" or "DOWN"
+  end
+  local corner = (verticalDirection == "UP" and "BOTTOM" or "TOP") .. (horizontal == "LEFT" and "RIGHT" or "LEFT")
+  local point = corner
+  if direction == "CENTER_HORIZONTAL" then point = verticalDirection == "UP" and "BOTTOM" or "TOP"
+  elseif direction == "CENTER_VERTICAL" then point = horizontal == "LEFT" and "RIGHT" or "LEFT" end
+  return corner, point, horizontal, verticalDirection, vertical
+end
+
+function Display.ApplyFlowWrap(container, corner, horizontal, verticalDirection, vertical, perRow, width, height, spacing)
+  container:SetFlowLayoutAxis(vertical and AnchorUtil.FlowLayoutAxis.Vertical or AnchorUtil.FlowLayoutAxis.Horizontal)
+  container:SetFlowLayoutAnchorPoint(corner)
+  container:SetFlowLayoutGrowthDirection(horizontal == "LEFT" and AnchorUtil.FlowDirection.Left or AnchorUtil.FlowDirection.Right,
+    verticalDirection == "UP" and AnchorUtil.FlowDirection.Up or AnchorUtil.FlowDirection.Down)
+  local size = vertical and height or width
+  if container.SetFlowLayoutMaximumLineSize then
+    container:SetFlowLayoutMaximumLineSize(perRow and perRow * size + (perRow - 1) * spacing + 0.5 or nil)
+  end
+end
+
+local function ApplyWrap(container, direction, rows, perRow, width, height, spacing)
+  local corner, _, horizontal, verticalDirection, vertical = Display.WrapLayout(direction, rows)
+  Display.ApplyFlowWrap(container, corner, horizontal, verticalDirection, vertical, perRow, width, height, spacing)
+end
+Display.ApplyWrap = ApplyWrap
+
+local function AnchorWrappedList(container, region, data)
+  local settings = data.blizzardAuraDisplay
+  local _, point = Display.WrapLayout(Display.Growth(data), settings.rowGrowth)
+  container:ClearAllPoints()
+  container:SetPoint(point, region, point)
+end
+
 local function Layout(native, region, data)
   local width, height = Display.Dimensions(data)
   local settings = data.blizzardAuraDisplay
@@ -926,6 +978,16 @@ local function Layout(native, region, data)
   local vertical = direction == "UP" or direction == "DOWN" or direction == "CENTER_VERTICAL"
   local anchor = direction == "LEFT" and "TOPRIGHT" or direction == "UP" and "BOTTOMLEFT" or "TOPLEFT"
   local container = native.container
+  local perRow = Display.IconsPerRow(data)
+  if perRow then
+    local spacing = settings.spacing or 6
+    AnchorWrappedList(container, region, data)
+    ApplyWrap(container, direction, settings.rowGrowth, perRow, width, height, spacing)
+    container:SetAuraGroupLayout("Auras", {elementWidth = width, elementHeight = height, elementSpacing = spacing, lineSpacing = spacing})
+    container:SetAuraGroupMaxFrameCount("Auras", Display.MaxAuras(data))
+    return
+  end
+  if container.SetFlowLayoutMaximumLineSize then container:SetFlowLayoutMaximumLineSize(nil) end
   container:ClearAllPoints()
   local centered = direction == "CENTER_HORIZONTAL" or direction == "CENTER_VERTICAL"
   -- In a Modern Aura Group the content starts where the previous display ends.
@@ -953,6 +1015,40 @@ local function Layout(native, region, data)
   container:SetAuraGroupMaxFrameCount("Auras", Display.MaxAuras(data))
 end
 
+local function BuildButton(container, button)
+  local native = {container = container}
+  native.button = button
+  button:EnableMouse(false)
+  -- Gate clip (Total Duration, Remaining Time, Stack Count): created before
+  -- any element on every display type (StyleDurationGate). It does not
+  -- clip while no gate is used.
+  native.gateClip = CreateFrame("Frame", nil, button, "DisableUntrustedLayoutScriptsTemplate")
+  native.gateClip:SetClipsChildren(true)
+  native.gateClip:SetAllPoints(button)
+  native.gateText = button:CreateFontString(nil, "BACKGROUND")
+  for _, area in ipairs({"inner", "outer"}) do
+    native[area] = CreateFrame("Frame", nil, button)
+    native[area]:SetPoint("CENTER", button, "CENTER")
+    native[area]:EnableMouse(false)
+  end
+  native.border = (native.gateClip or button):CreateTexture(nil, "BACKGROUND")
+  native.border:SetAllPoints(button)
+  local base = ElementFrame(native, "sharedBase")
+  native.icon = base:CreateTexture(nil, "ARTWORK")
+  button:SetIcon(native.icon)
+  native.cooldown = CreateFrame("Cooldown", nil, base, "CooldownFrameTemplate")
+  native.cooldown:SetAllPoints(native.icon)
+  native.cooldown:SetDrawBling(false)
+  native.cooldown:SetHideCountdownNumbers(true)
+  button:SetDurationCooldown(native.cooldown)
+  local overlay = CreateFrame("Frame", nil, native.gateClip or button)
+  native.overlay = overlay
+  overlay:SetAllPoints(button)
+  overlay:SetFrameLevel(native.cooldown:GetFrameLevel() + 1)
+  return native
+end
+Display.BuildNativeButton = BuildButton
+
 local function Create(region, data)
   local display = {buttons = {}, data = data}
   local container, inFlow = Display.CreateAuraContainer(region, data)
@@ -966,35 +1062,7 @@ local function Create(region, data)
     maxFrameCount = Display.MaxAuras(data),
     candidateFilters = CandidateFilters(data),
     initializeFrame = function(button)
-      local native = {container = container}
-      native.button = button
-      button:EnableMouse(false)
-      -- Gate clip (Total Duration, Remaining Time, Stack Count): created before
-      -- any element on every display type (StyleDurationGate). It does not
-      -- clip while no gate is used.
-      native.gateClip = CreateFrame("Frame", nil, button, "DisableUntrustedLayoutScriptsTemplate")
-      native.gateClip:SetClipsChildren(true)
-      native.gateClip:SetAllPoints(button)
-      native.gateText = button:CreateFontString(nil, "BACKGROUND")
-      for _, area in ipairs({"inner", "outer"}) do
-        native[area] = CreateFrame("Frame", nil, button)
-        native[area]:SetPoint("CENTER", button, "CENTER")
-        native[area]:EnableMouse(false)
-      end
-      native.border = (native.gateClip or button):CreateTexture(nil, "BACKGROUND")
-      native.border:SetAllPoints(button)
-      local base = ElementFrame(native, "sharedBase")
-      native.icon = base:CreateTexture(nil, "ARTWORK")
-      button:SetIcon(native.icon)
-      native.cooldown = CreateFrame("Cooldown", nil, base, "CooldownFrameTemplate")
-      native.cooldown:SetAllPoints(native.icon)
-      native.cooldown:SetDrawBling(false)
-      native.cooldown:SetHideCountdownNumbers(true)
-      button:SetDurationCooldown(native.cooldown)
-      local overlay = CreateFrame("Frame", nil, native.gateClip or button)
-      native.overlay = overlay
-      overlay:SetAllPoints(button)
-      overlay:SetFrameLevel(native.cooldown:GetFrameLevel() + 1)
+      local native = BuildButton(container, button)
       Style(native, display.data, region)
       display.buttons[#display.buttons + 1] = native
     end,
@@ -1090,7 +1158,7 @@ local function RefreshUnits(region, removedUnit, changedUnit)
       local anchorFrame
       if unit then
         if unitFrames then
-          anchorFrame = ForeverAuras.GetUnitFrame(unit)
+          anchorFrame = WeakAuras.GetUnitFrame(unit)
         elseif nameplates and unit ~= removedUnit then
           anchorFrame = C_NamePlate.GetNamePlateForUnit(unit)
         end
@@ -1098,6 +1166,7 @@ local function RefreshUnits(region, removedUnit, changedUnit)
       if anchorFrame and anchorFrame:IsForbidden() then anchorFrame = nil end
       -- Live aura visibility must not affect the editor samples.
       local shown = not IsPreview() and unit ~= nil and region:IsShown() and (not (unitFrames or nameplates) or anchorFrame ~= nil)
+        and not native.gridMember
       local parent = unitFrames and data.anchorFrameParent ~= false and anchorFrame or region
       -- Disabling clears native aura assignments and restarts their animations.
       if instance.boundUnit ~= unit or container:GetParent() ~= parent then
@@ -1135,7 +1204,9 @@ local function RefreshUnits(region, removedUnit, changedUnit)
         local direction = growth
         local anchor = direction == "LEFT" and "TOPRIGHT" or direction == "UP" and "BOTTOMLEFT" or "TOPLEFT"
         container:ClearAllPoints()
-        if direction == "CENTER_HORIZONTAL" or direction == "CENTER_VERTICAL" then
+        if Display.IconsPerRow(data) then
+          AnchorWrappedList(container, region, data)
+        elseif direction == "CENTER_HORIZONTAL" or direction == "CENTER_VERTICAL" then
           container:SetPoint("CENTER", region, "CENTER")
         elseif CompactUnits(data) and index > 1 then
           local previous = native.instances[index - 1].container
@@ -1185,7 +1256,9 @@ local function RefreshUnits(region, removedUnit, changedUnit)
   if frameMode then Display.RelinkFlowUnits(Display.FlowGroup(data)) end
   Display.UpdateDetachedFrameLevels(region)
   RefreshPreview(region)
+  Display.RefreshGridFor(region)
 end
+Display.RefreshUnits = RefreshUnits
 
 local unitFrameRefreshPending
 function Display.UnitFramesChanged()
@@ -1312,6 +1385,7 @@ function Display.Apply(region, data)
         Display.RefreshSingle(instance, nil, false)
       end
       SyncSounds(region)
+      Display.RefreshGridFor(region)
     end)
     region:HookScript("OnShow", function()
       native.unitGlowsHidden = false
@@ -1461,7 +1535,7 @@ local function DrainEditorQueue()
     editorQueue[region] = nil
     -- Skip displays deleted, renamed or replaced since they were queued.
     local entry = Private.regions[data.id]
-    if entry and entry.region == region and (ForeverAuras.GetData(data.id) or data) == data and Display.Enabled(data) then
+    if entry and entry.region == region and (WeakAuras.GetData(data.id) or data) == data and Display.Enabled(data) then
       Display.Apply(region, data)
       done = done + 1
     end
@@ -1474,6 +1548,9 @@ function Display.CancelEditorApply(region)
 end
 
 function Display.Modify(region, data)
+  local strayMember = Display.FlowGroup(data) ~= nil and not Display.Enabled(data)
+  Private.AuraWarnings.UpdateWarning(data.uid, "blizzard_aura_flow_member", strayMember and "warning" or nil,
+    strayMember and "Only Aura (Modern) trigger driven Auras should be in this group." or nil)
   local trigger = Display.GetTrigger(data)
   local key = trigger and (data.progressSource and data.progressSource[1] or -1) or 0
   if key < 0 then key = (data.triggers.activeTriggerMode and data.triggers.activeTriggerMode > 0 and data.triggers.activeTriggerMode)
@@ -1483,7 +1560,7 @@ function Display.Modify(region, data)
   if not Display.Enabled(data) then Display.Release(region); Warn(data); SoundWarning(data); return end
   Install(region)
   local native = region.blizzardAuraDisplay
-  if ForeverAuras.IsOptionsOpen() and native and native.active and native.data == data and not Restricted() then
+  if WeakAuras.IsOptionsOpen() and native and native.active and native.data == data and not Restricted() then
     editorQueue[region] = data
     if not editorDraining then
       editorDraining = true
@@ -1539,7 +1616,7 @@ local function DrainPending()
   local done = 0
   for region, data in pairs(pending) do
     pending[region] = nil
-    if ForeverAuras.GetData(data.id) == data and Private.regions[data.id] and Private.regions[data.id].region == region then
+    if WeakAuras.GetData(data.id) == data and Private.regions[data.id] and Private.regions[data.id].region == region then
       Display.Apply(region, data)
       done = done + 1
       if done >= APPLIES_PER_FRAME then break end

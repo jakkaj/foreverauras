@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
@@ -18,14 +18,14 @@ local GetRuneCooldown, UnitCastingInfo, UnitChannelInfo = GetRuneCooldown, UnitC
 local UnitDetailedThreatSituation = UnitDetailedThreatSituation
 local MAX_NUM_TALENTS = MAX_NUM_TALENTS or 20
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local SpellRange = LibStub("SpellRange-1.0")
 -- 1 in range, 0 out of range, nil when it cannot be told (no or invalid unit,
 -- unknown spell, or a secret result, which reads as unknown).
-function ForeverAuras.IsSpellInRange(spellId, unit)
+function WeakAuras.IsSpellInRange(spellId, unit)
   if C_Spell.IsSpellInRange then
     local result = C_Spell.IsSpellInRange(spellId, unit)
     if issecretvalue(result) or result == nil then return nil end
@@ -38,14 +38,14 @@ local LibRangeCheck = LibStub("LibRangeCheck-3.0")
 
 -- Range results can be secret, and another addon may have loaded an older
 -- copy of the library: an error or a secret result reads as "unknown".
-function ForeverAuras.GetRange(unit, checkVisible)
+function WeakAuras.GetRange(unit, checkVisible)
   local ok, min, max = pcall(LibRangeCheck.GetRange, LibRangeCheck, unit, checkVisible)
   if not ok or issecretvalue(min) or issecretvalue(max) then return end
   return min, max
 end
 
-function ForeverAuras.CheckRange(unit, range, operator)
-  local min, max = ForeverAuras.GetRange(unit, true);
+function WeakAuras.CheckRange(unit, range, operator)
+  local min, max = WeakAuras.GetRange(unit, true);
   if (type(range) ~= "number") then
     range = tonumber(range);
   end
@@ -91,18 +91,18 @@ end
 
 LibRangeCheck:RegisterCallback(LibRangeCheck.CHECKERS_CHANGED, RangeCacheUpdate)
 
-function ForeverAuras.UnitDetailedThreatSituation(unit1, unit2)
+function WeakAuras.UnitDetailedThreatSituation(unit1, unit2)
   local ok, aggro, status, threatpct, rawthreatpct, threatvalue = pcall(UnitDetailedThreatSituation, unit1, unit2)
   if ok then
     return aggro, status, threatpct, rawthreatpct, threatvalue
   end
 end
 
-ForeverAuras.UnitCastingInfo = UnitCastingInfo
+WeakAuras.UnitCastingInfo = UnitCastingInfo
 
 do
   local cacheEmpowered = {}
-  ForeverAuras.UnitChannelInfo = function(unit)
+  WeakAuras.UnitChannelInfo = function(unit)
     local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID, _, numStages = UnitChannelInfo(unit)
     if name == nil and cacheEmpowered[unit] then
       local holdAtMaxTime
@@ -162,13 +162,13 @@ local constants = {
 
 ---@param school integer
 ---@return string school
-function ForeverAuras.SpellSchool(school)
+function WeakAuras.SpellSchool(school)
   return Private.combatlog_spell_school_types[school] or ""
 end
 
 ---@param flag integer
 ---@return integer index
-function ForeverAuras.RaidFlagToIndex(flag)
+function WeakAuras.RaidFlagToIndex(flag)
   return Private.combatlog_raidFlags[flag] or 0
 end
 
@@ -279,7 +279,7 @@ local hsvFrame = CreateFrame("ColorSelect")
 ---@return number g
 ---@return number b
 ---@return number a
-function ForeverAuras.GetHSVTransition(perc, r1, g1, b1, a1, r2, g2, b2, a2)
+function WeakAuras.GetHSVTransition(perc, r1, g1, b1, a1, r2, g2, b2, a2)
   --get hsv color for colorA
   hsvFrame:SetColorRGB(r1, g1, b1)
   local h1, s1, v1 = hsvFrame:GetColorHSV() -- hue, saturation, value
@@ -334,7 +334,7 @@ end
 
 straightHSV = [[
 function(progress, r1, g1, b1, a1, r2, g2, b2, a2)
-    return ForeverAuras.GetHSVTransition(progress, r1, g1, b1, a1, r2, g2, b2, a2)
+    return WeakAuras.GetHSVTransition(progress, r1, g1, b1, a1, r2, g2, b2, a2)
 end
 ]],
 
@@ -466,7 +466,7 @@ pulseHSV = [[
 function(progress, r1, g1, b1, a1, r2, g2, b2, a2)
     local angle = (progress * 2 * math.pi) - (math.pi / 2)
     local newProgress = ((math.sin(angle) + 1)/2);
-    return ForeverAuras.GetHSVTransition(newProgress, r1, g1, b1, a1, r2, g2, b2, a2)
+    return WeakAuras.GetHSVTransition(newProgress, r1, g1, b1, a1, r2, g2, b2, a2)
 end
 ]],
 
@@ -698,16 +698,16 @@ Private.anim_presets = {
   }
 };
 
-ForeverAuras.class_ids = {}
-ForeverAuras.classes_sorted = {}
+WeakAuras.class_ids = {}
+WeakAuras.classes_sorted = {}
 for _, classID in ipairs({1, 2, 3, 4, 5, 7, 8, 9, 11}) do
   local classInfo = C_CreatureInfo.GetClassInfo(classID)
   if classInfo then
-    ForeverAuras.class_ids[classInfo.classFile] = classInfo.classID
-    tinsert(ForeverAuras.classes_sorted, classInfo.classFile)
+    WeakAuras.class_ids[classInfo.classFile] = classInfo.classID
+    tinsert(WeakAuras.classes_sorted, classInfo.classFile)
   end
 end
-table.sort(ForeverAuras.classes_sorted)
+table.sort(WeakAuras.classes_sorted)
 
 do
   local talentCheckFrame = CreateFrame("Frame")
@@ -761,6 +761,7 @@ do
     end
     Private.ScanForLoads(nil, "WA_TALENT_UPDATE")
     Private.ScanEvents("WA_TALENT_UPDATE")
+    C_Timer.After(0, function() Private.CleanForeignTalentsAfterLogin() end)
 
     Private.StopProfileSystem("talent")
   end
@@ -772,7 +773,7 @@ do
   ---@return number? icon
   ---@return number? spellId
   ---@return number? rank
-  function ForeverAuras.GetTalentById(talentId)
+  function WeakAuras.GetTalentById(talentId)
     if selectedTalentsById[talentId] then
       local spellName, _, icon = Private.ExecEnv.GetSpellInfo(selectedTalentsById[talentId].spellId)
       return spellName, icon, selectedTalentsById[talentId].spellId, selectedTalentsById[talentId].rank
@@ -781,15 +782,95 @@ do
 
   ---@param talentId integer
   ---@return boolean hasTalent
-  function ForeverAuras.CheckTalentId(talentId)
+  function WeakAuras.CheckTalentId(talentId)
     return selectedTalentsById[talentId] and selectedTalentsById[talentId].rank > 0
+  end
+
+  local talentLoadKeys = {"talent", "talent2", "talent3"}
+
+  local function ClearLoadOption(load, key)
+    local changed = load["use_" .. key] ~= nil
+    load["use_" .. key] = nil
+    if type(load[key]) == "table" then
+      if load[key].single ~= nil or next(load[key].multi or {}) then changed = true end
+      load[key].single = nil
+      load[key].multi = {}
+    end
+    return changed
+  end
+
+  -- Imports from another game version can carry a spec or talent choices
+  -- this client does not have. They cannot be shown or cleared in the
+  -- options, and the aura never loads, so they are removed.
+  -- allowView: other specs' talents may be read (only while the options are open).
+  function Private.CleanForeignTalents(data, allowView)
+    local load = data and data.load
+    if type(load) ~= "table" then return false end
+    local specId = load.class_and_spec and load.class_and_spec.single
+    if load.use_class_and_spec == true and type(specId) == "number" and GetSpecializationInfoByID then
+      local ownSpec = Private.ExecEnv.GetSpecialization()
+      local ownSpecId = ownSpec and Private.ExecEnv.GetSpecializationInfo(ownSpec)
+      if ownSpecId and GetSpecializationInfoByID(ownSpecId) and not GetSpecializationInfoByID(specId) then
+        local changed = ClearLoadOption(load, "class_and_spec")
+        for _, key in ipairs(talentLoadKeys) do changed = ClearLoadOption(load, key) or changed end
+        return changed
+      end
+    end
+    local hasTalents = false
+    for _, key in ipairs(talentLoadKeys) do
+      if load["use_" .. key] ~= nil and type(load[key]) == "table" then hasTalents = true end
+    end
+    if not hasTalents then return false end
+    specId = Private.checkForSingleLoadCondition(load, "class_and_spec")
+    if type(specId) ~= "number" then return false end
+    local ownSpec = Private.ExecEnv.GetSpecialization()
+    local ownSpecId = ownSpec and Private.ExecEnv.GetSpecializationInfo(ownSpec)
+    if specId ~= ownSpecId and not allowView then return false end
+    local talents = Private.GetTalentData(specId)
+    if type(talents) ~= "table" or #talents < 20 then return false end
+    local valid = {}
+    for _, talent in ipairs(talents) do valid[talent[1]] = true end
+    local changed = false
+    for _, key in ipairs(talentLoadKeys) do
+      local option = load[key]
+      if load["use_" .. key] ~= nil and type(option) == "table" then
+        for talentKey in pairs(option.multi or {}) do
+          if not valid[tonumber(talentKey)] then
+            option.multi[talentKey] = nil
+            changed = true
+          end
+        end
+        if option.single ~= nil and not valid[tonumber(option.single)] then
+          option.single = nil
+          changed = true
+        end
+        if option.single == nil and not next(option.multi or {}) then
+          load["use_" .. key] = nil
+          changed = true
+        end
+      end
+    end
+    return changed
+  end
+
+  local talentCleanupDone
+  function Private.CleanForeignTalentsAfterLogin()
+    if talentCleanupDone or InCombatLockdown() then return end
+    local ownSpec = Private.ExecEnv.GetSpecialization()
+    local ownSpecId = ownSpec and Private.ExecEnv.GetSpecializationInfo(ownSpec)
+    local talents = ownSpecId and Private.GetTalentData(ownSpecId)
+    if type(talents) ~= "table" or #talents < 20 then return end
+    talentCleanupDone = true
+    for _, data in pairs(Private.db and Private.db.displays or {}) do
+      if Private.CleanForeignTalents(data, false) then WeakAuras.Add(data) end
+    end
   end
 end
 
 ---@param spellId integer
 ---@return boolean hasTalent
 ---@return number? spellid
-function ForeverAuras.CheckPvpTalentBySpellId(spellId)
+function WeakAuras.CheckPvpTalentBySpellId(spellId)
   local checkTalentSlotInfo = C_SpecializationInfo.GetPvpTalentSlotInfo(1)
   if checkTalentSlotInfo then
     for i = 1, 3 do
@@ -809,7 +890,7 @@ end
 ---@param loadids string
 ---@param currentId string
 ---@return boolean result
-function ForeverAuras.CheckNumericIds(loadids, currentId)
+function WeakAuras.CheckNumericIds(loadids, currentId)
   if (not loadids or not currentId) then
     return false;
   end
@@ -832,7 +913,7 @@ end
 ---@param info any?
 ---@param val any
 ---@return boolean isNumeric
-function ForeverAuras.ValidateNumeric(info, val)
+function WeakAuras.ValidateNumeric(info, val)
   if val ~= nil and val ~= "" and (not tonumber(val) or tonumber(val) >= 2^31) then
     return false;
   end
@@ -842,7 +923,7 @@ end
 ---@param info any?
 ---@param val any
 ---@return boolean isTime
-function ForeverAuras.ValidateTime(info, val)
+function WeakAuras.ValidateTime(info, val)
   if val ~= nil and val ~= "" then
     if not tonumber(val) then
       if val:sub(1,1) == "-" then
@@ -858,7 +939,7 @@ end
 
 ---@param val number|string
 ---@return number? result
-function ForeverAuras.TimeToSeconds(val)
+function WeakAuras.TimeToSeconds(val)
   if tonumber(val) then
     return tonumber(val)
   else
@@ -971,7 +1052,7 @@ end
 ---@param info any?
 ---@param val string
 ---@return boolean result
-function ForeverAuras.ValidateNumericOrPercent(info, val)
+function WeakAuras.ValidateNumericOrPercent(info, val)
   if val ~= nil and val ~= "" then
     local index = val:find("%% *$")
     local number = index and tonumber(val:sub(1, index-1)) or tonumber(val)
@@ -1077,7 +1158,7 @@ end
 
 ---@param spell string|number
 ---@return boolean result
-function ForeverAuras.IsPlayerSpellOrOverridesAndBaseIsPlayerSpell(spell)
+function WeakAuras.IsPlayerSpellOrOverridesAndBaseIsPlayerSpell(spell)
   if spell == 0 or spell >= 2^31 then return false end
   if IsPlayerSpell(spell) then
     return true
@@ -1092,7 +1173,7 @@ function ForeverAuras.IsPlayerSpellOrOverridesAndBaseIsPlayerSpell(spell)
 end
 
 ---@private
-function ForeverAuras.IsSpellKnownForLoad(spell, exact)
+function WeakAuras.IsSpellKnownForLoad(spell, exact)
   if spell == 0 or spell >= 2^31 then return false end
   local result = IsPlayerSpell(spell)
                  or IsSpellKnownOrOverridesAndBaseIsKnown(spell, false)
@@ -1105,7 +1186,7 @@ function ForeverAuras.IsSpellKnownForLoad(spell, exact)
   if (spellName) then
     local otherSpell = select(7, Private.ExecEnv.GetSpellInfo(spellName))
     if otherSpell and otherSpell ~= spell then
-      return ForeverAuras.IsSpellKnownForLoad(otherSpell)
+      return WeakAuras.IsSpellKnownForLoad(otherSpell)
     end
   end
 end
@@ -1113,7 +1194,7 @@ end
 ---@param spell string|number
 ---@param pet boolean?
 ---@return boolean result
-function ForeverAuras.IsSpellKnown(spell, pet)
+function WeakAuras.IsSpellKnown(spell, pet)
   if spell == 0 or spell >= 2^31 then return false end
   if (pet) then
     return IsSpellKnownOrOverridesAndBaseIsKnown(spell, true)
@@ -1123,14 +1204,14 @@ end
 
 ---@param spell string|number
 ---@return boolean result
-function ForeverAuras.IsSpellKnownIncludingPet(spell)
+function WeakAuras.IsSpellKnownIncludingPet(spell)
   if (not tonumber(spell)) then
     spell = select(7, Private.ExecEnv.GetSpellInfo(spell));
   end
   if (not spell) then
     return false;
   end
-  return ForeverAuras.IsSpellKnown(spell, false) or ForeverAuras.IsSpellKnown(spell, true)
+  return WeakAuras.IsSpellKnown(spell, false) or WeakAuras.IsSpellKnown(spell, true)
 end
 
 do
@@ -1173,7 +1254,7 @@ end
 ---@return integer? quantity
 ---@return integer? maxQuantity
 ---@return string? setName
-function ForeverAuras.GetNumSetItemsEquipped(setID)
+function WeakAuras.GetNumSetItemsEquipped(setID)
   if not setID or not type(setID) == "number" then return end
   local equipped = 0
   local setName = C_Item.GetItemSetInfo(setID)
@@ -1187,7 +1268,7 @@ function ForeverAuras.GetNumSetItemsEquipped(setID)
 end
 
 ---@return number result
-function ForeverAuras.GetEffectiveAttackPower(ranged)
+function WeakAuras.GetEffectiveAttackPower(ranged)
   local base, pos, neg
   if ranged then
     base, pos, neg = UnitRangedAttackPower("player")
@@ -1201,7 +1282,7 @@ function ForeverAuras.GetEffectiveAttackPower(ranged)
 end
 
 --- @type fun(): number
-function ForeverAuras.GetEffectiveSpellPower()
+function WeakAuras.GetEffectiveSpellPower()
   if C_Secrets.ShouldUnitStatsBeSecret() then
     return 0
   end
@@ -1302,7 +1383,7 @@ Private.load_prototype = {
       name = "combat",
       display = L["In Combat"],
       type = "tristate",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       init = "arg",
       optional = true,
       events = {"PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED"}
@@ -1311,7 +1392,7 @@ Private.load_prototype = {
       name = "never",
       display = L["Never"],
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       test = "false",
     },
     {
@@ -1319,7 +1400,7 @@ Private.load_prototype = {
       display = L["Alive"],
       type = "tristate",
       init = "arg",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       optional = true,
       events = {"PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST"}
     },
@@ -1327,7 +1408,7 @@ Private.load_prototype = {
       name = "encounter",
       display = L["In Encounter"],
       type = "tristate",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       init = "arg",
       optional = true,
       events = {"ENCOUNTER_START", "ENCOUNTER_END"}
@@ -1337,7 +1418,7 @@ Private.load_prototype = {
       display = L["In War Mode"],
       type = "tristate",
       init = "arg",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       optional = true,
       enable = false,
       hidden = true,
@@ -1348,7 +1429,7 @@ Private.load_prototype = {
       display = L["PvP Mode Active"],
       type = "tristate",
       init = nil,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       optional = true,
       enable = false,
       hidden = true,
@@ -1359,7 +1440,7 @@ Private.load_prototype = {
       display = L["In Pet Battle"],
       type = "tristate",
       init = "arg",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       optional = true,
       enable = false,
       hidden = true,
@@ -1370,7 +1451,7 @@ Private.load_prototype = {
       display = (false) and L["On Taxi"] or L["In Vehicle"],
       type = "tristate",
       init = "arg",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       optional = true,
       events = (false) and {"UNIT_FLAGS"}
                or {"VEHICLE_UPDATE", "UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE", "UPDATE_OVERRIDE_ACTIONBAR", "UNIT_FLAGS"}
@@ -1380,7 +1461,7 @@ Private.load_prototype = {
       display = L["Has Vehicle UI"],
       type = "tristate",
       init = "arg",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       optional = true,
       enable = true,
       hidden = false,
@@ -1391,7 +1472,7 @@ Private.load_prototype = {
       display = L["Skyriding"],
       type = "tristate",
       init = "arg",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       optional = true,
       enable = false,
       hidden = true,
@@ -1402,7 +1483,7 @@ Private.load_prototype = {
       display = L["Mounted"],
       type = "tristate",
       init = "arg",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       optional = true,
       events = {"PLAYER_MOUNT_DISPLAY_CHANGED"}
     },
@@ -1420,7 +1501,7 @@ Private.load_prototype = {
       display = L["Hardcore"],
       type = "tristate",
       init = nil,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       enable = false,
       hidden = true,
     },
@@ -1429,7 +1510,7 @@ Private.load_prototype = {
       display = L["Season of Discovery"],
       type = "tristate",
       init = nil,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       enable = false,
       hidden = true,
     },
@@ -1477,7 +1558,7 @@ Private.load_prototype = {
       display = L["Talent"],
       type = "multiselect",
       values = valuesForTalentFunction,
-      test = "ForeverAuras.CheckTalentId(%d) == (%d == 4)",
+      test = "WeakAuras.CheckTalentId(%d) == (%d == 4)",
       enableTest = function(trigger, talent)
         return type(talent) == "number" and talent > 0
       end,
@@ -1496,7 +1577,7 @@ Private.load_prototype = {
         return false
       end,
       extraOption = false,
-      control = "ForeverAurasMiniTalent",
+      control = "WeakAurasMiniTalent",
       multiNoSingle = true, -- no single mode
       multiTristate = true, -- values can be true/false/nil
       multiAll = true, -- require all tests
@@ -1515,7 +1596,7 @@ Private.load_prototype = {
       display = L["Or Talent"] or L["And Talent"],
       type = "multiselect",
       values = valuesForTalentFunction,
-      test = "ForeverAuras.CheckTalentId(%d) == (%d == 4)",
+      test = "WeakAuras.CheckTalentId(%d) == (%d == 4)",
       enableTest = function(trigger, talent)
         return type(talent) == "number" and talent > 0
       end,
@@ -1533,7 +1614,7 @@ Private.load_prototype = {
         return false
       end,
       extraOption = false,
-      control = "ForeverAurasMiniTalent",
+      control = "WeakAurasMiniTalent",
       multiNoSingle = true, -- no single mode
       multiTristate = true, -- values can be true/false/nil
       multiAll = true, -- require all tests
@@ -1555,7 +1636,7 @@ Private.load_prototype = {
       display = L["Or Talent"] or L["And Talent"],
       type = "multiselect",
       values = valuesForTalentFunction,
-      test = "ForeverAuras.CheckTalentId(%d) == (%d == 4)",
+      test = "WeakAuras.CheckTalentId(%d) == (%d == 4)",
       enableTest = function(trigger, talent)
         return type(talent) == "number" and talent > 0
       end,
@@ -1573,7 +1654,7 @@ Private.load_prototype = {
         return false
       end,
       extraOption = false,
-      control = "ForeverAurasMiniTalent",
+      control = "WeakAurasMiniTalent",
       multiNoSingle = true, -- no single mode
       multiTristate = true, -- values can be true/false/nil
       multiAll = true, -- require all tests
@@ -1595,7 +1676,7 @@ Private.load_prototype = {
       display = L["Hero Talent"],
       type = "multiselect",
       values = valuesForHeroTalentFunction,
-      test = "ForeverAuras.CheckTalentId(%d) == (%d == 4)",
+      test = "WeakAuras.CheckTalentId(%d) == (%d == 4)",
       enableTest = function(trigger, talent, arg)
         local specId = Private.checkForSingleLoadCondition(trigger, "class_and_spec")
         if specId then
@@ -1619,7 +1700,7 @@ Private.load_prototype = {
         end
       end or nil,
       events = {"WA_TALENT_UPDATE"},
-      control = "ForeverAurasMiniTalent",
+      control = "WeakAurasMiniTalent",
       multiNoSingle = true, -- no single mode
       multiTristate = true, -- values can be true/false/nil
       multiAll = true, -- require all tests
@@ -1635,7 +1716,7 @@ Private.load_prototype = {
       values = "glyph_types",
       sorted = true,
       sortOrder = Private.glyph_sorted or {},
-      test = "ForeverAuras.IsGlyphActive(%s)",
+      test = "WeakAuras.IsGlyphActive(%s)",
       events = {"GLYPH_ADDED", "GLYPH_REMOVED", "GLYPH_UPDATED", "USE_GLYPH"},
       enable = false,
       hidden = true,
@@ -1644,15 +1725,15 @@ Private.load_prototype = {
       name = "spellknown",
       display = L["Spell Known"],
       type = "spell",
-      test = "ForeverAuras.IsSpellKnownForLoad(%s, %s)",
+      test = "WeakAuras.IsSpellKnownForLoad(%s, %s)",
       events = {"SPELLS_CHANGED", "UNIT_PET"},
       showExactOption = true
     },
     {
       name = "not_spellknown",
-      display = ForeverAuras.newFeatureString .. L["|cFFFF0000Not|r Spell Known"],
+      display = WeakAuras.newFeatureString .. L["|cFFFF0000Not|r Spell Known"],
       type = "spell",
-      test = "not ForeverAuras.IsSpellKnownForLoad(%s, %s)",
+      test = "not WeakAuras.IsSpellKnownForLoad(%s, %s)",
       events = {"SPELLS_CHANGED", "UNIT_PET"},
       showExactOption = true
     },
@@ -1753,7 +1834,7 @@ Private.load_prototype = {
     },
     {
       name = "spec_position",
-      display = ForeverAuras.newFeatureString .. L["Spec Position"],
+      display = WeakAuras.newFeatureString .. L["Spec Position"],
       type = "multiselect",
       values = "spec_position_types",
       init = "arg",
@@ -1775,7 +1856,7 @@ Private.load_prototype = {
       name = "ingroup",
       display = L["Group Type"],
       type = "multiselect",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       init = "arg",
       values = "group_types",
       events = {"GROUP_ROSTER_UPDATE"},
@@ -1795,11 +1876,11 @@ Private.load_prototype = {
     },
     {
       name = "group_leader",
-      display = ForeverAuras.newFeatureString .. L["Group Leader/Assist"],
+      display = WeakAuras.newFeatureString .. L["Group Leader/Assist"],
       type = "multiselect",
       init = "arg",
       events = {"PARTY_LEADER_CHANGED", "GROUP_ROSTER_UPDATE"},
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       values = "group_member_types",
       test = "Private.ExecEnv.CheckGroupMemberType(%s, group_leader)",
       optional = true,
@@ -1867,7 +1948,7 @@ Private.load_prototype = {
       init = "arg",
       multiline = true,
       desc = Private.get_encounters_list,
-      test = "ForeverAuras.CheckNumericIds(%q, encounterid)",
+      test = "WeakAuras.CheckNumericIds(%q, encounterid)",
       events = {"ENCOUNTER_START", "ENCOUNTER_END"},
       optional = true,
     },
@@ -1945,7 +2026,7 @@ Private.load_prototype = {
     },
     {
       name = "not_itemequiped",
-      display = ForeverAuras.newFeatureString .. L["|cFFFF0000Not|r Item Equipped"],
+      display = WeakAuras.newFeatureString .. L["|cFFFF0000Not|r Item Equipped"],
       type = "item",
       multiEntry = {
         operator = "or"
@@ -1966,15 +2047,15 @@ Private.load_prototype = {
       name = "item_bonusid_equipped",
       display =  L["Item Bonus Id Equipped"],
       type = "string",
-      test = "ForeverAuras.CheckForItemBonusId(%q)",
+      test = "WeakAuras.CheckForItemBonusId(%q)",
       events = { "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED"},
       desc = L["Supports multiple entries, separated by commas"]
     },
     {
       name = "not_item_bonusid_equipped",
-      display =  ForeverAuras.newFeatureString .. L["|cFFFF0000Not|r Item Bonus Id Equipped"],
+      display =  WeakAuras.newFeatureString .. L["|cFFFF0000Not|r Item Bonus Id Equipped"],
       type = "string",
-      test = "not ForeverAuras.CheckForItemBonusId(%q)",
+      test = "not WeakAuras.CheckForItemBonusId(%q)",
       events = { "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED"},
       desc = L["Supports multiple entries, separated by commas"]
     }
@@ -1993,7 +2074,7 @@ local function AddUnitChangeInternalEvents(triggerUnit, t, includePets, unitisun
     if Private.multiUnitUnits[triggerUnit] then
       local isPet
       for unit in pairs(Private.multiUnitUnits[triggerUnit]) do
-        isPet = ForeverAuras.UnitIsPet(unit)
+        isPet = WeakAuras.UnitIsPet(unit)
         if (includePets ~= nil and isPet) or (includePets ~= "PetsOnly" and not isPet) then
           tinsert(t, "UNIT_CHANGED_" .. string.lower(unit))
           if unitisunit then
@@ -2017,24 +2098,24 @@ local function AddWatchedUnits(triggerUnit, includePets, unitisunit)
   if (triggerUnit == "multi") then
     -- Handled by normal events"
   elseif triggerUnit == "pet" then
-    ForeverAuras.WatchForPetDeath();
+    WeakAuras.WatchForPetDeath();
   else
     if Private.multiUnitUnits[triggerUnit] then
       local isPet
       for unit in pairs(Private.multiUnitUnits[triggerUnit]) do
-        isPet = ForeverAuras.UnitIsPet(unit)
+        isPet = WeakAuras.UnitIsPet(unit)
         if (includePets ~= nil and isPet) or (includePets ~= "PetsOnly" and not isPet) then
           if unitisunit then
-            ForeverAuras.WatchUnitChange(unitisunit)
+            WeakAuras.WatchUnitChange(unitisunit)
           end
-          ForeverAuras.WatchUnitChange(unit)
+          WeakAuras.WatchUnitChange(unit)
         end
       end
     else
       if unitisunit then
-        ForeverAuras.WatchUnitChange(unitisunit)
+        WeakAuras.WatchUnitChange(unitisunit)
       end
-      ForeverAuras.WatchUnitChange(triggerUnit)
+      WeakAuras.WatchUnitChange(triggerUnit)
     end
   end
 end
@@ -2042,7 +2123,7 @@ end
 local function AddUnitSpecChangeInternalEvents(triggerUnit, t)
   if Private.multiUnitUnits[triggerUnit] then
     for unit in pairs(Private.multiUnitUnits[triggerUnit]) do
-      local isPet = ForeverAuras.UnitIsPet(unit)
+      local isPet = WeakAuras.UnitIsPet(unit)
       if (not isPet) then
         tinsert(t, "UNIT_SPEC_CHANGED_" .. string.lower(unit))
       end
@@ -2057,12 +2138,12 @@ local function AddUnitRoleChangeInternalEvents(triggerUnit, t)
 
   if Private.multiUnitUnits[triggerUnit] then
     for unit in pairs(Private.multiUnitUnits[triggerUnit]) do
-      if not ForeverAuras.UnitIsPet(unit) then
+      if not WeakAuras.UnitIsPet(unit) then
         tinsert(t, "UNIT_ROLE_CHANGED_" .. string.lower(unit))
       end
     end
   else
-    if not ForeverAuras.UnitIsPet(triggerUnit) then
+    if not WeakAuras.UnitIsPet(triggerUnit) then
       tinsert(t, "UNIT_ROLE_CHANGED_" .. string.lower(triggerUnit))
     end
   end
@@ -2120,7 +2201,7 @@ local unitHelperFunctions = {
     if Private.multiUnitUnits[trigger.unit] then
       local isPet
       for unit in pairs(Private.multiUnitUnits[trigger.unit]) do
-        isPet = ForeverAuras.UnitIsPet(unit)
+        isPet = WeakAuras.UnitIsPet(unit)
         if (includePets ~= nil and isPet) or (includePets ~= "PetsOnly" and not isPet) then
           tinsert(events, {"UNIT_CHANGED_" .. unit, unit})
         end
@@ -2137,7 +2218,7 @@ local unitHelperFunctions = {
     local events = {}
     if Private.multiUnitUnits[trigger.unit] then
       for unit in pairs(Private.multiUnitUnits[trigger.unit]) do
-        if not ForeverAuras.UnitIsPet(unit) then
+        if not WeakAuras.UnitIsPet(unit) then
           tinsert(events, {"UNIT_CHANGED_" .. unit, unit})
         end
       end
@@ -2258,16 +2339,16 @@ Private.event_prototypes = {
     events = {},
     internal_events = {"FA_SWING_TIMER_UPDATE"},
     force_events = "FA_SWING_TIMER_UPDATE",
-    loadFunc = function() ForeverAuras.WatchSwingTimer() end,
+    loadFunc = function() WeakAuras.WatchSwingTimer() end,
     statesParameter = "one",
     init = function(trigger)
       local hand = tonumber(trigger.swingType) or 0
       if hand ~= 0 and hand ~= 1 and hand ~= 2 then hand = 0 end
       return ([[
-        local duration, expirationTime, name, icon = ForeverAuras.GetSwingTimerInfo(%d)
+        local duration, expirationTime, name, icon = WeakAuras.GetSwingTimerInfo(%d)
         local progressType = "timed"
         local active = expirationTime > GetTime()
-        local inRange = ForeverAuras.IsTargetInSwingRange(%d)
+        local inRange = WeakAuras.IsTargetInSwingRange(%d)
       ]]):format(hand, hand)
     end,
     args = {
@@ -2327,7 +2408,7 @@ Private.event_prototypes = {
         unit = string.lower(unit)
         local smart = %s
         local extraUnit = %q;
-        local name, realm = ForeverAuras.UnitNameWithRealm(unit)
+        local name, realm = WeakAuras.UnitNameWithRealm(unit)
       ]=];
 
       ret = ret .. unitHelperFunctions.SpecificUnitCheck(trigger)
@@ -2409,7 +2490,7 @@ Private.event_prototypes = {
         name = "specId",
         display = L["Specialization"],
         type = "multiselect",
-        init = "ForeverAuras.SpecForUnit(unit)",
+        init = "WeakAuras.SpecForUnit(unit)",
         values = "spec_types_all",
         store = true,
         conditionType = "select",
@@ -2484,7 +2565,7 @@ Private.event_prototypes = {
         name = "raid_role",
         display = L["Raid Role"],
         type = "select",
-        init = "ForeverAuras.UnitRaidRole(unit)",
+        init = "WeakAuras.UnitRaidRole(unit)",
         values = "raid_role_types",
         store = true,
         conditionType = "select",
@@ -2496,7 +2577,7 @@ Private.event_prototypes = {
         name = "dead",
         display = L["Dead"],
         type = "tristate",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         init = "UnitIsDeadOrGhost(unit)",
         store = true,
         conditionType = "bool",
@@ -2505,7 +2586,7 @@ Private.event_prototypes = {
         name = "resurrectPending",
         display = L["Resurrect Pending"],
         type = "tristate",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         init = "UnitHasIncomingResurrection(unit)",
         store = true,
         conditionType = "bool",
@@ -2514,7 +2595,7 @@ Private.event_prototypes = {
         name = "summonPending",
         display = L["Summon Pending"],
         type = "tristate",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = true,
         hidden = false,
         init = "C_IncomingSummon.HasIncomingSummon(unit)",
@@ -2525,7 +2606,7 @@ Private.event_prototypes = {
         name = "ignoreSelf",
         display = L["Ignore Self"],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "nameplate" or trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -2535,7 +2616,7 @@ Private.event_prototypes = {
         name = "ignoreDisconnected",
         display = L["Ignore Disconnected"],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -2546,7 +2627,7 @@ Private.event_prototypes = {
         display = L["Ignore out of checking range"],
         desc = L["Uses UnitIsVisible() to check if game client has loaded a object for this unit. This distance is around 100 yards. This is polled every second."],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -2556,7 +2637,7 @@ Private.event_prototypes = {
         name = "hostility",
         display = L["Hostility"],
         type = "select",
-        init = "ForeverAuras.GetPlayerReaction(unit)",
+        init = "WeakAuras.GetPlayerReaction(unit)",
         values = "hostility_types",
         store = true,
         conditionType = "select",
@@ -2635,7 +2716,7 @@ Private.event_prototypes = {
       },
       {
         hidden = true,
-        test = "ForeverAuras.UnitExistsFixed(unit, smart) and specificUnitCheck"
+        test = "WeakAuras.UnitExistsFixed(unit, smart) and specificUnitCheck"
       }
     },
     automaticrequired = true,
@@ -3110,7 +3191,7 @@ Private.event_prototypes = {
       trigger.unit = trigger.unit or "player"
       local ret = ([=[
         unit = string.lower(unit)
-        local name, realm = ForeverAuras.UnitNameWithRealm(unit)
+        local name, realm = WeakAuras.UnitNameWithRealm(unit)
         local smart = %s
       ]=]):format(trigger.unit == "group" and "true" or "false")
       return ret .. unitHelperFunctions.SpecificUnitCheck(trigger)
@@ -3150,7 +3231,7 @@ Private.event_prototypes = {
       },
       { name = "name", display = L["Unit Name"], type = "string", hidden = true, store = true, test = "true" },
       { name = "realm", display = L["Realm"], type = "string", hidden = true, store = true, test = "true" },
-      { hidden = true, test = "ForeverAuras.UnitExistsFixed(unit, smart) and specificUnitCheck" },
+      { hidden = true, test = "WeakAuras.UnitExistsFixed(unit, smart) and specificUnitCheck" },
     },
     automaticrequired = true,
   },
@@ -3215,7 +3296,7 @@ Private.event_prototypes = {
       local ret = {}
       table.insert(ret, ([=[
         unit = string.lower(unit)
-        local name, realm = ForeverAuras.UnitNameWithRealm(unit)
+        local name, realm = WeakAuras.UnitNameWithRealm(unit)
         local smart = %s
         local powerType = %s;
         local unitPowerType = UnitPowerType(unit);
@@ -3280,13 +3361,13 @@ Private.event_prototypes = {
       if (canEnableShowCost and trigger.use_showCost) then
         table.insert(ret, [[
           if (event == "UNIT_DISPLAYPOWER") then
-            local cost = ForeverAuras.GetSpellCost(powerTypeToCheck)
+            local cost = WeakAuras.GetSpellCost(powerTypeToCheck)
             if state.cost ~= cost then
               state.cost = cost
               state.changed = true
             end
           elseif ( (event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_SUCCEEDED") and unit == "player") or event == "WA_UNIT_QUEUED_SPELL_CHANGED" then
-            local cost = ForeverAuras.GetSpellCost(powerTypeToCheck)
+            local cost = WeakAuras.GetSpellCost(powerTypeToCheck)
             if state.cost ~= cost then
               state.cost = cost
               state.changed = true
@@ -3366,7 +3447,7 @@ Private.event_prototypes = {
         name = "scaleStagger",
         display = L["Stagger Scale"],
         type = "string",
-        validate = ForeverAuras.ValidateNumeric,
+        validate = WeakAuras.ValidateNumeric,
         enable = function(trigger)
           return trigger.use_powertype and trigger.powertype == 99
         end,
@@ -3453,7 +3534,7 @@ Private.event_prototypes = {
       },
       {
         name = "maxpower",
-        display = ForeverAuras.newFeatureString .. L["Max Power"],
+        display = WeakAuras.newFeatureString .. L["Max Power"],
         type = "number",
         init = "total",
         store = true,
@@ -3533,7 +3614,7 @@ Private.event_prototypes = {
         name = "specId",
         display = L["Specialization"],
         type = "multiselect",
-        init = "ForeverAuras.SpecForUnit(unit)",
+        init = "WeakAuras.SpecForUnit(unit)",
         values = "spec_types_all",
         store = true,
         conditionType = "select",
@@ -3560,7 +3641,7 @@ Private.event_prototypes = {
         name = "raid_role",
         display = L["Raid Role"],
         type = "select",
-        init = "ForeverAuras.UnitRaidRole(unit)",
+        init = "WeakAuras.UnitRaidRole(unit)",
         values = "raid_role_types",
         store = true,
         conditionType = "select",
@@ -3581,7 +3662,7 @@ Private.event_prototypes = {
         display = L["Include Pets"],
         type = "select",
         values = "include_pets_types",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         test = "true",
         enable = function(trigger)
           return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
@@ -3591,7 +3672,7 @@ Private.event_prototypes = {
         name = "ignoreSelf",
         display = L["Ignore Self"],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "nameplate" or trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -3601,7 +3682,7 @@ Private.event_prototypes = {
         name = "ignoreDead",
         display = L["Ignore Dead"],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -3611,7 +3692,7 @@ Private.event_prototypes = {
         name = "ignoreDisconnected",
         display = L["Ignore Disconnected"],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -3621,14 +3702,14 @@ Private.event_prototypes = {
         name = "nameplateType",
         display = L["Hostility"],
         type = "select",
-        init = "ForeverAuras.GetPlayerReaction(unit)",
+        init = "WeakAuras.GetPlayerReaction(unit)",
         values = "hostility_types",
         store = true,
         conditionType = "select",
       },
       {
         hidden = true,
-        test = "ForeverAuras.UnitExistsFixed(unit, smart) and specificUnitCheck"
+        test = "WeakAuras.UnitExistsFixed(unit, smart) and specificUnitCheck"
       }
     },
     overlayFuncs = {
@@ -3691,7 +3772,7 @@ Private.event_prototypes = {
       trigger.unit = trigger.unit or "player";
       local ret = [=[
         unit = string.lower(unit)
-        local unitname, realm = ForeverAuras.UnitNameWithRealm(unit)
+        local unitname, realm = WeakAuras.UnitNameWithRealm(unit)
         local smart = %s
       ]=]
 
@@ -3804,7 +3885,7 @@ Private.event_prototypes = {
         name = "specId",
         display = L["Specialization"],
         type = "multiselect",
-        init = "ForeverAuras.SpecForUnit(unit)",
+        init = "WeakAuras.SpecForUnit(unit)",
         values = "spec_types_all",
         store = true,
         conditionType = "select",
@@ -3831,7 +3912,7 @@ Private.event_prototypes = {
         name = "raid_role",
         display = L["Raid Role"],
         type = "select",
-        init = "ForeverAuras.UnitRaidRole(unit)",
+        init = "WeakAuras.UnitRaidRole(unit)",
         values = "raid_role_types",
         store = true,
         conditionType = "select",
@@ -3851,7 +3932,7 @@ Private.event_prototypes = {
         name = "ignoreSelf",
         display = L["Ignore Self"],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "nameplate" or trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -3861,7 +3942,7 @@ Private.event_prototypes = {
         name = "ignoreDead",
         display = L["Ignore Dead"],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -3871,7 +3952,7 @@ Private.event_prototypes = {
         name = "ignoreDisconnected",
         display = L["Ignore Disconnected"],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -3881,14 +3962,14 @@ Private.event_prototypes = {
         name = "nameplateType",
         display = L["Hostility"],
         type = "select",
-        init = "ForeverAuras.GetPlayerReaction(unit)",
+        init = "WeakAuras.GetPlayerReaction(unit)",
         values = "hostility_types",
         store = true,
         conditionType = "select",
       },
       {
         hidden = true,
-        test = "name and ForeverAuras.UnitExistsFixed(unit, smart) and specificUnitCheck"
+        test = "name and WeakAuras.UnitExistsFixed(unit, smart) and specificUnitCheck"
       }
     },
     automaticrequired = true
@@ -3911,9 +3992,9 @@ Private.event_prototypes = {
     name = L["Spell Activation Overlay Glow"],
     loadFunc = function(trigger)
       if (trigger.use_exact_spellName) then
-        ForeverAuras.WatchSpellActivation(tonumber(trigger.spellName));
+        WeakAuras.WatchSpellActivation(tonumber(trigger.spellName));
       else
-        ForeverAuras.WatchSpellActivation(type(trigger.spellName) == "number" and Private.ExecEnv.GetSpellName(trigger.spellName) or trigger.spellName);
+        WeakAuras.WatchSpellActivation(type(trigger.spellName) == "number" and Private.ExecEnv.GetSpellName(trigger.spellName) or trigger.spellName);
       end
     end,
     init = function(trigger)
@@ -3954,7 +4035,7 @@ Private.event_prototypes = {
       },
       {
         hidden = true,
-        test = "ForeverAuras.SpellActivationActive(spellName)";
+        test = "WeakAuras.SpellActivationActive(spellName)";
       }
     },
     automaticrequired = true,
@@ -4001,9 +4082,9 @@ Private.event_prototypes = {
       end
       local exactMatch = trigger.use_exact_spellName
       local followoverride = not trigger.use_ignoreoverride
-      ForeverAuras.WatchSpellCooldown(spellName, trigger.use_matchedRune, exactMatch, followoverride)
+      WeakAuras.WatchSpellCooldown(spellName, trigger.use_matchedRune, exactMatch, followoverride)
       if (trigger.use_showgcd) then
-        ForeverAuras.WatchGCD();
+        WeakAuras.WatchGCD();
       end
     end,
     init = function(trigger)
@@ -4039,8 +4120,8 @@ Private.event_prototypes = {
         local track = %q
         local effectiveSpellId = Private.ExecEnv.GetEffectiveSpellId(spellname, useExact, followoverride)
         local name, _, icon = Private.ExecEnv.GetSpellInfo(effectiveSpellId)
-        local startTime, duration, gcdCooldown, readyTime, modRate, paused = ForeverAuras.GetSpellCooldown(effectiveSpellId, ignoreRuneCD, showgcd, ignoreSpellKnown, track)
-        local charges, maxCharges, spellCount, chargeGainTime, chargeLostTime = ForeverAuras.GetSpellCharges(effectiveSpellId, ignoreSpellKnown)
+        local startTime, duration, gcdCooldown, readyTime, modRate, paused = WeakAuras.GetSpellCooldown(effectiveSpellId, ignoreRuneCD, showgcd, ignoreSpellKnown, track)
+        local charges, maxCharges, spellCount, chargeGainTime, chargeLostTime = WeakAuras.GetSpellCharges(effectiveSpellId, ignoreSpellKnown)
         local isSecret = C_Secrets.ShouldSpellCooldownBeSecret(effectiveSpellId) or issecretvalue(maxCharges) or issecretvalue(spellCount)
         local stacks
         if maxCharges and maxCharges > 1 then
@@ -4052,10 +4133,10 @@ Private.event_prototypes = {
         end
         local cooldownData = Private.ExecEnv.GetSpellCooldownData(effectiveSpellId, track, showgcd, showlossofcontrol)
         local durationObject = cooldownData and cooldownData.duration
-        local durationObjectNoGCD = ForeverAuras.GetSpellCooldownDurationNoGCD(effectiveSpellId, track)
+        local durationObjectNoGCD = WeakAuras.GetSpellCooldownDurationNoGCD(effectiveSpellId, track)
         local isReady = cooldownData and cooldownData.ready
         if showlossofcontrol and startTime and duration then
-          local locStart, locDuration = ForeverAuras.GetSpellLossOfControlCooldown(spellname);
+          local locStart, locDuration = WeakAuras.GetSpellLossOfControlCooldown(spellname);
           if locStart and locDuration and not hasanysecretvalues(locStart, locDuration) and (locStart + locDuration) > (startTime + duration) then
             startTime = locStart
             duration = locDuration
@@ -4070,7 +4151,7 @@ Private.event_prototypes = {
             charges = (duration == 0 or gcdCooldown) and 1 or 0
           end
         end
-        local genericShowOn = (ignoreSpellKnown or ForeverAuras.IsSpellKnownIncludingPet(effectiveSpellId)) and (%s)
+        local genericShowOn = (ignoreSpellKnown or WeakAuras.IsSpellKnownIncludingPet(effectiveSpellId)) and (%s)
         local expirationTime = startTime and duration and startTime + duration
         state.spellname = spellname;
       ]=]):format(
@@ -4315,7 +4396,7 @@ Private.event_prototypes = {
       },
       {
         name = "showlossofcontrol",
-        display = ForeverAuras.newFeatureString .. L["Show Loss of Control"],
+        display = WeakAuras.newFeatureString .. L["Show Loss of Control"],
         type = "toggle",
         test = "true",
         collapse = "extra Cooldown Progress (Spell)",
@@ -4489,7 +4570,7 @@ Private.event_prototypes = {
         conditionType = "bool",
         conditionTest = function(state, needle)
           local spellId = state and (state.effectiveSpellId or state.spellname)
-          return state and state.show and (UnitExists('target') and spellId and ForeverAuras.IsSpellInRange(spellId, 'target') == needle)
+          return state and state.show and (UnitExists('target') and spellId and WeakAuras.IsSpellInRange(spellId, 'target') == needle)
         end,
         conditionEvents = AddTargetConditionEvents({
           "WA_SPELL_RANGECHECK",
@@ -4528,7 +4609,7 @@ Private.event_prototypes = {
         hidden = true,
         name = "isReady_secret",
         display = L["Is Ready (Secret)"],
-        init = 'ForeverAuras.IsSpellReadyFromDuration(effectiveSpellId)',
+        init = 'WeakAuras.IsSpellReadyFromDuration(effectiveSpellId)',
         store = true,
         test = "true",
         conditionType = "bool",
@@ -4569,7 +4650,7 @@ Private.event_prototypes = {
       end
       local useExact = trigger.use_exact_spellName
       local followoverride = not trigger.use_ignoreoverride
-      ForeverAuras.WatchSpellCooldown(spellName, false, useExact, followoverride)
+      WeakAuras.WatchSpellCooldown(spellName, false, useExact, followoverride)
     end,
     init = function(trigger)
       local spellName = type(trigger.spellName) ~= "table" and trigger.spellName or 0
@@ -4652,7 +4733,7 @@ Private.event_prototypes = {
       end
       local useExact = trigger.use_exact_spellName
       local followoverride = not trigger.use_ignoreoverride
-      ForeverAuras.WatchSpellCooldown(spellName, false, useExact, followoverride)
+      WeakAuras.WatchSpellCooldown(spellName, false, useExact, followoverride)
     end,
     init = function(trigger)
       local spellName = type(trigger.spellName) ~= "table" and trigger.spellName or 0
@@ -4761,9 +4842,9 @@ Private.event_prototypes = {
     force_events = "ITEM_COOLDOWN_FORCE",
     name = L["Cooldown Progress (Item)"],
     loadFunc = function(trigger)
-      ForeverAuras.WatchItemCooldown(trigger.itemName or 0)
+      WeakAuras.WatchItemCooldown(trigger.itemName or 0)
       if (trigger.use_showgcd) then
-        ForeverAuras.WatchGCD();
+        WeakAuras.WatchGCD();
       end
     end,
     init = function(trigger)
@@ -4773,7 +4854,7 @@ Private.event_prototypes = {
         local name = C_Item.GetItemInfo(itemname or 0) or "Invalid"
         local itemId, _, _, _, icon = C_Item.GetItemInfoInstant(itemname or 0)
         local showgcd = %s
-        local startTime, duration, enabled, gcdCooldown = ForeverAuras.GetItemCooldown(itemname, showgcd);
+        local startTime, duration, enabled, gcdCooldown = WeakAuras.GetItemCooldown(itemname, showgcd);
         local expirationTime = startTime + duration
         local genericShowOn = %s
         state.itemname = itemname;
@@ -4809,7 +4890,7 @@ Private.event_prototypes = {
       },
       {
         name = "itemId",
-        display = ForeverAuras.newFeatureString .. L["ItemId"],
+        display = WeakAuras.newFeatureString .. L["ItemId"],
         hidden = true,
         init = "itemId",
         test = "true",
@@ -4956,16 +5037,16 @@ Private.event_prototypes = {
     force_events = "ITEM_COOLDOWN_FORCE",
     name = L["Cooldown Progress (Slot)"],
     loadFunc = function(trigger)
-      ForeverAuras.WatchItemSlotCooldown(trigger.itemSlot);
+      WeakAuras.WatchItemSlotCooldown(trigger.itemSlot);
       if (trigger.use_showgcd) then
-        ForeverAuras.WatchGCD();
+        WeakAuras.WatchGCD();
       end
     end,
     init = function(trigger)
       local ret = [[
         local showgcd = %s
         local itemSlot = %s
-        local startTime, duration, enable, gcdCooldown = ForeverAuras.GetItemSlotCooldown(itemSlot, showgcd)
+        local startTime, duration, enable, gcdCooldown = WeakAuras.GetItemSlotCooldown(itemSlot, showgcd)
         local expirationTime = startTime + duration
         local genericShowOn = %s
         local remaining = startTime + duration - GetTime();
@@ -5009,7 +5090,7 @@ Private.event_prototypes = {
     args = {
       {
         name = "itemId",
-        display = ForeverAuras.newFeatureString .. L["ItemId"],
+        display = WeakAuras.newFeatureString .. L["ItemId"],
         hidden = true,
         init = "item",
         test = "true",
@@ -5162,7 +5243,7 @@ Private.event_prototypes = {
     end,
     name = L["Cooldown Ready Event (Item)"],
     loadFunc = function(trigger)
-      ForeverAuras.WatchItemCooldown(trigger.itemName or 0)
+      WeakAuras.WatchItemCooldown(trigger.itemName or 0)
     end,
     init = function(trigger)
       local ret = [[
@@ -5190,7 +5271,7 @@ Private.event_prototypes = {
       },
       {
         name = "itemId",
-        display = ForeverAuras.newFeatureString .. L["ItemId"],
+        display = WeakAuras.newFeatureString .. L["ItemId"],
         hidden = true,
         init = "itemId",
         test = "true",
@@ -5229,7 +5310,7 @@ Private.event_prototypes = {
     end,
     name = L["Cooldown Ready Event (Slot)"],
     loadFunc  = function(trigger)
-      ForeverAuras.WatchItemSlotCooldown(trigger.itemSlot);
+      WeakAuras.WatchItemSlotCooldown(trigger.itemSlot);
     end,
     init = function(trigger)
       local ret = [[
@@ -5262,7 +5343,7 @@ Private.event_prototypes = {
       },
       {
         name = "itemId",
-        display = ForeverAuras.newFeatureString .. L["ItemId"],
+        display = WeakAuras.newFeatureString .. L["ItemId"],
         hidden = true,
         init = "item",
         test = "true",
@@ -5325,12 +5406,12 @@ Private.event_prototypes = {
     force_events = "GCD_UPDATE",
     name = L["Global Cooldown"],
     loadFunc = function(trigger)
-      ForeverAuras.WatchGCD();
+      WeakAuras.WatchGCD();
     end,
     init = function(trigger)
       local ret = [[
         local inverse = %s;
-        local _, _, name, icon = ForeverAuras.GetGCDInfo()
+        local _, _, name, icon = WeakAuras.GetGCDInfo()
         -- Forever uses the Classic GCD reference; pass its timer directly to the renderer.
         local info = C_Spell.GetSpellCooldown(29515)
         local active
@@ -5441,7 +5522,7 @@ Private.event_prototypes = {
       end
       local useExact = trigger.use_exact_spellName
       local followoverride = not trigger.use_ignoreoverride
-      ForeverAuras.WatchSpellCooldown(spellName, false, useExact, followoverride)
+      WeakAuras.WatchSpellCooldown(spellName, false, useExact, followoverride)
     end,
     init = function(trigger)
       local spellName = type(trigger.spellName) ~= "table" and trigger.spellName or 0
@@ -5460,8 +5541,8 @@ Private.event_prototypes = {
         ret = ret .. [=[local active = Private.ExecEnv.IsUsableSpell(spellName or "")]=]
       else
         ret = ret .. [=[
-        local startTime, duration, gcdCooldown, readyTime, paused = ForeverAuras.GetSpellCooldown(effectiveSpellId, nil, nil, nil, nil)
-        local charges, maxCharges, spellCount, chargeGainTime, chargeLostTime = ForeverAuras.GetSpellCharges(effectiveSpellId, nil)
+        local startTime, duration, gcdCooldown, readyTime, _, paused = WeakAuras.GetSpellCooldown(effectiveSpellId, nil, nil, nil, nil)
+        local charges, maxCharges, spellCount, chargeGainTime, chargeLostTime = WeakAuras.GetSpellCharges(effectiveSpellId, nil)
         -- Restricted counts cannot participate in trigger comparisons or stored numeric conditions.
         if issecretvalue(charges) then charges = nil end
         if issecretvalue(maxCharges) then maxCharges = nil end
@@ -5483,7 +5564,7 @@ Private.event_prototypes = {
         ]=]
       end
       if(trigger.use_targetRequired) then
-        ret = ret.."active = active and ForeverAuras.IsSpellInRange(spellName or '', 'target')\n";
+        ret = ret.."active = active and WeakAuras.IsSpellInRange(spellName or '', 'target')\n";
       end
       if(trigger.use_inverse) then
         ret = ret.."active = not active\n";
@@ -5585,7 +5666,7 @@ Private.event_prototypes = {
         test = "true",
         conditionType = "bool",
         conditionTest = function(state, needle)
-          return state and state.show and (UnitExists('target') and state.spellName and ForeverAuras.IsSpellInRange(state.spellName, 'target') == needle)
+          return state and state.show and (UnitExists('target') and state.spellName and WeakAuras.IsSpellInRange(state.spellName, 'target') == needle)
         end,
         conditionEvents = AddTargetConditionEvents({
           "WA_SPELL_RANGECHECK",
@@ -5670,7 +5751,7 @@ Private.event_prototypes = {
                 local talentId = %s
                 local shouldBeActive = %s
                 if talentId then
-                  activeName, activeIcon, _, rank = ForeverAuras.GetTalentById(talentId)
+                  activeName, activeIcon, _, rank = WeakAuras.GetTalentById(talentId)
                   if activeName ~= nil then
                     if rank > 0 ~= shouldBeActive then
                       active = false
@@ -5706,7 +5787,7 @@ Private.event_prototypes = {
         init = "Private.ExecEnv.GetSpecialization()",
         required = true,
         values = function(trigger)
-          return ForeverAuras.spec_types_specific[trigger.class]
+          return WeakAuras.spec_types_specific[trigger.class]
         end,
         enable = function(trigger)
           if trigger.use_class and trigger.class then
@@ -5746,7 +5827,7 @@ Private.event_prototypes = {
         multiAll = true,
         multiNoSingle = true,
         multiTristate = true, -- values can be true/false/nil
-        control = "ForeverAurasMiniTalent",
+        control = "WeakAurasMiniTalent",
         multiConvertKey = function(trigger, key)
           local classId
           for i = 1, GetNumClasses() do
@@ -5829,7 +5910,7 @@ Private.event_prototypes = {
         multiAll = true,
         multiNoSingle = true,
         multiTristate = true,
-        control = "ForeverAurasMiniTalent",
+        control = "WeakAurasMiniTalent",
         multiConvertKey = function(trigger, key)
           local classId
           for i = 1, GetNumClasses() do
@@ -5964,7 +6045,7 @@ Private.event_prototypes = {
         end
 
         if (totemType) then -- Check a specific totem slot
-          if slotId and (event == "PLAYER_TOTEM_UPDATE" or event == "FA_TOTEM_UPDATE") and totemType ~= slotId then
+          if slotId and not issecretvalue(slotId) and (event == "PLAYER_TOTEM_UPDATE" or event == "FA_TOTEM_UPDATE") and totemType ~= slotId then
             -- PLAYER_TOTEM_UPDATE for a different slot
             return false
           end
@@ -6359,7 +6440,7 @@ if count == nil then return false end
     name = L["Item Count"],
     loadFunc = function(trigger)
       if(trigger.use_includeCharges) then
-        ForeverAuras.RegisterItemCountWatch();
+        WeakAuras.RegisterItemCountWatch();
       end
     end,
     init = function(trigger)
@@ -6404,7 +6485,7 @@ if count == nil then return false end
       },
       {
         name = "itemId",
-        display = ForeverAuras.newFeatureString .. L["ItemId"],
+        display = WeakAuras.newFeatureString .. L["ItemId"],
         hidden = true,
         init = "itemId",
         test = "true",
@@ -6606,7 +6687,7 @@ if count == nil then return false end
         end
         return name;
       else
-        local types = ForeverAuras[class:lower().."_form_types"];
+        local types = WeakAuras[class:lower().."_form_types"];
         if(types) then
           return types[GetShapeshiftForm()];
         end
@@ -6632,7 +6713,7 @@ if count == nil then return false end
     force_events = "TENCH_UPDATE",
     name = L["Weapon Enchant / Fishing Lure"] or L["Weapon Enchant"],
     init = function(trigger)
-      ForeverAuras.TenchInit();
+      WeakAuras.TenchInit();
 
       local ret = [[
         local triggerWeaponType = %q
@@ -6643,9 +6724,9 @@ if count == nil then return false end
         local _, expirationTime, duration, name, icon, stacks, enchantID
 
         if triggerWeaponType == "main" then
-          expirationTime, duration, name, shortenedName, icon, stacks, enchantID = ForeverAuras.GetMHTenchInfo()
+          expirationTime, duration, name, shortenedName, icon, stacks, enchantID = WeakAuras.GetMHTenchInfo()
         elseif triggerWeaponType == "off" then
-          expirationTime, duration, name, shortenedName, icon, stacks, enchantID = ForeverAuras.GetOHTenchInfo()
+          expirationTime, duration, name, shortenedName, icon, stacks, enchantID = WeakAuras.GetOHTenchInfo()
         end
 
         local remaining = expirationTime and expirationTime - GetTime()
@@ -6671,7 +6752,7 @@ if count == nil then return false end
 
       return ret:format(trigger.weapon or "main",
       trigger.use_enchant and trigger.enchant or "",
-      showOnActive and trigger.use_stacks and tonumber(trigger.stacks or 0) or "nil",
+      trigger.showOn ~= "showOnMissing" and trigger.use_stacks and tonumber(trigger.stacks or 0) or "nil",
       showOnActive and trigger.use_remaining and tonumber(trigger.remaining or 0) or "nil",
       trigger.showOn or "showOnActive",
       trigger.stacks_operator or "<",
@@ -6706,14 +6787,14 @@ if count == nil then return false end
       },
       {
         name = "stacks",
-        display = L["Stack Count"],
+        display = L["Charges"],
+        desc = "Charges left on the enchant, such as poison charges. Also shown as %s in texts.",
         type = "number",
         conditionType = "number",
         test = "true",
         enable = function(trigger)
-          return false
+          return trigger.showOn ~= "showOnMissing"
         end,
-        hidden = true,
         store = true
       },
       {
@@ -6925,7 +7006,7 @@ if count == nil then return false end
         display = L["Clone per Event"],
         type = "toggle",
         test = "true",
-        init = "use_cloneId and ForeverAuras.GetUniqueCloneId() or ''",
+        init = "use_cloneId and WeakAuras.GetUniqueCloneId() or ''",
         reloadOptions = true
       },
     },
@@ -7078,7 +7159,7 @@ if count == nil then return false end
         name = "encounterId",
         display = L["Id"],
         type = "string",
-        validate = ForeverAuras.ValidateNumeric,
+        validate = WeakAuras.ValidateNumeric,
         conditionType = "number",
         store = true,
         init = "arg"
@@ -7096,10 +7177,10 @@ if count == nil then return false end
         display = L["Difficulty"],
         type = "select",
         values = "difficulty_types",
-        test = "%q == ForeverAuras.InstanceDifficulty()",
+        test = "%q == WeakAuras.InstanceDifficulty()",
         conditionType = "select",
         conditionTest = function(state, needle)
-          return ForeverAuras.InstanceDifficulty() == needle
+          return WeakAuras.InstanceDifficulty() == needle
         end,
         store = true,
         init = "arg"
@@ -7152,7 +7233,7 @@ if count == nil then return false end
 
       ret = ret ..[[
         local itemName = triggerItemName
-        local equipped = ForeverAuras.CheckForItemEquipped(triggerItemName, itemSlot)
+        local equipped = WeakAuras.CheckForItemEquipped(triggerItemName, itemSlot)
       ]]
 
       return ret:format(trigger.use_inverse and "true" or "false", itemName, trigger.use_itemSlot and trigger.itemSlot or "nil");
@@ -7174,7 +7255,7 @@ if count == nil then return false end
       },
       {
         name = "itemId",
-        display = ForeverAuras.newFeatureString .. L["ItemId"],
+        display = WeakAuras.newFeatureString .. L["ItemId"],
         hidden = true,
         init = "itemId",
         test = "true",
@@ -7184,7 +7265,7 @@ if count == nil then return false end
       },
       {
         name = "itemSlot",
-        display = ForeverAuras.newFeatureString .. L["Item Slot"],
+        display = WeakAuras.newFeatureString .. L["Item Slot"],
         type = "select",
         values = "item_slot_types",
         test = "true",
@@ -7289,7 +7370,7 @@ if count == nil then return false end
         local inverse = %s
         local useItemSlot, slotSelected = %s, %d
 
-        local itemBonusId, itemId, itemName, icon, itemSlot, itemSlotString = ForeverAuras.GetBonusIdInfo(item, useItemSlot and slotSelected)
+        local itemBonusId, itemId, itemName, icon, itemSlot, itemSlotString = WeakAuras.GetBonusIdInfo(item, useItemSlot and slotSelected)
         local itemBonusId = tonumber(itemBonusId)
 
         local slotValidation = (useItemSlot and itemSlot == slotSelected) or (not useItemSlot)
@@ -7377,12 +7458,12 @@ if count == nil then return false end
     init = function(trigger)
       local ret = [[
         local setid = %s
-        local value, total, name = ForeverAuras.GetNumSetItemsEquipped(setid)
+        local value, total, name = WeakAuras.GetNumSetItemsEquipped(setid)
       ]]
       return string.format(ret, trigger.itemSetId and tonumber(trigger.itemSetId) or "0");
     end,
     GetNameAndIcon = function(trigger)
-      local name = select(3, ForeverAuras.GetNumSetItemsEquipped(trigger.itemSetId and tonumber(trigger.itemSetId) or 0))
+      local name = select(3, WeakAuras.GetNumSetItemsEquipped(trigger.itemSetId and tonumber(trigger.itemSetId) or 0))
       return name, nil
     end,
     statesParameter = "one",
@@ -7394,7 +7475,7 @@ if count == nil then return false end
         test = "true",
         store = "true",
         required = true,
-        validate = ForeverAuras.ValidateNumeric,
+        validate = WeakAuras.ValidateNumeric,
         desc = function()
           do
             return L["Set IDs can be found on websites such as wowhead.com/item-sets"]
@@ -7466,13 +7547,13 @@ if count == nil then return false end
         local inverse = %s;
         local partial = %s;
 
-        local itemSetName, icon, numEquipped, numItems = ForeverAuras.GetEquipmentSetInfo(useItemSetName and triggerItemSetName or nil, partial);
+        local itemSetName, icon, numEquipped, numItems = WeakAuras.GetEquipmentSetInfo(useItemSetName and triggerItemSetName or nil, partial);
       ]];
 
       return ret:format(trigger.use_itemSetName and "true" or "false", itemSetName, trigger.use_inverse and "true" or "false", trigger.use_partial and "true" or "false");
     end,
     GetNameAndIcon = function(trigger)
-      local name, icon = ForeverAuras.GetEquipmentSetInfo(trigger.use_itemSetName and trigger.itemSetName or nil, true)
+      local name, icon = WeakAuras.GetEquipmentSetInfo(trigger.use_itemSetName and trigger.itemSetName or nil, true)
       return name, icon
     end,
     statesParameter = "one",
@@ -7582,7 +7663,7 @@ if count == nil then return false end
         local ok = true
         local aggro, status, threatpct, rawthreatpct, threatvalue, threattotal
         if unit ~= "none" then
-          aggro, status, threatpct, rawthreatpct, threatvalue = ForeverAuras.UnitDetailedThreatSituation('player', unit)
+          aggro, status, threatpct, rawthreatpct, threatvalue = WeakAuras.UnitDetailedThreatSituation('player', unit)
           if hasanysecretvalues(aggro, status, threatpct, rawthreatpct, threatvalue) then return false end
           if type(threatpct) ~= "number" or type(threatvalue) ~= "number" then return false end
           threattotal = threatvalue * 100 / (threatpct ~= 0 and threatpct or 1)
@@ -7733,7 +7814,7 @@ if count == nil then return false end
       },
       {
         hidden = true,
-        test = "ForeverAuras.UnitExistsFixed(unit, false) and specificUnitCheck"
+        test = "WeakAuras.UnitExistsFixed(unit, false) and specificUnitCheck"
       }
     },
     automaticrequired = true
@@ -7924,10 +8005,10 @@ if count == nil then return false end
     end,
     loadFunc = function(trigger)
       if trigger.use_showLatency and trigger.unit == "player" then
-        ForeverAuras.WatchForCastLatency()
+        WeakAuras.WatchForCastLatency()
       end
       if trigger.unit == "nameplate" and trigger.use_onUpdateUnitTarget then
-        ForeverAuras.WatchForNameplateTargetChange()
+        WeakAuras.WatchForNameplateTargetChange()
       end
       local includePets = trigger.use_includePets == true and trigger.includePets or nil
       AddWatchedUnits(trigger.unit, includePets)
@@ -7940,8 +8021,8 @@ if count == nil then return false end
       local ret = [=[
         unit = string.lower(unit)
         local destUnit = unit .. '-target'
-        local sourceName, sourceRealm = ForeverAuras.UnitNameWithRealm(unit)
-        local destName, destRealm = ForeverAuras.UnitNameWithRealm(destUnit)
+        local sourceName, sourceRealm = WeakAuras.UnitNameWithRealm(unit)
+        local destName, destRealm = WeakAuras.UnitNameWithRealm(destUnit)
         destName = destName or ""
         destRealm = destRealm or ""
         local smart = %s
@@ -7955,11 +8036,11 @@ if count == nil then return false end
         local show, expirationTime, castType, spell, icon, startTime, endTime, interruptible, spellId, remaining, _, stageTotal
         local durationObject, secretCast
 
-        spell, _, icon, startTime, endTime, _, _, interruptible, spellId = ForeverAuras.UnitCastingInfo(unit)
+        spell, _, icon, startTime, endTime, _, _, interruptible, spellId = WeakAuras.UnitCastingInfo(unit)
         if spell then
           castType = "cast"
         else
-          spell, _, icon, startTime, endTime, _, interruptible, spellId, _, stageTotal = ForeverAuras.UnitChannelInfo(unit)
+          spell, _, icon, startTime, endTime, _, interruptible, spellId, _, stageTotal = WeakAuras.UnitChannelInfo(unit)
           if spell then
             castType = "channel"
             if not hasanysecretvalues(startTime, endTime, stageTotal) and stageTotal and stageTotal > 0 then
@@ -7990,7 +8071,12 @@ if count == nil then return false end
         if not secretCast and empowered and showChargedDuration then
           endTime = endTime + GetUnitEmpowerHoldAtMaxTime(unit)
         end
+        local notInterruptible = interruptible
         if issecretvalue(interruptible) then interruptible = nil else interruptible = not interruptible end
+        local important
+        if type(spellId) == "number" and C_Spell.IsSpellImportant then
+          important = C_Spell.IsSpellImportant(spellId)
+        end
         if not secretCast then
           expirationTime = endTime and endTime > 0 and (endTime / 1000) or 0
           remaining = expirationTime - GetTime()
@@ -8008,6 +8094,9 @@ if count == nil then return false end
 
       if trigger.use_interruptible ~= nil then
         ret = ret .. "if interruptible == nil then return false end\n"
+      end
+      if trigger.use_important ~= nil then
+        ret = ret .. "if issecretvalue(important) then return false end\nimportant = important == true\n"
       end
       ret = ret .. unitHelperFunctions.SpecificUnitCheck(trigger)
 
@@ -8096,6 +8185,25 @@ if count == nil then return false end
         display = L["Interruptible"],
         type = "tristate",
         enable = function(trigger) return not trigger.use_inverse end,
+        store = true,
+        conditionType = "bool",
+      },
+      {
+        name = "important",
+        display = L["Important"],
+        desc = L["Casts Blizzard marks as important. In combat, use a (Boolean) condition; this filter hides hidden casts."],
+        type = "tristate",
+        enable = function(trigger) return not trigger.use_inverse end,
+        store = true,
+        conditionType = "bool",
+      },
+      {
+        name = "notInterruptible",
+        display = L["Not Interruptible"],
+        hidden = true,
+        init = "notInterruptible",
+        enable = function(trigger) return not trigger.use_inverse end,
+        test = "true",
         store = true,
         conditionType = "bool",
       },
@@ -8271,7 +8379,7 @@ if count == nil then return false end
         name = "raid_role",
         display = L["Raid Role"],
         type = "select",
-        init = "ForeverAuras.UnitRaidRole(unit)",
+        init = "WeakAuras.UnitRaidRole(unit)",
         values = "raid_role_types",
         store = true,
         conditionType = "select",
@@ -8284,7 +8392,7 @@ if count == nil then return false end
         name = "nameplateType",
         display = L["Hostility"],
         type = "select",
-        init = "ForeverAuras.GetPlayerReaction(unit)",
+        init = "WeakAuras.GetPlayerReaction(unit)",
         values = "hostility_types",
         store = true,
         conditionType = "select",
@@ -8409,7 +8517,7 @@ if count == nil then return false end
         display = L["Include Pets"],
         type = "select",
         values = "include_pets_types",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         test = "true",
         enable = function(trigger)
           return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
@@ -8419,7 +8527,7 @@ if count == nil then return false end
         name = "ignoreSelf",
         display = L["Ignore Self"],
         type = "toggle",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         enable = function(trigger)
           return trigger.unit == "nameplate" or trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
         end,
@@ -8427,7 +8535,7 @@ if count == nil then return false end
       },
       {
         name = "onUpdateUnitTarget",
-        display = ForeverAuras.newFeatureString .. L["Advanced Caster's Target Check"],
+        display = WeakAuras.newFeatureString .. L["Advanced Caster's Target Check"],
         desc = L["Check nameplate's target every 0.2s"],
         type = "toggle",
         test = "true",
@@ -8444,7 +8552,7 @@ if count == nil then return false end
       },
       {
         hidden = true,
-        test = "ForeverAuras.UnitExistsFixed(unit, smart) and ((not inverseTrigger and spell) or (inverseTrigger and not spell)) and specificUnitCheck"
+        test = "WeakAuras.UnitExistsFixed(unit, smart) and ((not inverseTrigger and spell) or (inverseTrigger and not spell)) and specificUnitCheck"
       },
       {
         name = "stagesData",
@@ -8459,7 +8567,7 @@ if count == nil then return false end
         name = L["Latency"],
         underlay = true,
         func = function(trigger, state)
-          local latency = ForeverAuras.GetCastLatency()
+          local latency = WeakAuras.GetCastLatency()
           if not latency then return 0, 0 end
           return 0, latency
         end,
@@ -8526,7 +8634,7 @@ if count == nil then return false end
       local name, icon, spellId, _
       if trigger.use_spellNames and type(trigger.spellNames) == "table" then
         for _, spellName in ipairs(trigger.spellNames) do
-          spellId = ForeverAuras.SafeToNumber(spellName)
+          spellId = WeakAuras.SafeToNumber(spellName)
           if spellId then
             name, _, icon = Private.ExecEnv.GetSpellInfo(spellName)
             if name and icon then
@@ -8542,7 +8650,7 @@ if count == nil then return false end
       end
       if trigger.use_spellIds and type(trigger.spellIds) == "table" then
         for _, spellIdString in ipairs(trigger.spellIds) do
-          spellId = ForeverAuras.SafeToNumber(spellIdString)
+          spellId = WeakAuras.SafeToNumber(spellIdString)
           if spellId then
             name, _, icon = Private.ExecEnv.GetSpellInfo(spellIdString)
             if name and icon then
@@ -8581,7 +8689,7 @@ if count == nil then return false end
     end,
     loadFunc = function(trigger)
       if trigger.use_moveSpeed then
-        ForeverAuras.WatchForPlayerMoving()
+        WeakAuras.WatchForPlayerMoving()
       end
     end,
     init = function()
@@ -8901,7 +9009,7 @@ if count == nil then return false end
         name = "attackpower",
         display = L["Attack Power"],
         type = "number",
-        init = "not statsAreSecret and (ForeverAuras.GetEffectiveAttackPower()) or nil",
+        init = "not statsAreSecret and (WeakAuras.GetEffectiveAttackPower()) or nil",
         store = true,
         conditionType = "number",
         multiEntry = {
@@ -8913,7 +9021,7 @@ if count == nil then return false end
         name = "rangedattackpower",
         display = L["Ranged Attack Power"],
         type = "number",
-        init = "not statsAreSecret and (ForeverAuras.GetEffectiveAttackPower(true)) or nil",
+        init = "not statsAreSecret and (WeakAuras.GetEffectiveAttackPower(true)) or nil",
         store = true,
         conditionType = "number",
         multiEntry = {
@@ -8925,7 +9033,7 @@ if count == nil then return false end
         name = "spellpower",
         display = L["Spell Power"],
         type = "number",
-        init = "not statsAreSecret and (ForeverAuras.GetEffectiveSpellPower()) or nil",
+        init = "not statsAreSecret and (WeakAuras.GetEffectiveSpellPower()) or nil",
         store = true,
         conditionType = "number",
         multiEntry = {
@@ -8957,7 +9065,7 @@ if count == nil then return false end
         display = L["Continuously update Movement Speed"],
         type = "boolean",
         test = true,
-        width = ForeverAuras.doubleWidth
+        width = WeakAuras.doubleWidth
       },
       {
         name = "movespeedpercent",
@@ -9303,7 +9411,7 @@ if count == nil then return false end
     name = L["Conditions"],
     loadFunc = function(trigger)
       if (trigger.use_ismoving ~= nil) then
-        ForeverAuras.WatchForPlayerMoving();
+        WeakAuras.WatchForPlayerMoving();
       end
       if (trigger.use_HasPet ~= nil) then
         AddWatchedUnits("pet")
@@ -9390,7 +9498,7 @@ if count == nil then return false end
         type = "multiselect",
         values = "instance_types",
         sorted = true,
-        init = "ForeverAuras.InstanceType()",
+        init = "WeakAuras.InstanceType()",
       },
       {
         name = "instance_difficulty",
@@ -9399,7 +9507,7 @@ if count == nil then return false end
         hidden = function(trigger) return trigger.use_instance_difficulty == nil end,
         type = "multiselect",
         values = "difficulty_types",
-        init = "ForeverAuras.InstanceDifficulty()",
+        init = "WeakAuras.InstanceDifficulty()",
         enable = true,
       },
       {
@@ -9409,14 +9517,14 @@ if count == nil then return false end
         hidden = function(trigger) return trigger.use_instance_type == nil end,
         type = "multiselect",
         values = "instance_difficulty_types",
-        init = "ForeverAuras.InstanceTypeRaw()",
+        init = "WeakAuras.InstanceTypeRaw()",
         enable = true,
       },
       {
         name = "secret_state",
         display = L["Secret Restrictions Active"],
         type = "tristate",
-        init = "ForeverAuras.IsSecretStateActive()",
+        init = "WeakAuras.IsSecretStateActive()",
       },
     },
     automaticrequired = true,
@@ -9458,12 +9566,12 @@ if count == nil then return false end
       if (trigger.use_inverse) then
         table.insert(ret, ([[
           local usePet = %s;
-          local active = not spellName or not ForeverAuras.IsSpellKnown(spellName, usePet)
+          local active = not spellName or not WeakAuras.IsSpellKnown(spellName, usePet)
         ]]):format(trigger.use_petspell and "true" or "false"))
       else
         table.insert(ret, ([[
           local usePet = %s;
-          local active = spellName and ForeverAuras.IsSpellKnown(spellName, usePet)
+          local active = spellName and WeakAuras.IsSpellKnown(spellName, usePet)
         ]]):format(trigger.use_petspell and "true" or "false"))
       end
       return table.concat(ret)
@@ -9489,7 +9597,7 @@ if count == nil then return false end
       },
       {
         name = "inverse",
-        display = ForeverAuras.newFeatureString .. L["Inverse"],
+        display = WeakAuras.newFeatureString .. L["Inverse"],
         type = "toggle",
         test = "true",
       },
@@ -9683,7 +9791,7 @@ if count == nil then return false end
         local unit = %q
         local spell = %s
         local name, _, icon = Private.ExecEnv.GetSpellInfo(spell)
-        local inRange = UnitExists(unit) and ForeverAuras.IsSpellInRange(spell, unit) or nil
+        local inRange = UnitExists(unit) and WeakAuras.IsSpellInRange(spell, unit) or nil
         local active = inRange == %d
       ]]):format(trigger.unit, spell, trigger.use_inverse and 0 or 1)
     end,
@@ -9756,7 +9864,7 @@ if count == nil then return false end
       trigger.unit = trigger.unit or "target";
       local ret = [=[
           local unit = %q;
-          local min, max = ForeverAuras.GetRange(unit, true);
+          local min, max = WeakAuras.GetRange(unit, true);
           min = min or 0;
           max = max or 999;
           local triggerResult = true;
@@ -9819,7 +9927,7 @@ if count == nil then return false end
         test = "triggerResult",
         conditionType = "number",
         conditionTest = function(state, needle, needle2)
-          return state and ForeverAuras.CheckRange(state.unit, needle, needle2);
+          return state and WeakAuras.CheckRange(state.unit, needle, needle2);
         end,
         noProgressSource = true
       },
@@ -9841,7 +9949,7 @@ if count == nil then return false end
     },
     internal_events = {"WA_DELAYED_PLAYER_ENTERING_WORLD"},
     force_events = "WA_DELAYED_PLAYER_ENTERING_WORLD",
-    name = ForeverAuras.newFeatureString..L["Player Money"],
+    name = WeakAuras.newFeatureString..L["Player Money"],
     init = function()
       return [=[
         local money = GetMoney()
@@ -9915,7 +10023,7 @@ if count == nil then return false end
     end,
     internal_events = {"WA_DELAYED_PLAYER_ENTERING_WORLD"},
     force_events = "WA_DELAYED_PLAYER_ENTERING_WORLD",
-    name = ForeverAuras.newFeatureString..L["Currency"],
+    name = WeakAuras.newFeatureString..L["Currency"],
     triggerFunction = function(trigger)
       local quantityChecks, tristateChecks, cloneChecks = {}, {}, {}
 
@@ -10335,7 +10443,7 @@ if count == nil then return false end
     },
     internal_events = {"INSTANCE_LOCATION_CHECK"},
     force_events = "INSTANCE_LOCATION_CHECK",
-    name = ForeverAuras.newFeatureString..L["Location"],
+    name = WeakAuras.newFeatureString..L["Location"],
     init = function(trigger)
       local ret = [=[
         local uiMapId = C_Map.GetBestMapForUnit("player")
@@ -10430,7 +10538,7 @@ if count == nil then return false end
         type = "multiselect",
         values = "instance_types",
         sorted = true,
-        init = "ForeverAuras.InstanceType()",
+        init = "WeakAuras.InstanceType()",
         conditionType = "select",
         store = true,
       },
@@ -10439,7 +10547,7 @@ if count == nil then return false end
         display = L["Instance Difficulty"],
         type = "multiselect",
         values = "difficulty_types",
-        init = "ForeverAuras.InstanceDifficulty()",
+        init = "WeakAuras.InstanceDifficulty()",
         conditionType = "select",
         store = true,
         enable = true,
@@ -10450,7 +10558,7 @@ if count == nil then return false end
         display = L["Instance Type"],
         type = "multiselect",
         values = "instance_difficulty_types",
-        init = "ForeverAuras.InstanceTypeRaw()",
+        init = "WeakAuras.InstanceTypeRaw()",
         conditionType = "select",
         store = true,
         enable = true,

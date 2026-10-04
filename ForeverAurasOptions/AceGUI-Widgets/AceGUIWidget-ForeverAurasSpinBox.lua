@@ -2,7 +2,7 @@
 --[[-----------------------------------------------------------------------------
 Spin Box Widget
 -------------------------------------------------------------------------------]]
-local Type, Version = "ForeverAurasSpinBox", 5
+local Type, Version = "WeakAurasSpinBox", 5
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
   return

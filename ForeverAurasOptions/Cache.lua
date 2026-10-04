@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -11,11 +11,11 @@ local pairs, error, coroutine = pairs, error, coroutine
 -- WoW APIs
 local IsSpellKnown = IsSpellKnown
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
+---@class WeakAuras
+local WeakAuras = WeakAuras
 
 local spellCache = {}
-ForeverAuras.spellCache = spellCache
+WeakAuras.spellCache = spellCache
 
 local cache
 local metaData
@@ -25,7 +25,7 @@ local bestIcon = {}
 -- This is a rather slow operation, so it's only done once, and the result is subsequently saved
 function spellCache.Build()
   if not cache  then
-    error("spellCache has not been loaded. Call ForeverAuras.spellCache.Load(...) first.")
+    error("spellCache has not been loaded. Call WeakAuras.spellCache.Load(...) first.")
   end
 
   if not metaData.needsRebuild then
@@ -107,7 +107,7 @@ function spellCache.GetIcon(name)
     bestIcon[name] = bestMatch
     return bestIcon[name]
   else
-    error("spellCache has not been loaded. Call ForeverAuras.spellCache.Load(...) first.")
+    error("spellCache has not been loaded. Call WeakAuras.spellCache.Load(...) first.")
   end
 end
 
@@ -129,12 +129,13 @@ end
 
 function spellCache.AddIcon(name, id, icon)
   if not cache then
-    error("spellCache has not been loaded. Call ForeverAuras.spellCache.Load(...) first.")
+    error("spellCache has not been loaded. Call WeakAuras.spellCache.Load(...) first.")
     return
   end
 
   if name and id and icon then
     cache[name] = cache[name] or {}
+    if cache[name].spells and ("," .. cache[name].spells):find("," .. id .. "=", 1, true) then return end
     if not cache[name].spells or cache[name].spells == "" then
       cache[name].spells = id .. "=" .. icon
     else
@@ -143,11 +144,40 @@ function spellCache.AddIcon(name, id, icon)
   end
 end
 
+local function AddKnownSpell(name)
+  if type(name) ~= "string" or name == "" or not C_Spell.GetSpellInfo then return end
+  local ok, info = pcall(C_Spell.GetSpellInfo, name)
+  if ok and type(info) == "table" and not hasanysecretvalues(info.name, info.spellID, info.iconID)
+    and info.name and info.spellID and info.iconID then
+    spellCache.AddIcon(info.name, info.spellID, info.iconID)
+    return info.name
+  end
+end
+
+-- Auras on these units are real spells, so their names and IDs join the cache.
+function spellCache.AddCurrentAuras()
+  if not cache or InCombatLockdown() or not C_UnitAuras or not C_UnitAuras.GetAuraDataByIndex then return end
+  for _, unit in ipairs({"player", "target", "focus", "pet"}) do
+    if UnitExists(unit) then
+      for _, filter in ipairs({"HELPFUL", "HARMFUL"}) do
+        for index = 1, 40 do
+          local ok, aura = pcall(C_UnitAuras.GetAuraDataByIndex, unit, index, filter)
+          if not ok or type(aura) ~= "table" then break end
+          local okFields, name, id, icon = pcall(function() return aura.name, aura.spellId, aura.icon end)
+          if okFields and not hasanysecretvalues(name, id, icon) and type(name) == "string" and type(id) == "number" and icon then
+            spellCache.AddIcon(name, id, icon)
+          end
+        end
+      end
+    end
+  end
+end
+
 function spellCache.Get()
   if cache then
     return cache
   else
-    error("spellCache has not been loaded. Call ForeverAuras.spellCache.Load(...) first.")
+    error("spellCache has not been loaded. Call WeakAuras.spellCache.Load(...) first.")
   end
 end
 
@@ -157,7 +187,7 @@ function spellCache.Load(data)
 
   local _, build = GetBuildInfo();
   local locale = GetLocale();
-  local version = ForeverAuras.versionString
+  local version = WeakAuras.versionString
 
   local num = 0;
   for i,v in pairs(cache) do
@@ -224,6 +254,9 @@ function spellCache.BestKeyMatch(nearkey)
     end
   end
 
+  if bestKey == "" then
+    bestKey = AddKnownSpell(nearkey) or ""
+  end
   return bestKey;
 end
 
@@ -231,12 +264,12 @@ end
 ---@return string name, number? id
 function spellCache.CorrectAuraName(input)
   if (not cache) then
-    error("spellCache has not been loaded. Call ForeverAuras.spellCache.Load(...) first.")
+    error("spellCache has not been loaded. Call WeakAuras.spellCache.Load(...) first.")
   end
 
-  local spellId = ForeverAuras.SafeToNumber(input)
+  local spellId = WeakAuras.SafeToNumber(input)
   if type(input) == "string" and input:find("|", nil, true) then
-    spellId = ForeverAuras.SafeToNumber(input:match("|Hspell:(%d+)"))
+    spellId = WeakAuras.SafeToNumber(input:match("|Hspell:(%d+)"))
   end
   if(spellId) then
     local name, _, icon = OptionsPrivate.Private.ExecEnv.GetSpellInfo(spellId);

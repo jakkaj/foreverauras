@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local default = function()
   local d = {
@@ -116,7 +116,7 @@ local function GetProperties(parentData, data)
       setter = "SetTickPlacementAt",
       type = "number",
       arg1 = i,
-      validate = ForeverAuras.ValidateNumeric,
+      validate = WeakAuras.ValidateNumeric,
     }
   end
 
@@ -576,5 +576,5 @@ local function supports(regionType)
   return regionType == "aurabar"
 end
 
-ForeverAuras.RegisterSubRegionType("subtick", L["Tick"], supports, create, modify, onAcquire, onRelease,
+WeakAuras.RegisterSubRegionType("subtick", L["Tick"], supports, create, modify, onAcquire, onRelease,
                                 default, nil, GetProperties);

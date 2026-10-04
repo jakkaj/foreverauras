@@ -1,9 +1,9 @@
 # Modified for ForeverAuras; namespace and/or implementation changes through 2026-09-18.
 ## Interface: 16001
-## Title: ForeverAuras Model Paths (RG fork)
+## Title: WeakAuras - ForeverAuras Model Paths
 ## Author: m33shoq, WeakAuras contributors
-## Version: 0.44.2-BETA.1
-## IconTexture: Interface\AddOns\ForeverAuras\Media\Textures\foreverauras_logo.tga
+## Version: 0.50.3-BETA.1
+## IconTexture: Interface\AddOns\ForeverAuras\Media\Textures\foreverauras_logo_64.tga
 ## Notes: Model paths for ForeverAuras
 ## Notes-esES: Las rutas de modelos para ForeverAuras
 ## Notes-esMX: Las rutas de modelos para ForeverAuras

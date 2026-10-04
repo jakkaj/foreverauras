@@ -1,7 +1,7 @@
 -- Player-only load conditions inferred from learned final-tier talent spells.
 -- Catalog: Forever beta data from talentsforever.com and Wowhead talent records.
 -- See SpecializationData-LICENSE.txt for sources and attribution.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 -- Keys describe talent trees, not retail specialization IDs. Include every known
 -- rank so learning a higher rank cannot stop an existing aura from loading.

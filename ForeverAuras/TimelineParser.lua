@@ -1,12 +1,12 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
-local timer = ForeverAuras.timer;
-local L = ForeverAuras.L
+local timer = WeakAuras.timer;
+local L = WeakAuras.L
 
 Private.ExecEnv.TimelineParser = {
   registeredEvents = {},

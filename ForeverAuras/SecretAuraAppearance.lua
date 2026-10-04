@@ -1,5 +1,5 @@
 -- Shared Display settings rendered by Blizzard's native aura widgets.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local Display = Private.BlizzardAuraDisplay
 local Media = LibStub("LibSharedMedia-3.0")
@@ -418,7 +418,7 @@ function Display.StyleAppearance(native, data, ElementFrame, StyleText, StyleGlo
   Display.StyleIconTexCoords(native, data)
   native.icon:SetVertexColor(unpack(data.regionType == "aurabar" and data.icon_color or data.color or {1, 1, 1, 1}))
   if data.regionType == "icon" or (data.regionType == "aurabar" and data.icon) then
-    if data.iconSource == 0 and data.displayIcon then native.icon:SetTexture(data.displayIcon) else button:SetIcon(native.icon) end
+    if data.iconSource == 0 and data.displayIcon and data.displayIcon ~= "" then native.icon:SetTexture(data.displayIcon) else button:SetIcon(native.icon) end
     native.icon:Show()
   end
   if data.regionType == "icon" and data.cooldown ~= false then

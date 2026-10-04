@@ -1,4 +1,4 @@
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -175,7 +175,7 @@ local function CloneFor(object, path)
     local _, size, flags = object:GetFont()
     if not size then return end
     cloneCount = cloneCount + 1
-    clone = CreateFont("ForeverAurasInterfaceFont" .. cloneCount)
+    clone = CreateFont("WeakAurasInterfaceFont" .. cloneCount)
     clone:CopyFontObject(object)
     cloneSource[clone] = {object = object, size = size, flags = flags or ""}
     clones[object] = clone
@@ -348,7 +348,7 @@ local CHUNK = 20
 
 local menuAnchor
 local function MenuOpen()
-  return _G.L_UIDROPDOWNMENU_OPEN_MENU == ForeverAuras_DropDownMenu and _G.L_DropDownList1 and L_DropDownList1:IsShown()
+  return _G.L_UIDROPDOWNMENU_OPEN_MENU == WeakAuras_DropDownMenu and _G.L_DropDownList1 and L_DropDownList1:IsShown()
 end
 local dismiss = CreateFrame("Frame")
 if pcall(dismiss.RegisterEvent, dismiss, "GLOBAL_MOUSE_DOWN") then
@@ -369,7 +369,7 @@ local function ToggleMenu(menu, anchor)
     return
   end
   menuAnchor = anchor
-  LibDD:EasyMenu(menu, ForeverAuras_DropDownMenu, anchor, 0, 0, "MENU")
+  LibDD:EasyMenu(menu, WeakAuras_DropDownMenu, anchor, 0, 0, "MENU")
 end
 
 function Theme.ShowFontMenu(anchor)
@@ -418,7 +418,7 @@ function Theme.ShowLayoutMenu(anchor)
         ForeverAurasOptionsSaved = ForeverAurasOptionsSaved or {}
         if (value == "modern") ~= Theme.IsModern() then
           ForeverAurasOptionsSaved.windowStyle = value
-          ForeverAuras.prettyPrint("The layout changes after /reload.")
+          WeakAuras.prettyPrint("The layout changes after /reload.")
         end
         LibDD:CloseDropDownMenus()
       end,

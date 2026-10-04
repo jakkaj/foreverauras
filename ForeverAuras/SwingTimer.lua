@@ -1,24 +1,24 @@
 -- Player swing timing supplied by Blizzard; no combat-log reconstruction.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local swings, timers = {}, {}
 local frame
 local eventName = 'FA_SWING_TIMER_UPDATE'
 local slots = {[0] = 16, [1] = 17, [2] = 18}
 local names = {[0] = 'Main Hand', [1] = 'Off Hand', [2] = 'Ranged'}
 
-function ForeverAuras.GetSwingTimerInfo(swingType)
+function WeakAuras.GetSwingTimerInfo(swingType)
   local swing = swings[swingType]
   return swing and swing.duration or 0, swing and swing.expirationTime or 0,
     names[swingType], GetInventoryItemTexture('player', slots[swingType]) or 132324
 end
 
-function ForeverAuras.IsTargetInSwingRange(swingType)
+function WeakAuras.IsTargetInSwingRange(swingType)
   if not (C_SwingTimer and C_SwingTimer.IsTargetWithinSwingRange) then return end
   local ok, inRange = pcall(C_SwingTimer.IsTargetWithinSwingRange, swingType)
   if ok and type(inRange) == 'boolean' and not issecretvalue(inRange) then return inRange end
 end
 
-function ForeverAuras.WatchSwingTimer()
+function WeakAuras.WatchSwingTimer()
   if frame or not Enum.PlayerSwingType then return end
   frame = CreateFrame('Frame')
   frame:RegisterEvent('PLAYER_SWING')
@@ -38,13 +38,13 @@ function ForeverAuras.WatchSwingTimer()
       swings[swingType] = {duration = duration, expirationTime = GetTime() + duration}
       timers[swingType] = C_Timer.NewTimer(duration, function()
         swings[swingType], timers[swingType] = nil, nil
-        ForeverAuras.ScanEvents(eventName)
+        WeakAuras.ScanEvents(eventName)
       end)
     else
       for _, timer in pairs(timers) do timer:Cancel() end
       wipe(timers)
       wipe(swings)
     end
-    ForeverAuras.ScanEvents(eventName)
+    WeakAuras.ScanEvents(eventName)
   end)
 end

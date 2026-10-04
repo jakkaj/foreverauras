@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local function createOptions(parentData, data, index, subIndex)
   local areaAnchors = {}
@@ -18,13 +18,13 @@ local function createOptions(parentData, data, index, subIndex)
     __order = 1,
     border_visible = {
       type = "toggle",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Show Border"],
       order = 2,
     },
     border_edge = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       dialogControl = "LSM30_Border",
       name = L["Border Style"],
       order = 3,
@@ -32,15 +32,15 @@ local function createOptions(parentData, data, index, subIndex)
     },
     border_color = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Border Color"],
       hasAlpha = true,
       order = 4,
     },
     border_offset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Border Offset"],
       order = 5,
       softMin = 0,
@@ -49,8 +49,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     border_size = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Border Size"],
       order = 6,
       min = 1,
@@ -59,8 +59,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     anchor_area = {
       type = "select",
-      width = ForeverAuras.normalWidth,
-      control = "ForeverAurasTwoColumnDropdown",
+      width = WeakAuras.normalWidth,
+      control = "WeakAurasTwoColumnDropdown",
       name = L["Border Anchor"],
       order = 7,
       values = areaAnchors,
@@ -68,7 +68,7 @@ local function createOptions(parentData, data, index, subIndex)
     },
     border_ppscale = {
       type = "toggle",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Force pixel perfect scale"],
       order = 8,
     }
@@ -79,4 +79,4 @@ local function createOptions(parentData, data, index, subIndex)
   return options
 end
 
-ForeverAuras.RegisterSubRegionOptions("subborder", createOptions, L["Shows a border"]);
+WeakAuras.RegisterSubRegionOptions("subborder", createOptions, L["Shows a border"]);

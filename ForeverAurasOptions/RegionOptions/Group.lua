@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-29.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 -- Calculate bounding box
 local function getRect(data)
@@ -62,7 +62,7 @@ local function createDistributeAlignOptions(id, data)
   return {
     align_h = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Horizontal Align"],
       order = 10,
       values = OptionsPrivate.Private.align_types,
@@ -73,7 +73,7 @@ local function createDistributeAlignOptions(id, data)
         ---@type AnchorPoint?, AnchorPoint?, AnchorPoint?
         local alignedCenter, alignedRight, alignedLeft = "CENTER", "RIGHT", "LEFT";
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
+          local childData = WeakAuras.GetData(childId);
           if(childData) then
             local left, _, right = getRect(childData);
             local center = (left + right) / 2;
@@ -92,8 +92,8 @@ local function createDistributeAlignOptions(id, data)
       end,
       set = function(info, v)
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
-          local childRegion = ForeverAuras.GetRegion(childId)
+          local childData = WeakAuras.GetData(childId);
+          local childRegion = WeakAuras.GetRegion(childId)
           if(childData and childRegion) then
             if(v == "CENTER") then
               if(childData.selfPoint:find("LEFT")) then
@@ -120,16 +120,16 @@ local function createDistributeAlignOptions(id, data)
                 childData.xOffset = 0 - (getWidth(childData, childRegion) / 2);
               end
             end
-            ForeverAuras.Add(childData);
+            WeakAuras.Add(childData);
           end
         end
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.ResetMoverSizer();
       end
     },
     align_v = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Vertical Align"],
       order = 15,
       values = OptionsPrivate.Private.rotated_align_types,
@@ -140,7 +140,7 @@ local function createDistributeAlignOptions(id, data)
         ---@type AnchorPoint?, AnchorPoint?, AnchorPoint?
         local alignedCenter, alignedBottom, alignedTop = "CENTER", "RIGHT", "LEFT";
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
+          local childData = WeakAuras.GetData(childId);
           if(childData) then
             local _, bottom, _, top = getRect(childData);
             local center = (bottom + top) / 2;
@@ -159,8 +159,8 @@ local function createDistributeAlignOptions(id, data)
       end,
       set = function(info, v)
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
-          local childRegion = ForeverAuras.GetRegion(childId)
+          local childData = WeakAuras.GetData(childId);
+          local childRegion = WeakAuras.GetRegion(childId)
           if(childData and childRegion) then
             if(v == "CENTER") then
               if(childData.selfPoint:find("BOTTOM")) then
@@ -187,17 +187,17 @@ local function createDistributeAlignOptions(id, data)
                 childData.yOffset = 0 - (getHeight(childData, childRegion) / 2);
               end
             end
-            ForeverAuras.Add(childData);
+            WeakAuras.Add(childData);
           end
         end
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.ResetMoverSizer();
       end
     },
     distribute_h = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Distribute Horizontally"],
       order = 20,
       softMin = -100,
@@ -210,7 +210,7 @@ local function createDistributeAlignOptions(id, data)
         local spaced;
         local previousData;
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
+          local childData = WeakAuras.GetData(childId);
           if(childData) then
             local left, _, right = getRect(childData);
             if not(previousData) then
@@ -248,8 +248,8 @@ local function createDistributeAlignOptions(id, data)
       set = function(info, v)
         local xOffset = 0;
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
-          local childRegion = ForeverAuras.GetRegion(childId)
+          local childData = WeakAuras.GetData(childId);
+          local childRegion = WeakAuras.GetRegion(childId)
           if(childData and childRegion) then
             if(v > 0) then
               if(childData.selfPoint:find("LEFT")) then
@@ -270,18 +270,18 @@ local function createDistributeAlignOptions(id, data)
               end
               xOffset = xOffset + v;
             end
-            ForeverAuras.Add(childData);
+            WeakAuras.Add(childData);
           end
         end
 
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.ResetMoverSizer();
       end
     },
     distribute_v = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Distribute Vertically"],
       order = 25,
       softMin = -100,
@@ -294,7 +294,7 @@ local function createDistributeAlignOptions(id, data)
         local spaced;
         local previousData;
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
+          local childData = WeakAuras.GetData(childId);
           if(childData) then
             local _, bottom, _, top = getRect(childData);
             if not(previousData) then
@@ -332,8 +332,8 @@ local function createDistributeAlignOptions(id, data)
       set = function(info, v)
         local yOffset = 0;
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
-          local childRegion = ForeverAuras.GetRegion(childId)
+          local childData = WeakAuras.GetData(childId);
+          local childRegion = WeakAuras.GetRegion(childId)
           if(childData and childRegion) then
             if(v > 0) then
               if(childData.selfPoint:find("BOTTOM")) then
@@ -354,18 +354,18 @@ local function createDistributeAlignOptions(id, data)
               end
               yOffset = yOffset + v;
             end
-            ForeverAuras.Add(childData);
+            WeakAuras.Add(childData);
           end
         end
 
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.ResetMoverSizer();
       end
     },
     space_h = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Space Horizontally"],
       order = 30,
       softMin = -100,
@@ -378,7 +378,7 @@ local function createDistributeAlignOptions(id, data)
         local spaced;
         local previousData;
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
+          local childData = WeakAuras.GetData(childId);
           if(childData) then
             local left, _, right = getRect(childData);
             if not(previousData) then
@@ -416,8 +416,8 @@ local function createDistributeAlignOptions(id, data)
       set = function(info, v)
         local xOffset = 0;
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
-          local childRegion = ForeverAuras.GetRegion(childId)
+          local childData = WeakAuras.GetData(childId);
+          local childRegion = WeakAuras.GetRegion(childId)
           if(childData and childRegion) then
             if(v >= 0) then
               if(childData.selfPoint:find("LEFT")) then
@@ -438,18 +438,18 @@ local function createDistributeAlignOptions(id, data)
               end
               xOffset = xOffset + v - getWidth(childData, childRegion);
             end
-            ForeverAuras.Add(childData);
+            WeakAuras.Add(childData);
           end
         end
 
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.ResetMoverSizer();
       end
     },
     space_v = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Space Vertically"],
       order = 35,
       softMin = -100,
@@ -462,7 +462,7 @@ local function createDistributeAlignOptions(id, data)
         local spaced;
         local previousData;
         for _, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
+          local childData = WeakAuras.GetData(childId);
           if(childData) then
             local _, bottom, _, top = getRect(childData);
             if not(previousData) then
@@ -500,8 +500,8 @@ local function createDistributeAlignOptions(id, data)
       set = function(info, v)
         local yOffset = 0;
         for index, childId in pairs(data.controlledChildren) do
-          local childData = ForeverAuras.GetData(childId);
-          local childRegion = ForeverAuras.GetRegion(childId)
+          local childData = WeakAuras.GetData(childId);
+          local childRegion = WeakAuras.GetRegion(childId)
           if(childData and childRegion) then
             if(v >= 0) then
               if(childData.selfPoint:find("BOTTOM")) then
@@ -522,11 +522,11 @@ local function createDistributeAlignOptions(id, data)
               end
               yOffset = yOffset + v - getHeight(childData, childRegion);
             end
-            ForeverAuras.Add(childData);
+            WeakAuras.Add(childData);
           end
         end
 
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.ResetMoverSizer();
       end
     }
@@ -547,13 +547,13 @@ local function createOptions(id, data)
     pendingFlowSave = true
     C_Timer.After(0, function()
       pendingFlowSave = nil
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
       for _, childId in ipairs(data.controlledChildren) do
-        local childData = ForeverAuras.GetData(childId)
-        if childData then ForeverAuras.Add(childData) end
+        local childData = WeakAuras.GetData(childId)
+        if childData then WeakAuras.Add(childData) end
       end
       OptionsPrivate.ResetMoverSizer()
-      ForeverAuras.ClearAndUpdateOptions(data.id)
+      WeakAuras.ClearAndUpdateOptions(data.id)
     end)
   end
   local function FlowOff() return not data.blizzardFlow end
@@ -563,33 +563,77 @@ local function createOptions(id, data)
     -- Shown only for a Modern Aura Group (made from New or the group menu),
     -- laid out like the Dynamic Group settings.
     blizzardFlowGrowth = {
-      type = "select", width = ForeverAuras.doubleWidth, order = 0.61, name = L["Grow"],
-      values = Display.flowGrowths, sorting = {"RIGHT", "LEFT", "DOWN", "UP", "CENTER_HORIZONTAL", "CENTER_VERTICAL"}, hidden = FlowOff,
-      get = function() return data.blizzardFlowGrowth or "RIGHT" end,
-      set = function(_, v) SaveFlow("blizzardFlowGrowth", v) end,
+      type = "select", width = WeakAuras.doubleWidth, order = 0.61, name = L["Grow"], hidden = FlowOff,
+      values = function()
+        local values = CopyTable(Display.flowGrowths)
+        if data.blizzardFlowFrames == nil then values.GRID = L["Grid"] end
+        return values
+      end,
+      sorting = {"RIGHT", "LEFT", "DOWN", "UP", "CENTER_HORIZONTAL", "CENTER_VERTICAL", "GRID"},
+      get = function() return Display.FlowGrid(data) and "GRID" or data.blizzardFlowGrowth or "RIGHT" end,
+      set = function(_, v)
+        if v == "GRID" then
+          data.blizzardFlowGridType = Display.GridType(data)
+          SaveFlow("blizzardFlowGrid", true)
+        else
+          data.blizzardFlowGrid = nil
+          SaveFlow("blizzardFlowGrowth", v)
+        end
+      end,
+    },
+    blizzardFlowGridType = {
+      type = "select", width = WeakAuras.normalWidth, order = 0.631, name = L["Grid direction"],
+      values = OptionsPrivate.Private.grid_types,
+      desc = "Every aura needs Show On: Aura(s) Found and the same single unit. A centered last row lines up with the rows above.",
+      hidden = function() return FlowOff() or not Display.FlowGrid(data) end,
+      get = function() return Display.GridType(data) end,
+      set = function(_, v) SaveFlow("blizzardFlowGridType", v) end,
+    },
+    blizzardFlowPerRow = {
+      type = "range", control = "WeakAurasSpinBox", width = WeakAuras.normalWidth, order = 0.632,
+      name = function() return Display.GridType(data):find("^[RLH]") and L["Row Width"] or L["Column Height"] end,
+      min = 1, softMax = 20, step = 1,
+      hidden = function() return FlowOff() or not Display.FlowGrid(data) end,
+      get = function() return data.blizzardFlowPerRow or 6 end,
+      set = function(_, v) SaveFlow("blizzardFlowPerRow", v) end,
+    },
+    blizzardFlowRowSpace = {
+      type = "range", control = "WeakAurasSpinBox", width = WeakAuras.normalWidth, order = 0.633, name = L["Row Space"],
+      softMin = 0, softMax = 300, step = 1,
+      hidden = function() return FlowOff() or not Display.FlowGrid(data) end,
+      get = function() return (Display.GridSpaces(data)) end,
+      set = function(_, v) SaveFlow("blizzardFlowRowSpace", v) end,
+    },
+    blizzardFlowColumnSpace = {
+      type = "range", control = "WeakAurasSpinBox", width = WeakAuras.normalWidth, order = 0.634, name = L["Column Space"],
+      softMin = 0, softMax = 300, step = 1,
+      hidden = function() return FlowOff() or not Display.FlowGrid(data) end,
+      get = function() return select(2, Display.GridSpaces(data)) end,
+      set = function(_, v) SaveFlow("blizzardFlowColumnSpace", v) end,
     },
     blizzardFlowUseFrames = {
-      type = "toggle", width = ForeverAuras.normalWidth, order = 0.62, name = L["Group by Frame"], hidden = FlowOff,
+      type = "toggle", width = WeakAuras.normalWidth, order = 0.62, name = L["Group by Frame"], hidden = FlowOff,
       desc = "Show the auras on each unit's frame or nameplate. The Position and Size settings place them on the frame.",
       get = function() return data.blizzardFlowFrames ~= nil end,
       set = function(_, v) SaveFlow("blizzardFlowFrames", v and "UNITFRAME" or nil) end,
     },
     blizzardFlowFrames = {
-      type = "select", width = ForeverAuras.normalWidth, order = 0.63, name = L["Group by Frame"], hidden = FlowOff,
+      type = "select", width = WeakAuras.normalWidth, order = 0.63, name = L["Group by Frame"], hidden = FlowOff,
       values = {UNITFRAME = "Unit Frames", NAMEPLATE = "Nameplates"}, sorting = {"UNITFRAME", "NAMEPLATE"},
       disabled = function() return data.blizzardFlowFrames == nil end,
       get = function() return data.blizzardFlowFrames end,
       set = function(_, v) SaveFlow("blizzardFlowFrames", v) end,
     },
     blizzardFlowSpacing = {
-      type = "range", control = "ForeverAurasSpinBox", width = ForeverAuras.normalWidth, order = 0.64, name = L["Space"],
-      min = -20, softMax = 50, step = 1, hidden = FlowOff,
+      type = "range", control = "WeakAurasSpinBox", width = WeakAuras.normalWidth, order = 0.64, name = L["Space"],
+      min = -20, softMax = 50, step = 1, hidden = function() return FlowOff() or Display.FlowGrid(data) end,
       get = function() return data.blizzardFlowSpacing or 2 end,
       set = function(_, v) SaveFlow("blizzardFlowSpacing", v) end,
     },
-    blizzardFlowSpacingSpace = {type = "description", name = "", order = 0.645, width = ForeverAuras.normalWidth, hidden = FlowOff},
+    blizzardFlowSpacingSpace = {type = "description", name = "", order = 0.645, width = WeakAuras.normalWidth,
+      hidden = function() return FlowOff() or Display.FlowGrid(data) end},
     blizzardFlowSort = {
-      type = "select", width = ForeverAuras.normalWidth, order = 0.65, name = L["Sort"], hidden = FlowOff,
+      type = "select", width = WeakAuras.normalWidth, order = 0.65, name = L["Sort"], hidden = FlowOff,
       values = function()
         local values = CopyTable(Display.sortMethods)
         values.UnitFrameDebuff = nil
@@ -601,18 +645,18 @@ local function createOptions(id, data)
       set = function(_, v) SaveFlow("blizzardFlowSort", v) end,
     },
     blizzardFlowReverse = {
-      type = "toggle", width = ForeverAuras.normalWidth, order = 0.66, name = "Reverse Sort", hidden = FlowOff,
+      type = "toggle", width = WeakAuras.normalWidth, order = 0.66, name = "Reverse Sort", hidden = FlowOff,
       get = function() return data.blizzardFlowReverse or false end,
       set = function(_, v) SaveFlow("blizzardFlowReverse", v or nil) end,
     },
     blizzardFlowUseLimit = {
-      type = "toggle", width = ForeverAuras.normalWidth, order = 0.67, name = L["Limit"], hidden = FlowOff,
+      type = "toggle", width = WeakAuras.normalWidth, order = 0.67, name = L["Limit"], hidden = FlowOff,
       desc = "The most auras each display shows.",
       get = function() return data.blizzardFlowUseLimit or false end,
       set = function(_, v) SaveFlow("blizzardFlowUseLimit", v or nil) end,
     },
     blizzardFlowLimit = {
-      type = "range", control = "ForeverAurasSpinBox", width = ForeverAuras.normalWidth, order = 0.68, name = L["Limit"],
+      type = "range", control = "WeakAurasSpinBox", width = WeakAuras.normalWidth, order = 0.68, name = L["Limit"],
       min = 1, softMax = 40, step = 1, hidden = FlowOff,
       disabled = function() return not data.blizzardFlowUseLimit end,
       get = function() return data.blizzardFlowLimit or 5 end,
@@ -620,7 +664,7 @@ local function createOptions(id, data)
     },
     groupIcon = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Group Icon"],
       desc = L["Set Thumbnail Icon"],
       order = 0.50,
@@ -629,8 +673,8 @@ local function createOptions(id, data)
       end,
       set = function(info, v)
         data.groupIcon = v
-        ForeverAuras.Add(data)
-        ForeverAuras.UpdateThumbnail(data)
+        WeakAuras.Add(data)
+        WeakAuras.UpdateThumbnail(data)
       end
     },
     chooseIcon = {
@@ -643,14 +687,14 @@ local function createOptions(id, data)
        end,
        imageWidth = 24,
        imageHeight = 24,
-       control = "ForeverAurasIcon",
+       control = "WeakAurasIcon",
        image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     -- Alignment/Distribute options are added below
     scale = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Group Scale"],
       order = 45,
       min = 0.05,
@@ -666,14 +710,14 @@ local function createOptions(id, data)
         data.xOffset = data.xOffset/(1-change)
         data.yOffset = data.yOffset/(1-change)
         data.scale = v
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.ResetMoverSizer();
       end
     },
     alpha = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Group Alpha"],
       order = 46,
       min = 0,
@@ -683,15 +727,15 @@ local function createOptions(id, data)
     },
     sharedFrameLevel = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Flat Framelevels"],
       desc = L["The group and all direct children will share the same base frame level."],
       order = 47,
       set = function(info, v)
         data.sharedFrameLevel = v
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
         for parent in OptionsPrivate.Private.TraverseParents(data) do
-          ForeverAuras.Add(parent)
+          WeakAuras.Add(parent)
         end
       end
     },
@@ -705,7 +749,7 @@ local function createOptions(id, data)
   local hasSubGroups = false
   local hasDynamicSubGroup = false
   for index, childId in pairs(data.controlledChildren) do
-    local childData = ForeverAuras.GetData(childId);
+    local childData = WeakAuras.GetData(childId);
     if childData.controlledChildren then
       hasSubGroups = true
     end

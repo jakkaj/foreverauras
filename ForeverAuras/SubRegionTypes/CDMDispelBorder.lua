@@ -1,4 +1,4 @@
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local function defaults(parentType)
   -- Borders fit the parent rectangle by default; icons retain their square corner size.
@@ -43,6 +43,6 @@ local function release(region)
   region:Hide()
 end
 local function supports(kind) return kind == "icon" or kind == "aurabar" or kind == "progresstexture" end
-ForeverAuras.RegisterSubRegionType("subcdmdispelborder", "Dispel Type Border", supports, create, modify,
+WeakAuras.RegisterSubRegionType("subcdmdispelborder", "Dispel Type Border", supports, create, modify,
   function(region) region:Show() end, release, defaults, nil,
   {dispelVisible = {display = "Visibility", setter = "SetVisible", type = "bool", defaultProperty = true}})

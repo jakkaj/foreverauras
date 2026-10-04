@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
@@ -8,7 +8,7 @@ local Private = select(2, ...)
 local LCG = LibStub("LibCustomGlow-1.0-foreverauras")
 
 local MSQ = LibStub("Masque", true)
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local default = function(parentType)
   local options = {
@@ -479,5 +479,5 @@ local function addDefaultsForNewAura(data)
   end
 end
 
-ForeverAuras.RegisterSubRegionType("subglow", L["Glow"], supports, create, modify, onAcquire, onRelease,
+WeakAuras.RegisterSubRegionType("subglow", L["Glow"], supports, create, modify, onAcquire, onRelease,
                                 default, addDefaultsForNewAura, properties)

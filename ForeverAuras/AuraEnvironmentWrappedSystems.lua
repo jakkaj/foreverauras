@@ -1,10 +1,10 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 --- @class AuraEnvironmentWrappedSystem
 --- @field Get fun(systemName: string, id: auraId, cloneId: string?): any
@@ -50,7 +50,7 @@ local function Wrap(id, cloneId, system, funcs)
       local oldArg = select(data.arg, ...)
       if type(oldArg) == "function" then
         packed[data.arg] = function(...)
-          local region = ForeverAuras.GetRegion(id, cloneId)
+          local region = WeakAuras.GetRegion(id, cloneId)
           if region then
             Private.ActivateAuraEnvironmentForRegion(region)
             xpcall(oldArg, Private.GetErrorHandlerId(id, L["Callback function"]), ...)

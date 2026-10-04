@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-29.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
@@ -38,7 +38,7 @@ local function create(parent)
   region:SetHeight(2);
 
   -- Border region
-  local border = CreateFrame("Frame", nil, region, "BackdropTemplateForeverAuras")
+  local border = CreateFrame("Frame", nil, region, "BackdropTemplateWeakAuras")
   region.border = border;
 
   Private.regionPrototype.create(region);
@@ -111,7 +111,7 @@ local function modify(parent, region, data)
     if not self.boundingRect then
       local leftest, rightest, lowest, highest = 0, 0, 0, 0;
       for child in Private.TraverseLeafs(data) do
-        local childRegion = ForeverAuras.GetRegion(child.id)
+        local childRegion = WeakAuras.GetRegion(child.id)
         if(child) then
           local blx, bly, trx, try = getRect(child, childRegion);
           leftest = math.min(leftest, blx);
@@ -135,7 +135,7 @@ local function modify(parent, region, data)
 
   local hasDynamicSubGroups = false
   for index, childId in pairs(data.controlledChildren) do
-    local childData = ForeverAuras.GetData(childId);
+    local childData = WeakAuras.GetData(childId);
     if childData.regionType == "dynamicgroup" then
       hasDynamicSubGroups = true
       break;
@@ -203,7 +203,7 @@ local function modify(parent, region, data)
   -- Modern Aura Group: re-anchor its Aura (Modern) children in the current order.
   if data.blizzardFlow and Private.BlizzardAuraDisplay and Private.BlizzardAuraDisplay.RechainFlow then
     Private.BlizzardAuraDisplay.RechainFlow(data)
-    if ForeverAuras.IsOptionsOpen() then Private.BlizzardAuraDisplay.ArrangeFlowPreview(data) end
+    if WeakAuras.IsOptionsOpen() then Private.BlizzardAuraDisplay.ArrangeFlowPreview(data) end
   end
 end
 

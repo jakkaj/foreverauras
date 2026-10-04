@@ -18,7 +18,7 @@
 -- gets an invisible "shadow" copy at half its size, with the same filters and
 -- unit. The shadows are chained backwards from the centre point; their far
 -- end is where the visible row starts, so the row stays centred.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local Display = Private.BlizzardAuraDisplay
 
@@ -51,7 +51,7 @@ end
 
 -- The Modern Aura Group this display belongs to, or nil.
 function Display.FlowGroup(data)
-  local parent = data and data.parent and ForeverAuras.GetData(data.parent)
+  local parent = data and data.parent and WeakAuras.GetData(data.parent)
   if parent and parent.regionType == "group" and parent.blizzardFlow then return parent end
 end
 
@@ -391,7 +391,7 @@ end
 -- shown while the options are open, as for a Dynamic Group grouped by
 -- nameplate. Released when the group no longer uses it.
 local function NameplatePreview(group)
-  if not (Private.ensurePRDFrame and ForeverAuras.IsOptionsOpen()) then return end
+  if not (Private.ensurePRDFrame and WeakAuras.IsOptionsOpen()) then return end
   Private.ensurePRDFrame()
   local frame = Private.personalRessourceDisplayFrame
   if frame and frame.anchorFrame then frame:anchorFrame(group.id, "NAMEPLATE") end
@@ -504,7 +504,7 @@ local function AlignedPoints(group, g)
 end
 
 local function UnitAnchor(mode, unit)
-  local frame = mode == "UNITFRAME" and ForeverAuras.GetUnitFrame(unit) or (mode == "NAMEPLATE" and C_NamePlate.GetNamePlateForUnit(unit))
+  local frame = mode == "UNITFRAME" and WeakAuras.GetUnitFrame(unit) or (mode == "NAMEPLATE" and C_NamePlate.GetNamePlateForUnit(unit))
   if frame and not frame:IsForbidden() then return frame end
 end
 
@@ -593,7 +593,7 @@ function Display.FlowPreviewUnits(data)
   if Display.FlowFrameMode(data) ~= "UNITFRAME" then return {false} end
   local units = {}
   for _, unit in ipairs(Display.UnitTokens(Display.GetTrigger(data) or {})) do
-    if UnitExists(unit) and ForeverAuras.GetUnitFrame(unit) then
+    if UnitExists(unit) and WeakAuras.GetUnitFrame(unit) then
       units[#units + 1] = unit
       if #units >= MAX_PREVIEW_UNITS then break end
     end
@@ -609,7 +609,7 @@ local function PreviewFrame(group, unit)
   if group.blizzardFlowFrames == "NAMEPLATE" then
     frame = NameplatePreview(group)
   elseif unit then
-    frame = ForeverAuras.GetUnitFrame(unit)
+    frame = WeakAuras.GetUnitFrame(unit)
   end
   if frame and not frame:IsForbidden() then return frame end
 end
@@ -619,10 +619,10 @@ end
 -- by frame. nil when the group is not grouped by frame or the options are closed.
 function Display.FlowPreviewFrame(group)
   local mode = group and group.blizzardFlow and group.blizzardFlowFrames
-  if (mode ~= "UNITFRAME" and mode ~= "NAMEPLATE") or not ForeverAuras.IsOptionsOpen() then return end
+  if (mode ~= "UNITFRAME" and mode ~= "NAMEPLATE") or not WeakAuras.IsOptionsOpen() then return end
   local unit
   for _, childID in ipairs(group.controlledChildren or {}) do
-    local child = ForeverAuras.GetData(childID)
+    local child = WeakAuras.GetData(childID)
     if child and Display.Enabled(child) then
       unit = Display.FlowPreviewUnits(child)[1]
       break
@@ -636,6 +636,11 @@ end
 -- stand-in) when grouped by frame, else starting at the first display.
 function Display.ArrangeFlowPreview(group)
   if not group then return end
+  if Display.FlowGrid(group) then
+    Display.ReleaseNameplatePreview(group)
+    Display.ArrangeGridPreview(group)
+    return
+  end
   local mode = group.blizzardFlowFrames
   local framed = mode == "UNITFRAME" or mode == "NAMEPLATE"
   if mode ~= "NAMEPLATE" then Display.ReleaseNameplatePreview(group) end
@@ -730,6 +735,8 @@ end
 -- Re-anchors every child of a Modern Aura Group in the group's child order.
 function Display.RechainFlow(group)
   if not group then return end
+  Display.RebuildGrid(group)
+  if Display.FlowGrid(group) then return end
   if group.blizzardFlowFrames == "UNITFRAME" or group.blizzardFlowFrames == "NAMEPLATE" then
     if not InCombatLockdown() then
       for _, childID in ipairs(group.controlledChildren or {}) do
@@ -737,8 +744,8 @@ function Display.RechainFlow(group)
           staleRebuilds[childID] = true
           C_Timer.After(0, function()
             staleRebuilds[childID] = nil
-            local child = ForeverAuras.GetData(childID)
-            if child and not InCombatLockdown() and StaleGrowth(group, childID) then ForeverAuras.Add(child) end
+            local child = WeakAuras.GetData(childID)
+            if child and not InCombatLockdown() and StaleGrowth(group, childID) then WeakAuras.Add(child) end
           end)
         end
       end

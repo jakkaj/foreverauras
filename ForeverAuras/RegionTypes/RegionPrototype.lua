@@ -1,13 +1,13 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras;
-local L = ForeverAuras.L;
+---@class WeakAuras
+local WeakAuras = WeakAuras;
+local L = WeakAuras.L;
 local GetAtlasInfo = C_Texture and C_Texture.GetAtlasInfo or GetAtlasInfo
 
 Private.regionPrototype = {};
@@ -170,14 +170,14 @@ function Private.regionPrototype.AddProperties(properties, defaultsForRegion)
       display = L["Minimum Progress"],
       setter = "SetAdjustedMin",
       type = "string",
-      validate = ForeverAuras.ValidateNumericOrPercent,
+      validate = WeakAuras.ValidateNumericOrPercent,
     }
 
     properties["adjustedMax"] = {
       display = L["Maximum Progress"],
       setter = "SetAdjustedMax",
       type = "string",
-      validate = ForeverAuras.ValidateNumericOrPercent,
+      validate = WeakAuras.ValidateNumericOrPercent,
     }
   end
 end
@@ -185,7 +185,7 @@ end
 local function SoundRepeatStop(self)
   Private.StartProfileSystem("sound");
   if (self.soundRepeatTimer) then
-    ForeverAuras.timer:CancelTimer(self.soundRepeatTimer);
+    WeakAuras.timer:CancelTimer(self.soundRepeatTimer);
     self.soundRepeatTimer = nil;
   end
   Private.StopProfileSystem("sound");
@@ -208,14 +208,14 @@ local function SoundPlayHelper(self)
     return;
   end
 
-  if (ForeverAuras.IsOptionsOpen() or Private.SquelchingActions() or ForeverAuras.InLoadingScreen()) then
+  if (WeakAuras.IsOptionsOpen() or Private.SquelchingActions() or WeakAuras.InLoadingScreen()) then
     Private.StopProfileSystem("sound");
     return;
   end
 
   if options.sound == " Fojji" then
     local file, message = Private.ResolveFojjiRecordedSound(options.sound_fojji or "")
-    local data = ForeverAuras.GetData(self.id)
+    local data = WeakAuras.GetData(self.id)
     if data then Private.AuraWarnings.UpdateWarning(data.uid, "fojji_recorded_sound", message and "warning" or nil, message) end
     if file then
       local ok, _, handle = pcall(PlaySoundFile, file, options.sound_channel or "Master")
@@ -263,7 +263,7 @@ local function hasSound(options)
 end
 
 local function SoundPlay(self, options)
-  if (not options or ForeverAuras.IsOptionsOpen()) then
+  if (not options or WeakAuras.IsOptionsOpen()) then
     return
   end
   Private.StartProfileSystem("sound");
@@ -281,20 +281,20 @@ local function SoundPlay(self, options)
 
   local loop = options.do_loop or options.sound_type == "Loop";
   if (loop and options.sound_repeat and options.sound_repeat < Private.maxTimerDuration) then
-    self.soundRepeatTimer = ForeverAuras.timer:ScheduleRepeatingTimer(SoundPlayHelper, options.sound_repeat, self);
+    self.soundRepeatTimer = WeakAuras.timer:ScheduleRepeatingTimer(SoundPlayHelper, options.sound_repeat, self);
   end
   Private.StopProfileSystem("sound");
 end
 
 local function SendChat(self, options)
-  if (not options or ForeverAuras.IsOptionsOpen()) then
+  if (not options or WeakAuras.IsOptionsOpen()) then
     return
   end
   Private.HandleChatAction(options.message_type, options.message, options.message_dest, options.message_dest_isunit, options.message_channel, options.r, options.g, options.b, self, {customFunc = options.message_custom}, nil, options.message_formaters);
 end
 
 local function RunCode(self, func)
-  if func and not ForeverAuras.IsOptionsOpen() then
+  if func and not WeakAuras.IsOptionsOpen() then
     Private.ActivateAuraEnvironment(self.id, self.cloneId, self.state, self.states);
     xpcall(func, Private.GetErrorHandlerId(self.id, L["Custom Condition Code"]));
     Private.ActivateAuraEnvironment(nil);
@@ -302,7 +302,7 @@ local function RunCode(self, func)
 end
 
 local function GlowExternal(self, options)
-  if (not options or ForeverAuras.IsOptionsOpen()) then
+  if (not options or WeakAuras.IsOptionsOpen()) then
     return
   end
   Private.HandleGlowAction(options, self)
@@ -461,7 +461,7 @@ local function UpdateProgressFromState(self, minMaxConfig, state, progressSource
   local useAdditionalProgress = progressSource[9]
 
   if state and progressType == "timer" and property == "expirationTime"
-     and state.progressType == "durationObject" and ForeverAuras.IsDurationObject(state.durationObject) then
+     and state.progressType == "durationObject" and WeakAuras.IsDurationObject(state.durationObject) then
     progressType = "durationObject"
   end
   if progressType ~= "durationObject" then
@@ -667,7 +667,7 @@ local function UpdateProgressFromAuto(self, minMaxConfig, state)
     UpdateProgressFromState(self, minMaxConfig, state, autoTimedProgressSource)
   elseif state.progressType == "static" then
     UpdateProgressFromState(self, minMaxConfig, state, autoStaticProgressSource)
-  elseif state.progressType == "durationObject" and ForeverAuras.IsDurationObject(state.durationObject) then
+  elseif state.progressType == "durationObject" and WeakAuras.IsDurationObject(state.durationObject) then
     UpdateProgressFromState(self, minMaxConfig, state, autoDurationObjectProgressSource)
   else
     self.minProgress, self.maxProgress = nil, nil
@@ -759,7 +759,7 @@ local function SetAnimAlpha(self, alpha)
   end
   self.animAlpha = alpha;
   local errorHandler = Private.GetErrorHandlerId(self.id, L["Custom Fade Animation"])
-  if (ForeverAuras.IsOptionsOpen()) then
+  if (WeakAuras.IsOptionsOpen()) then
     xpcall(self.SetAlpha, errorHandler, self, max(self.animAlpha or self.alpha or 1, 0.5))
   else
     xpcall(self.SetAlpha, errorHandler, self, self.animAlpha or self.alpha or 1)
@@ -925,7 +925,7 @@ function Private.regionPrototype.modify(parent, region, data)
   region:SetOffsetAnim(0, 0);
 
   if data.anchorFrameType == "CUSTOM" and data.customAnchor then
-    region.customAnchorFunc = ForeverAuras.LoadFunction("return " .. data.customAnchor, data.id)
+    region.customAnchorFunc = WeakAuras.LoadFunction("return " .. data.customAnchor, data.id)
   else
     region.customAnchorFunc = nil
   end
@@ -1074,7 +1074,7 @@ function Private.regionPrototype.AddExpandFunction(data, region, cloneId, parent
   function region:ClickToPick()
     region:EnableMouse(true)
     region:SetScript("OnMouseDown", function()
-      ForeverAuras.PickDisplay(region.id, nil, true)
+      WeakAuras.PickDisplay(region.id, nil, true)
     end)
     if region.GetFrameStrata and region:GetFrameStrata() == "TOOLTIP" then
       region:SetFrameStrata("HIGH")

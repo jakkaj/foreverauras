@@ -4,10 +4,11 @@ local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
----@class ForeverAuras
-ForeverAuras = {}
+---@class WeakAuras
+WeakAuras = {}
+ForeverAuras = WeakAuras
 ---@type table<string, string>
-ForeverAuras.L = {}
+WeakAuras.L = {}
 Private.frames = {}
 
 --- @alias uid string
@@ -380,27 +381,29 @@ Private.frames = {}
 --- @class AceTimer-3.0
 --- @field Embed fun(self: AceTimer-3.0, t: table)
 
-ForeverAuras.normalWidth = 1.3
-ForeverAuras.halfWidth = ForeverAuras.normalWidth / 2
-ForeverAuras.doubleWidth = ForeverAuras.normalWidth * 2
+WeakAuras.normalWidth = 1.3
+WeakAuras.halfWidth = WeakAuras.normalWidth / 2
+WeakAuras.doubleWidth = WeakAuras.normalWidth * 2
 local versionStringFromToc = C_AddOns.GetAddOnMetadata("ForeverAuras", "Version")
-local versionString = "0.44.2-BETA.1"
+local versionString = "0.50.3-BETA.1"
 local buildTime = "2026-09-29"
 
 -- Prerelease labels are case-insensitive; packages use the requested BETA spelling.
 if not versionString:lower():find("beta", 1, true) then
-  ForeverAuras.buildType = "release"
+  WeakAuras.buildType = "release"
 else
-  ForeverAuras.buildType = "beta"
+  WeakAuras.buildType = "beta"
 end
 
-ForeverAuras.versionString = versionStringFromToc
-ForeverAuras.buildTime = buildTime
-ForeverAuras.newFeatureString = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
-ForeverAuras.BuildInfo = select(4, GetBuildInfo())
+WeakAuras.versionString = versionStringFromToc
+WeakAuras.buildTime = buildTime
+WeakAuras.newFeatureString = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
+WeakAuras.BuildInfo = select(4, GetBuildInfo())
 
-ForeverAuras.prettyPrint = function(...)
-  print("|cff9900ffForeverAuras:|r ", ...)
+WeakAuras.displayName = "WeakAuras - ForeverAuras"
+
+WeakAuras.prettyPrint = function(...)
+  print("|cff9900ffWeakAuras - ForeverAuras:|r ", ...)
 end
 
 -- Force enable ForeverAurasCompanion and Archive because some addon managers interfere with it
@@ -408,16 +411,16 @@ C_AddOns.EnableAddOn("ForeverAurasCompanion")
 C_AddOns.EnableAddOn("ForeverAurasArchive")
 
 local libsAreOk = true
-function ForeverAuras.IsLibsOK()
+function WeakAuras.IsLibsOK()
   return libsAreOk
 end
 
 local clientVersion = GetBuildInfo()
-local isForeverClient = type(clientVersion) == "string" and clientVersion:match("^1%.60%.") ~= nil and ForeverAuras.BuildInfo >= 16000 and ForeverAuras.BuildInfo < 16100
+local isForeverClient = type(clientVersion) == "string" and clientVersion:match("^1%.60%.") ~= nil and WeakAuras.BuildInfo >= 16000 and WeakAuras.BuildInfo < 16100
 
 if not isForeverClient then
   libsAreOk = false
-  StaticPopupDialogs["ForeverAuras_UNSUPPORTED_CLIENT"] = {
+  StaticPopupDialogs["WeakAuras_UNSUPPORTED_CLIENT"] = {
     text = "ForeverAuras supports World of Warcraft: Forever only.",
     button1 = OKAY,
     timeout = 0,
@@ -425,7 +428,7 @@ if not isForeverClient then
     hideOnEscape = false,
     preferredIndex = 5,
   }
-  StaticPopup_Show("ForeverAuras_UNSUPPORTED_CLIENT")
+  StaticPopup_Show("WeakAuras_UNSUPPORTED_CLIENT")
   return
 end
 
@@ -451,29 +454,29 @@ do
     tinsert(LibStubLibs, "LibSpecialization-ForeverAuras")
     if AddonCompartmentFrame and AddonCompartmentFrame.RegisterAddon then
     AddonCompartmentFrame:RegisterAddon({
-      text = AddonName,
-      icon = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\foreverauras_logo.tga",
+      text = WeakAuras.displayName,
+      icon = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\foreverauras_logo_64.tga",
       registerForAnyClick = true,
       notCheckable = true,
       func = function(button, menuInputData, menu)
         local mouseButton = menuInputData.buttonName
         if mouseButton == "LeftButton" then
           if IsShiftKeyDown() then
-            if not (ForeverAuras.IsOptionsOpen()) then
-              ForeverAuras.Toggle()
+            if not (WeakAuras.IsOptionsOpen()) then
+              WeakAuras.Toggle()
             end
           else
-            ForeverAuras.OpenOptions()
+            WeakAuras.OpenOptions()
           end
         elseif mouseButton == "MiddleButton" then
-          ForeverAuras.ToggleMinimap()
+          WeakAuras.ToggleMinimap()
         else
-          ForeverAurasProfilingFrame:Toggle()
+          WeakAurasProfilingFrame:Toggle()
         end
       end,
       funcOnEnter = function(button)
         MenuUtil.ShowTooltip(button, function(tooltip)
-          ForeverAuras.GenerateTooltip(true, tooltip)
+          WeakAuras.GenerateTooltip(true, tooltip)
         end)
       end,
       funcOnLeave = function(button)
@@ -485,19 +488,19 @@ do
   -- Archivist is embedded in the addon namespace, not installed globally.
   if not Private.Archivist then
     libsAreOk = false
-    ForeverAuras.prettyPrint("Missing library:", "Archivist")
+    WeakAuras.prettyPrint("Missing library:", "Archivist")
   end
   for _, lib in ipairs(StandAloneLibs) do
     if not _G[lib] then
         libsAreOk = false
-        ForeverAuras.prettyPrint("Missing library:", lib)
+        WeakAuras.prettyPrint("Missing library:", lib)
     end
   end
   if LibStub then
     for _, lib in ipairs(LibStubLibs) do
         if not LibStub:GetLibrary(lib, true) then
           libsAreOk = false
-          ForeverAuras.prettyPrint("Missing library:", lib)
+          WeakAuras.prettyPrint("Missing library:", lib)
         end
     end
   else
@@ -511,7 +514,7 @@ end
 
 if not libsAreOk then
   C_Timer.After(1, function()
-    ForeverAuras.prettyPrint("ForeverAuras is missing necessary libraries. Please reinstall a proper package.")
+    WeakAuras.prettyPrint("ForeverAuras is missing necessary libraries. Please reinstall a proper package.")
   end)
 end
 
@@ -550,23 +553,23 @@ Private.ExecEnv = {}
 -- If ForeverAuras shuts down due to being installed on the wrong target, keep the bindings from erroring
 --- @type fun(type: string)
 ---@diagnostic disable-next-line: duplicate-set-field
-function ForeverAuras.StartProfile(_)
+function WeakAuras.StartProfile(_)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
-function ForeverAuras.StopProfile()
+function WeakAuras.StopProfile()
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
-function ForeverAuras.PrintProfile()
+function WeakAuras.PrintProfile()
 end
 
-function ForeverAuras.CountWagoUpdates()
+function WeakAuras.CountWagoUpdates()
   -- The Companion may query this fork; it does not provide updates for it.
   return 0
 end
 
-function ForeverAuras.PurgeSecrets(tbl)
+function WeakAuras.PurgeSecrets(tbl)
   for k, v in pairs(tbl) do
     if issecretvalue(v) then
       tbl[k] = nil
@@ -574,7 +577,7 @@ function ForeverAuras.PurgeSecrets(tbl)
   end
 end
 
-function ForeverAuras.IsDurationObject(duration)
+function WeakAuras.IsDurationObject(duration)
   local t = type(duration)
   if t == "userdata" and duration.GetRemainingDuration then
     return true

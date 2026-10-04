@@ -59,15 +59,15 @@
       bigStep (optional) -> step size of the slider. Defaults to 0.05
       step (optional) -> like bigStep, but applies to number input as well
 ]]
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local tinsert, tremove, tconcat = table.insert, table.remove, table.concat
 local conflictBlue = "|cFF4080FF"
@@ -409,9 +409,9 @@ local function set(data, option, key)
       local childOption = optionData.options[optionData.index]
       local childData = optionData.data
       childOption[key] = value
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -421,9 +421,9 @@ local function setUser(data, option)
       local childData = optionData.data
       local childConfig = optionData.config
       childConfig[option.key] = value
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -434,9 +434,9 @@ local function setStr(data, option, key)
       local childOption = optionData.options[optionData.index]
       local childData = optionData.data
       childOption[key] = value
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -451,17 +451,17 @@ local function setNum(data, option, key, required)
         local childOption = optionData.options[optionData.index]
         local childData = optionData.data
         childOption[key] = num
-        ForeverAuras.Add(childData)
+        WeakAuras.Add(childData)
       end
     elseif not required then
       for id, optionData in pairs(option.references) do
         local childOption = optionData.options[optionData.index]
         local childData = optionData.data
         childOption[key] = nil
-        ForeverAuras.Add(childData)
+        WeakAuras.Add(childData)
       end
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -474,9 +474,9 @@ local function setUserNum(data, option)
         local childData = optionData.data
         local childConfig = optionData.config
         childConfig[option.key] = num
-        ForeverAuras.Add(childData)
+        WeakAuras.Add(childData)
       end
-      ForeverAuras.ClearAndUpdateOptions(data.id, true)
+      WeakAuras.ClearAndUpdateOptions(data.id, true)
     end
   end
 end
@@ -488,9 +488,9 @@ local function setColor(data, option, key)
       local childOption = optionData.options[optionData.index]
       local childData = optionData.data
       childOption[key] = color
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -501,9 +501,9 @@ local function setUserColor(data, option)
       local childData = optionData.data
       local childConfig = optionData.config
       childConfig[option.key] = color
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -513,9 +513,9 @@ local function setSelectDefault(data, option, key)
       local childOption = optionData.options[optionData.index]
       local childData = optionData.data
       childOption.default = min(value, #childOption.values)
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -526,9 +526,9 @@ local function setArrayStr(data, option, array, index)
       local childOption = optionData.options[optionData.index]
       local childData = optionData.data
       childOption[array][index] = value
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -566,7 +566,7 @@ typeControlAdders = {
     local option = options[i]
     args[prefix .. "default"] = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = name(option, "default", L["Default"]),
       desc = desc(option, "default"),
       order = order(),
@@ -583,9 +583,9 @@ typeControlAdders = {
           local childOption = optionData.options[optionData.index]
           local childData = optionData.data
           childOption.default = val
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
   end,
@@ -593,7 +593,7 @@ typeControlAdders = {
     local option = options[i]
     args[prefix .. "default"] = {
       type = "input",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = name(option, "default", L["Default"]),
       desc = desc(option, "default"),
       order = order(),
@@ -602,7 +602,7 @@ typeControlAdders = {
     }
     args[prefix .. "useLength"] = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = name(option, "useLength", L["Max Length"]),
       desc = desc(option, "useLength"),
       order = order(),
@@ -611,8 +611,8 @@ typeControlAdders = {
     }
     args[prefix .. "length"] = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = name(option, "length", L["Length"]),
       desc = desc(option, "length"),
       order = order(),
@@ -627,7 +627,7 @@ typeControlAdders = {
     }
     args[prefix .. "multiline"] = {
       type = "toggle",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = name(option, "multiline", L["Large Input"]),
       desc = desc(option, "multiline", L["If checked, then the user will see a multi line edit box. This is useful for inputting large amounts of text."]),
       order = order(),
@@ -639,7 +639,7 @@ typeControlAdders = {
     local option = options[i]
     args[prefix .. "default"] = {
       type = "input",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = name(option, "default", L["Default"]),
       desc = desc(option, "default"),
       order = order(),
@@ -648,7 +648,7 @@ typeControlAdders = {
     }
     args[prefix .. "min"] = {
       type = "input",
-      width = ForeverAuras.normalWidth * 2 / 3,
+      width = WeakAuras.normalWidth * 2 / 3,
       name = name(option, "min", L["Min"]),
       desc = desc(option, "min"),
       order = order(),
@@ -657,7 +657,7 @@ typeControlAdders = {
     }
     args[prefix .. "max"] = {
       type = "input",
-      width = ForeverAuras.normalWidth * 2 / 3,
+      width = WeakAuras.normalWidth * 2 / 3,
       name = name(option, "max", L["Max"]),
       desc = desc(option, "min"),
       order = order(),
@@ -666,7 +666,7 @@ typeControlAdders = {
     }
     args[prefix .. "step"] = {
       type = "input",
-      width = ForeverAuras.normalWidth * 2 / 3,
+      width = WeakAuras.normalWidth * 2 / 3,
       name = name(option, "step", L["Step Size"]),
       desc = desc(option, "step"),
       order = order(),
@@ -698,8 +698,8 @@ typeControlAdders = {
     step = option.step
     args[prefix .. "default"] = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = name(option, "default", L["Default"]),
       desc = desc(option, "default"),
       order = order(),
@@ -715,7 +715,7 @@ typeControlAdders = {
 
     args[prefix .. "min"] = {
       type = "input",
-      width = ForeverAuras.normalWidth * 2 / 3,
+      width = WeakAuras.normalWidth * 2 / 3,
       name = name(option, "min", L["Min"]),
       desc = desc(option, "min"),
       order = order(),
@@ -725,7 +725,7 @@ typeControlAdders = {
 
     args[prefix .. "max"] = {
       type = "input",
-      width = ForeverAuras.normalWidth * 2 / 3,
+      width = WeakAuras.normalWidth * 2 / 3,
       name = name(option, "max", L["Max"]),
       desc = desc(option, "max"),
       order = order(),
@@ -735,7 +735,7 @@ typeControlAdders = {
 
     args[prefix .. "step"] = {
       type = "input",
-      width = ForeverAuras.normalWidth * 2 / 3,
+      width = WeakAuras.normalWidth * 2 / 3,
       name = name(option, "step", L["Step Size"]),
       desc = desc(option, "step"),
       order = order(),
@@ -745,7 +745,7 @@ typeControlAdders = {
 
     args[prefix .. "softmin"] = {
       type = "input",
-      width = ForeverAuras.normalWidth * 2 / 3,
+      width = WeakAuras.normalWidth * 2 / 3,
       name = name(option, "softMin", L["Soft Min"]),
       desc = desc(option, "softMin"),
       order = order(),
@@ -755,7 +755,7 @@ typeControlAdders = {
 
     args[prefix .. "softmax"] = {
       type = "input",
-      width = ForeverAuras.normalWidth * 2 / 3,
+      width = WeakAuras.normalWidth * 2 / 3,
       name = name(option, "softMax", L["Soft Max"]),
       desc = desc(option, "softMax"),
       order = order(),
@@ -765,7 +765,7 @@ typeControlAdders = {
 
     args[prefix .. "bigstep"] = {
       type = "input",
-      width = ForeverAuras.normalWidth * 2 / 3,
+      width = WeakAuras.normalWidth * 2 / 3,
       name = name(option, "bigStep", L["Slider Step Size"]),
       desc = desc(option, "bigStep"),
       order = order(),
@@ -779,7 +779,7 @@ typeControlAdders = {
     args[prefix .. "name"] = nil
     args[prefix .. "fontsize"] = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = name(option, "fontSize", L["Font Size"]),
       desc = desc(option, "fontSize"),
       order = order(),
@@ -789,7 +789,7 @@ typeControlAdders = {
     }
     args[prefix .. "descinput"] = {
       type = "input",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = name(option, "text", L["Description Text"]),
       desc = desc(option, "text"),
       order = order(),
@@ -802,7 +802,7 @@ typeControlAdders = {
     local option = options[i]
     args[prefix .. "default"] = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       hasAlpha = true,
       name = name(option, "default", L["Default"]),
       desc = descColor(option, "default"),
@@ -824,7 +824,7 @@ typeControlAdders = {
     end
     args[prefix .. "default"] = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = name(option, "default", L["Default"]),
       desc = desc(option, "default"),
       order = order(),
@@ -835,7 +835,7 @@ typeControlAdders = {
     for j, value in ipairs(values) do
       args[prefix .. "space" .. j] = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Value %i"]:format(j),
         order = order(),
         disabled = function()
@@ -849,7 +849,7 @@ typeControlAdders = {
       }
       args[prefix .. "value" .. j] = {
         type = "input",
-        width = ForeverAuras.normalWidth - 0.15,
+        width = WeakAuras.normalWidth - 0.15,
         name = (value == conflict and conflictBlue or "") .. L["Value %i"]:format(j),
         desc = descSelect(option, j),
         order = order(),
@@ -869,9 +869,9 @@ typeControlAdders = {
             else
               childOption.values[insertPoint] = value
             end
-            ForeverAuras.Add(childData)
+            WeakAuras.Add(childData)
           end
-          ForeverAuras.ClearAndUpdateOptions(data.id, true)
+          WeakAuras.ClearAndUpdateOptions(data.id, true)
         end
       }
       args[prefix .. "valdelete" .. j] = {
@@ -884,19 +884,19 @@ typeControlAdders = {
             local childOption = optionData.options[optionData.index]
             local childData = optionData.data
             tremove(childOption.values, j)
-            ForeverAuras.Add(childData)
+            WeakAuras.Add(childData)
           end
-          ForeverAuras.ClearAndUpdateOptions(data.id, true)
+          WeakAuras.ClearAndUpdateOptions(data.id, true)
         end,
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\delete",
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon"
+        control = "WeakAurasIcon"
       }
     end
     args[prefix .. "newvaluespace"] = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["New Value"],
       order = order(),
       disabled = function()
@@ -910,7 +910,7 @@ typeControlAdders = {
     }
     args[prefix .. "newvalue"] = {
       type = "input",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["New Value"],
       order = order(),
       get = function()
@@ -922,9 +922,9 @@ typeControlAdders = {
           local childOption = optionData.options[optionData.index]
           local childData = optionData.data
           childOption.values[#childOption.values + 1] = value
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
   end,
@@ -933,7 +933,7 @@ typeControlAdders = {
     -- this option should be just useWidth but no need to do a migration in the data just for that.
     args[prefix .. "variableWidth"] = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = order(),
       name = name(option, "variableWidth", L["Width"]),
       desc = desc(
@@ -955,7 +955,7 @@ typeControlAdders = {
 
     args[prefix .. "useHeight"] = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = order(),
       name = name(option, "useHeight", L["Height"]),
       desc = desc(option, "useHeight", L["If checked, then this space will span across multiple lines."]),
@@ -965,8 +965,8 @@ typeControlAdders = {
 
     args[prefix .. "height"] = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       order = order(),
       name = name(option, "height", L["Height"]),
       desc = desc(option, "height"),
@@ -984,7 +984,7 @@ typeControlAdders = {
     local option = options[i]
     args[prefix .. "mediaType"] = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = name(option, "mediaType", L["Media Type"]),
       desc = desc(option, "mediaType"),
       values = OptionsPrivate.Private.shared_media_types,
@@ -996,14 +996,14 @@ typeControlAdders = {
           local childData = optionData.data
           childOption.mediaType = value
           childOption.default = OptionsPrivate.Private.author_option_media_defaults[value]
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
     args[prefix .. "default"] = {
       type = "select",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = name(option, "default", L["Default"]),
       desc = desc(option, "default"),
       values = function()
@@ -1033,9 +1033,9 @@ typeControlAdders = {
           local childOption = optionData.options[optionData.index]
           local childData = optionData.data
           childOption.default = value
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
   end,
@@ -1052,7 +1052,7 @@ typeControlAdders = {
     end
     args[prefix .. "default"] = {
       type = "multiselect",
-      width = ForeverAuras.normalWidth * 0.9,
+      width = WeakAuras.normalWidth * 0.9,
       name = L["Default"],
       order = order(),
       values = defaultValues,
@@ -1064,15 +1064,15 @@ typeControlAdders = {
           local childOption = optionData.options[optionData.index]
           local childData = optionData.data
           childOption.default[k] = v
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
     for j, value in ipairs(values) do
       args[prefix .. "space" .. j] = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Value %i"]:format(j),
         order = order(),
         disabled = function()
@@ -1086,7 +1086,7 @@ typeControlAdders = {
       }
       args[prefix .. "value" .. j] = {
         type = "input",
-        width = ForeverAuras.normalWidth - 0.15,
+        width = WeakAuras.normalWidth - 0.15,
         name = (value == conflict and conflictBlue or "") .. L["Value %i"]:format(j),
         desc = descSelect(option, j),
         order = order(),
@@ -1107,9 +1107,9 @@ typeControlAdders = {
             else
               childOption.values[insertPoint] = value
             end
-            ForeverAuras.Add(childData)
+            WeakAuras.Add(childData)
           end
-          ForeverAuras.ClearAndUpdateOptions(data.id, true)
+          WeakAuras.ClearAndUpdateOptions(data.id, true)
         end
       }
       args[prefix .. "valdelete" .. j] = {
@@ -1123,9 +1123,9 @@ typeControlAdders = {
             local childData = optionData.data
             tremove(childOption.values, j)
             tremove(childOption.default, j)
-            ForeverAuras.Add(childData)
+            WeakAuras.Add(childData)
           end
-          ForeverAuras.ClearAndUpdateOptions(data.id, true)
+          WeakAuras.ClearAndUpdateOptions(data.id, true)
         end,
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\delete",
         imageWidth = 24,
@@ -1134,7 +1134,7 @@ typeControlAdders = {
     end
     args[prefix .. "newvaluespace"] = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["New Value"],
       order = order(),
       disabled = function()
@@ -1148,7 +1148,7 @@ typeControlAdders = {
     }
     args[prefix .. "newvalue"] = {
       type = "input",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["New Value"],
       order = order(),
       get = function()
@@ -1161,9 +1161,9 @@ typeControlAdders = {
           local childData = optionData.data
           childOption.values[#childOption.values + 1] = value
           childOption.default[#childOption.default + 1] = false
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
   end,
@@ -1179,7 +1179,7 @@ typeControlAdders = {
         L["If checked, then this separator will include text. Otherwise, it will be just a horizontal line."]
       ),
       order = order(),
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       get = get(option, "useName"),
       set = set(data, option, "useName")
     }
@@ -1188,7 +1188,7 @@ typeControlAdders = {
       name = name(option, "text", L["Separator Text"]),
       desc = desc(option, "text"),
       order = order(),
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       get = getStr(option, "text"),
       set = setStr(data, option, "text"),
       disabled = function()
@@ -1203,7 +1203,7 @@ typeControlAdders = {
       type = "select",
       name = name(option, "groupType", L["Group Type"]),
       order = order(),
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       values = OptionsPrivate.Private.group_option_types,
       get = get(option, "groupType"),
       set = function(_, value)
@@ -1211,9 +1211,9 @@ typeControlAdders = {
           local childOption = optionData.options[optionData.index]
           local childData = optionData.data
           childOption.groupType = value
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
     args[prefix .. "useCollapse"] = {
@@ -1221,7 +1221,7 @@ typeControlAdders = {
       name = name(option, "useCollapse", L["Collapsible Group"]),
       desc = desc(option, "useCollapse", L["If checked, then this option group can be temporarily collapsed by the user."]),
       order = order(),
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       get = get(option, "useCollapse"),
       set = set(data, option, "useCollapse"),
     }
@@ -1230,7 +1230,7 @@ typeControlAdders = {
       name = name(option, "collapse", L["Start Collapsed"]),
       desc = desc(option, "collapse", L["If checked, then this option group will start collapsed."]),
       order = order(),
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       get = get(option, "collapse"),
       set = function(_, value)
         for id, optionData in pairs(option.references) do
@@ -1238,28 +1238,28 @@ typeControlAdders = {
           local childData = optionData.data
           childOption.collapse = value
           OptionsPrivate.SetCollapsed(id, "config", optionData.path, value)
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end,
       disabled = function() return not option.useCollapse end
     }
     args[prefix .. "noMerge"] = {
       type = "toggle",
-      name = ForeverAuras.newFeatureString .. name(option, "noMerge", L["Prevent Merging"]),
+      name = WeakAuras.newFeatureString .. name(option, "noMerge", L["Prevent Merging"]),
       desc = desc(option, "noMerge", L["If checked, then this group will not merge with other group when selecting multiple auras."]),
       order = order(),
-      width = option.groupType =="simple" and ForeverAuras.doubleWidth or ForeverAuras.normalWidth,
+      width = option.groupType =="simple" and WeakAuras.doubleWidth or WeakAuras.normalWidth,
       get = get(option, "noMerge"),
       set = set(data, option, "noMerge"),
     }
     if option.groupType ~="simple" then
       args[prefix .. "sortAlphabetically"] = {
         type = "toggle",
-        name = ForeverAuras.newFeatureString .. name(option, "sortAlphabetically", L["Sort"]),
+        name = WeakAuras.newFeatureString .. name(option, "sortAlphabetically", L["Sort"]),
         desc = desc(option, "sortAlphabetically", L["If checked, then the combo box in the User settings will be sorted."]),
         order = order(),
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         get = get(option, "sortAlphabetically"),
         set = set(data, option, "sortAlphabetically"),
       }
@@ -1270,7 +1270,7 @@ typeControlAdders = {
         name = name(option, "limitType", L["Number of Entries"]),
         desc = desc(option, "limitType", L["Determines how many entries can be in the table."]),
         order = order(),
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = OptionsPrivate.Private.group_limit_types,
         get = get(option, "limitType"),
         set = function(_, value)
@@ -1282,18 +1282,18 @@ typeControlAdders = {
               childOption.nameSource = 0
             end
             childOption.limitType = value
-            ForeverAuras.Add(childData)
+            WeakAuras.Add(childData)
           end
-          ForeverAuras.ClearAndUpdateOptions(data.id, true)
+          WeakAuras.ClearAndUpdateOptions(data.id, true)
         end,
       }
       args[prefix .. "size"] = {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         name = name(option, "limitType", option.limitType == "max" and L["Entry limit"] or L["Number of Entries"]),
         desc = desc(option, "limitType"),
         order = order(),
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         min = 1, -- no point in a table with no entries
         softMax = 20, -- 20 people in a mythic raid group
         step = 1,
@@ -1314,9 +1314,9 @@ typeControlAdders = {
               end
             end
             childOption.size = value
-            ForeverAuras.Add(childData)
+            WeakAuras.Add(childData)
           end
-          ForeverAuras.ClearAndUpdateOptions(data.id, true)
+          WeakAuras.ClearAndUpdateOptions(data.id, true)
         end,
         disabled = function() return option.limitType == "none" end,
       }
@@ -1325,7 +1325,7 @@ typeControlAdders = {
         name = name(option, "hideReorder", L["Disallow Entry Reordering"]),
         desc = desc(option, "hideReorder"),
         order = order(),
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         get = function()
           return option.hideReorder or option.nameSource == -1
         end,
@@ -1359,7 +1359,7 @@ typeControlAdders = {
         desc = desc(option, "nameSource"),
         order = order(),
         values = nameSources,
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         get = function()
           return option.nameSource or 0
         end,
@@ -1383,9 +1383,9 @@ typeControlAdders = {
             else
               childOption.nameSource = value
             end
-            ForeverAuras.Add(childData)
+            WeakAuras.Add(childData)
           end
-          ForeverAuras.ClearAndUpdateOptions(data.id, true)
+          WeakAuras.ClearAndUpdateOptions(data.id, true)
         end,
       }
       if option.nameSource == -1 then
@@ -1395,7 +1395,7 @@ typeControlAdders = {
             name = nameArray(option, "entryNames", i, L["Entry %i"]:format(i)),
             desc = descArray(option, "entryNames", i),
             order = order(),
-            width = ForeverAuras.doubleWidth,
+            width = WeakAuras.doubleWidth,
             get = getArrayStr(option, "entryNames", i),
             set = setArrayStr(data, option, "entryNames", i),
           }
@@ -1418,7 +1418,7 @@ typeControlAdders = {
       type = "execute",
       name = L["Add Sub Option"],
       order = order(),
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       func = function()
         for id, optionData in pairs(option.references) do
           local childOption = optionData.options[optionData.index]
@@ -1435,9 +1435,9 @@ typeControlAdders = {
             useDesc = false,
           }
           OptionsPrivate.SetCollapsed(id, "author", path, false)
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
     args[prefix .. "groupEnd"] = {
@@ -1474,9 +1474,9 @@ local function up(data, options, index)
       end
       OptionsPrivate.MoveCollapseDataUp(id, "author", path)
       childOptions[optionID], childOptions[optionID - 1] = childOptions[optionID - 1], childOptions[optionID]
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -1506,9 +1506,9 @@ local function down(data, options, index)
       local childOptions = optionData.options
       OptionsPrivate.MoveCollapseDataDown(id, "author", path)
       childOptions[optionID], childOptions[optionID + 1] = childOptions[optionID + 1], childOptions[optionID]
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -1538,9 +1538,9 @@ local function duplicate(data, options, index)
         newOption.name = newOption.name .. " - " .. L["Copy"]
       end
       tinsert(childOptions, optionID + 1, newOption)
-      ForeverAuras.Add(childData)
+      WeakAuras.Add(childData)
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end
 
@@ -1600,18 +1600,18 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
     type = "execute",
     name = nameHead(data, option, optionName),
     order = order(),
-    width = ForeverAuras.doubleWidth - buttonWidth,
+    width = WeakAuras.doubleWidth - buttonWidth,
     func = function()
       for id, optionData in pairs(option.references) do
         OptionsPrivate.SetCollapsed(id, "author", optionData.path, not collapsed)
       end
-      ForeverAuras.ClearAndUpdateOptions(data.id, true)
+      WeakAuras.ClearAndUpdateOptions(data.id, true)
     end,
     image = collapsed and "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\expand" or
       "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\collapse",
     imageWidth = 18,
     imageHeight = 18,
-    control = "ForeverAurasExpand"
+    control = "WeakAurasExpand"
   }
 
   args[prefix .. "upAndIn"] = {
@@ -1634,15 +1634,15 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
           childOption.key = ensureUniqueKey(childOption.key, "In", childGroup.subOptions)
           local childData = optionData.data
           tinsert(childGroup.subOptions, childOption)
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
       end
-      ForeverAuras.ClearAndUpdateOptions(data.id, true)
+      WeakAuras.ClearAndUpdateOptions(data.id, true)
     end,
     image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\upright",
     imageWidth = 24,
     imageHeight = 24,
-    control = "ForeverAurasIcon"
+    control = "WeakAurasIcon"
   }
   args[prefix .. "downAndIn"] = {
     type = "execute",
@@ -1664,15 +1664,15 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
           childOption.key = ensureUniqueKey(childOption.key, "In", childGroup.subOptions)
           local childData = optionData.data
           tinsert(childGroup.subOptions, 1, childOption)
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
       end
-      ForeverAuras.ClearAndUpdateOptions(data.id, true)
+      WeakAuras.ClearAndUpdateOptions(data.id, true)
     end,
     image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\downright",
     imageWidth = 24,
     imageHeight = 24,
-    control = "ForeverAurasIcon"
+    control = "WeakAurasIcon"
   }
 
   args[prefix .. "upAndOut"] = {
@@ -1700,14 +1700,14 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
         tinsert(parentOptions, path[#path - 1], childOption)
         path[#path] = nil
         OptionsPrivate.InsertCollapsed(id, "author", path)
-        ForeverAuras.Add(optionData.data)
+        WeakAuras.Add(optionData.data)
       end
-      ForeverAuras.ClearAndUpdateOptions(data.id, true)
+      WeakAuras.ClearAndUpdateOptions(data.id, true)
     end,
     image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\upleft",
     imageWidth = 24,
     imageHeight = 24,
-    control = "ForeverAurasIcon"
+    control = "WeakAurasIcon"
   }
   args[prefix .. "downAndOut"] = {
     type = "execute",
@@ -1735,14 +1735,14 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
         path[#path] = nil
         path[#path] = path[#path] + 1
         OptionsPrivate.InsertCollapsed(id, "author", path)
-        ForeverAuras.Add(optionData.data)
+        WeakAuras.Add(optionData.data)
       end
-      ForeverAuras.ClearAndUpdateOptions(data.id, true)
+      WeakAuras.ClearAndUpdateOptions(data.id, true)
     end,
     image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\downleft",
     imageWidth = 24,
     imageHeight = 24,
-    control = "ForeverAurasIcon"
+    control = "WeakAurasIcon"
   }
   local upDisable, upFunc = up(data, options, i)
   args[prefix .. "up"] = {
@@ -1755,7 +1755,7 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
     image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\moveup",
     imageWidth = 24,
     imageHeight = 24,
-    control = "ForeverAurasIcon"
+    control = "WeakAurasIcon"
   }
 
   local downDisable, downFunc = down(data, options, i)
@@ -1769,7 +1769,7 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
     image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\movedown",
     imageWidth = 24,
     imageHeight = 24,
-    control = "ForeverAurasIcon"
+    control = "WeakAurasIcon"
   }
 
   args[prefix .. "duplicate"] = {
@@ -1781,7 +1781,7 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
     image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\duplicate",
     imageWidth = 24,
     imageHeight = 24,
-    control = "ForeverAurasIcon"
+    control = "WeakAurasIcon"
   }
 
   args[prefix .. "delete"] = {
@@ -1805,21 +1805,21 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
             dereferencedParent.nameSource = dereferencedParent.nameSource - 1
           end
         end
-        ForeverAuras.Add(childData)
+        WeakAuras.Add(childData)
       end
-      ForeverAuras.ClearAndUpdateOptions(data.id, true)
+      WeakAuras.ClearAndUpdateOptions(data.id, true)
     end,
     image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\delete",
     imageWidth = 24,
     imageHeight = 24,
-    control = "ForeverAurasIcon"
+    control = "WeakAurasIcon"
   }
 
   if collapsed then return end
 
   args[prefix .. "type"] = {
     type = "select",
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     name = L["Option Type"],
     desc = descType(option),
     order = order(),
@@ -1881,16 +1881,16 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
             dereferencedParent.nameSource = 0
           end
         end
-        ForeverAuras.Add(childData)
+        WeakAuras.Add(childData)
       end
-      ForeverAuras.ClearAndUpdateOptions(data.id, true)
+      WeakAuras.ClearAndUpdateOptions(data.id, true)
     end
   }
 
   if optionClass ~= "noninteractive" then
     args[prefix .. "name"] = {
       type = "input",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = name(option, "name", L["Display Name"]),
       desc = desc(option, "name"),
       order = order(),
@@ -1900,7 +1900,7 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
 
     args[prefix .. "key"] = {
       type = "input",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = name(option, "key", optionClass == "group" and L["Group key"] or L["Option key"]),
       order = order(),
       validate = validateNonDuplicateKey(option),
@@ -1912,7 +1912,7 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
   if optionClass == "simple" then
     args[prefix .. "tooltipSpace"] = {
       type = "description",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = "",
       order = order
     }
@@ -1920,7 +1920,7 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
       type = "toggle",
       name = name(option, "useDesc", L["Tooltip"]),
       order = order(),
-      width = ForeverAuras.halfWidth,
+      width = WeakAuras.halfWidth,
       get = get(option, "useDesc"),
       set = set(data, option, "useDesc")
     }
@@ -1929,7 +1929,7 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
       name = name(option, "desc", L["Tooltip Text"]),
       desc = desc(option, "desc"),
       order = order(),
-      width = ForeverAuras.normalWidth * 1.5,
+      width = WeakAuras.normalWidth * 1.5,
       get = getStr(option, "desc"),
       set = setStr(data, option, "desc"),
       disabled = function()
@@ -1940,8 +1940,8 @@ function addAuthorModeOption(options, args, data, order, prefix, i)
 
   args[prefix .. "width"] = {
     type = "range",
-    control = "ForeverAurasSpinBox",
-    width = ForeverAuras.normalWidth,
+    control = "WeakAurasSpinBox",
+    width = WeakAuras.normalWidth,
     name = name(option, "width", L["Width"]),
     desc = desc(option, "width"),
     order = order(),
@@ -1999,7 +1999,7 @@ local function addUserModeOption(options, args, data, order, prefix, i)
       type = optionType,
       name = nameUser(option),
       desc = descUser(option),
-      width = (option.width or 1) * ForeverAuras.normalWidth,
+      width = (option.width or 1) * WeakAuras.normalWidth,
       order = order(),
       get = getUser(option),
       set = setUser(data, option)
@@ -2009,7 +2009,7 @@ local function addUserModeOption(options, args, data, order, prefix, i)
       type = "description",
       order = order(),
       name = "",
-      width = (option.width or 1) * ForeverAuras.normalWidth
+      width = (option.width or 1) * WeakAuras.normalWidth
     }
   elseif optionClass == "group" then
     local collapsed = false
@@ -2028,18 +2028,18 @@ local function addUserModeOption(options, args, data, order, prefix, i)
         type = "execute",
         name = option.name,
         order = order(),
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         func = function()
           for id, optionData in pairs(option.references) do
             OptionsPrivate.SetCollapsed(id, "config", optionData.path, not collapsed)
           end
-          ForeverAuras.ClearAndUpdateOptions(data.id, true)
+          WeakAuras.ClearAndUpdateOptions(data.id, true)
         end,
         image = collapsed and "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\expand" or
           "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\collapse",
         imageWidth = 18,
         imageHeight = 18,
-        control = "ForeverAurasExpand"
+        control = "WeakAurasExpand"
       }
     end
     if not collapsed then
@@ -2108,7 +2108,7 @@ local function addUserModeOption(options, args, data, order, prefix, i)
           type = "select",
           name = nameUser(option),
           order = order(),
-          width = ForeverAuras.doubleWidth - buttonWidth,
+          width = WeakAuras.doubleWidth - buttonWidth,
           values = values,
           get = function()
             if skipSubOptions then
@@ -2130,7 +2130,7 @@ local function addUserModeOption(options, args, data, order, prefix, i)
             for id, optionData in pairs(option.references) do
               setPage(id, optionData.path, value) -- XXX: mergeOptions will reset this to the maximum value if it's too big
             end
-            ForeverAuras.ClearAndUpdateOptions(data.id, true)
+            WeakAuras.ClearAndUpdateOptions(data.id, true)
           end,
           sorting = option.sortAlphabetically and OptionsPrivate.Private.SortOrderForValues(values) or nil
         }
@@ -2145,15 +2145,15 @@ local function addUserModeOption(options, args, data, order, prefix, i)
               local childPage = getPage(id, optionData.path)
               local childConfigList = optionData.config[childOption.key]
               childConfigList[childPage] = {}
-              ForeverAuras.Add(childData)
+              WeakAuras.Add(childData)
             end
-            ForeverAuras.ClearAndUpdateOptions(data.id, true)
+            WeakAuras.ClearAndUpdateOptions(data.id, true)
           end,
           width = 0.15,
           image = "Interface\\Addons\\ForeverAuras\\Media\\Textures\\reset",
           imageWidth = 18,
           imageHeight = 18,
-          control = "ForeverAurasIcon"
+          control = "WeakAurasIcon"
         }
         if option.limitType ~= "fixed" then
           args[prefix .. "createEntry"] = {
@@ -2169,10 +2169,10 @@ local function addUserModeOption(options, args, data, order, prefix, i)
                   tinsert(childConfigList, {})
                   setPage(id, optionData.path, #childConfigList)
                   -- we do need to Add here, so that the new entry can get its default values
-                  ForeverAuras.Add(childData)
+                  WeakAuras.Add(childData)
                 end
               end
-              ForeverAuras.ClearAndUpdateOptions(data.id, true)
+              WeakAuras.ClearAndUpdateOptions(data.id, true)
             end,
             disabled = function()
               if option.limitType == "none" then
@@ -2191,7 +2191,7 @@ local function addUserModeOption(options, args, data, order, prefix, i)
             image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\add",
             imageWidth = 18,
             imageHeight = 18,
-            control = "ForeverAurasIcon"
+            control = "WeakAurasIcon"
           }
           args[prefix .. "deleteEntry"] = {
             type = "execute",
@@ -2207,10 +2207,10 @@ local function addUserModeOption(options, args, data, order, prefix, i)
                 if #childConfigList ~= 0 then
                   tremove(childConfigList, page)
                   setPage(id, optionData.path, min(#childConfigList, page))
-                  ForeverAuras.Add(childData)
+                  WeakAuras.Add(childData)
                 end
               end
-              ForeverAuras.ClearAndUpdateOptions(data.id, true)
+              WeakAuras.ClearAndUpdateOptions(data.id, true)
             end,
             disabled = function()
               return skipSubOptions
@@ -2219,7 +2219,7 @@ local function addUserModeOption(options, args, data, order, prefix, i)
             image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\delete",
             imageWidth = 18,
             imageHeight = 18,
-            control = "ForeverAurasIcon"
+            control = "WeakAurasIcon"
           }
         end
         if option.nameSource ~= -1 and not option.hideReorder then
@@ -2236,10 +2236,10 @@ local function addUserModeOption(options, args, data, order, prefix, i)
                 if childConfigList[childPage] then
                   childConfigList[childPage], childConfigList[childPage - 1] = childConfigList[childPage - 1], childConfigList[childPage]
                   setPage(id, optionData.path, childPage - 1)
-                  ForeverAuras.Add(childData)
+                  WeakAuras.Add(childData)
                 end
               end
-              ForeverAuras.ClearAndUpdateOptions(data.id, true)
+              WeakAuras.ClearAndUpdateOptions(data.id, true)
             end,
             disabled = function()
               for id, optionData in pairs(option.references) do
@@ -2252,7 +2252,7 @@ local function addUserModeOption(options, args, data, order, prefix, i)
             image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\moveup",
             imageWidth = 18,
             imageHeight = 18,
-            control = "ForeverAurasIcon"
+            control = "WeakAurasIcon"
           }
           args[prefix .. "moveEntryDown"] = {
             type = "execute",
@@ -2267,10 +2267,10 @@ local function addUserModeOption(options, args, data, order, prefix, i)
                 if childConfigList[childPage] then
                   childConfigList[childPage], childConfigList[childPage + 1] = childConfigList[childPage + 1], childConfigList[childPage]
                   setPage(id, optionData.path, childPage + 1)
-                  ForeverAuras.Add(childData)
+                  WeakAuras.Add(childData)
                 end
               end
-              ForeverAuras.ClearAndUpdateOptions(data.id, true)
+              WeakAuras.ClearAndUpdateOptions(data.id, true)
             end,
             disabled = function()
               for id, optionData in pairs(option.references) do
@@ -2286,7 +2286,7 @@ local function addUserModeOption(options, args, data, order, prefix, i)
             image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\movedown",
             imageWidth = 18,
             imageHeight = 18,
-            control = "ForeverAurasIcon"
+            control = "WeakAurasIcon"
           }
         end
       end
@@ -2352,9 +2352,9 @@ local function addUserModeOption(options, args, data, order, prefix, i)
       userOption.set = function(_, k, v)
         for _, optionData in pairs(option.references) do
           optionData.config[option.key][k] = v
-          ForeverAuras.Add(optionData.data)
+          WeakAuras.Add(optionData.data)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     elseif optionType == "media" then
       userOption.type = "select"
@@ -2384,9 +2384,9 @@ local function addUserModeOption(options, args, data, order, prefix, i)
           local childData = optionData.data
           local childConfig = optionData.config
           childConfig[option.key] = value
-          ForeverAuras.Add(childData)
+          WeakAuras.Add(childData)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     end
   elseif optionClass == "noninteractive" then
@@ -2667,7 +2667,7 @@ function OptionsPrivate.GetAuthorOptions(data)
   if isAuthorMode then
     args["enterUserMode"] = {
       type = "execute",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Enter User Mode"],
       desc = L["Enter user mode."],
       order = order(),
@@ -2676,7 +2676,7 @@ function OptionsPrivate.GetAuthorOptions(data)
           child.authorMode = nil
           -- no need to add, author mode is picked up by ClearAndUpdateOptions
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
     args["enterUserModeSpacer"] = {
@@ -2689,7 +2689,7 @@ function OptionsPrivate.GetAuthorOptions(data)
     end
     args["addOption"] = {
       type = "execute",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Add Option"],
       order = order(),
       func = function()
@@ -2704,9 +2704,9 @@ function OptionsPrivate.GetAuthorOptions(data)
             useDesc = false,
           }
           OptionsPrivate.SetCollapsed(child.id, "author", i, false)
-          ForeverAuras.Add(child)
+          WeakAuras.Add(child)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
   else
@@ -2720,7 +2720,7 @@ function OptionsPrivate.GetAuthorOptions(data)
     }
     args["resetToDefault"] = {
       type = "execute",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Reset to Defaults"],
       desc = L["Reset all options to their default values."],
       order = order(),
@@ -2728,9 +2728,9 @@ function OptionsPrivate.GetAuthorOptions(data)
         for child in OptionsPrivate.Private.TraverseLeafsOrAura(data) do
           child.config = {} -- config validation in Add() will set all the needed keys to their defaults
           OptionsPrivate.ResetCollapsed(child.id, "config")
-          ForeverAuras.Add(child)
+          WeakAuras.Add(child)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end,
       disabled = function()
         local path = {}
@@ -2749,7 +2749,7 @@ function OptionsPrivate.GetAuthorOptions(data)
     }
     args["enterAuthorMode"] = {
       type = "execute",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Enter Author Mode"],
       desc = L["Configure what options appear on this panel."],
       order = order(),
@@ -2758,7 +2758,7 @@ function OptionsPrivate.GetAuthorOptions(data)
           -- no need to add, author mode is picked up by ClearAndUpdateOptions
           configData.authorMode = true
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id, true)
+        WeakAuras.ClearAndUpdateOptions(data.id, true)
       end
     }
   end
