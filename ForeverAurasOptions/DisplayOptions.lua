@@ -1,10 +1,10 @@
 -- Modified for ForeverAuras, 2026-09-29.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local flattenRegionOptions = OptionsPrivate.commonOptions.flattenRegionOptions
 local fixMetaOrders = OptionsPrivate.commonOptions.fixMetaOrders
@@ -33,7 +33,7 @@ local function AddSubRegion(data, subRegionName, detached)
           elseif subRegionName == "subtext" then subRegionData.text_text = "Text" end
         end
         tinsert(data.subRegions, subRegionData)
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
         OptionsPrivate.ClearOptions(data.id)
       end
     end
@@ -41,7 +41,7 @@ local function AddSubRegion(data, subRegionName, detached)
   if OptionsPrivate.Private.BlizzardAuraDisplay.Enabled(data) then
     OptionsPrivate.QueueOptionsRefresh(data.id)
   else
-    ForeverAuras.ClearAndUpdateOptions(data.id)
+    WeakAuras.ClearAndUpdateOptions(data.id)
   end
 end
 
@@ -59,7 +59,7 @@ local function AddOptionsForSupportedSubRegion(regionOption, data, supported)
   result.__withoutheader = true
   result["subregiontypespace"] = {
     type = "description",
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     name = "",
     order = order,
   }
@@ -69,7 +69,7 @@ local function AddOptionsForSupportedSubRegion(regionOption, data, supported)
       hasSubRegions = true
       result[subRegionType] = {
         type = "execute",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = string.format(L["Add %s"], OptionsPrivate.Private.subRegionTypes[subRegionType].displayName),
         order = order,
         func = function()
@@ -84,7 +84,7 @@ local function AddOptionsForSupportedSubRegion(regionOption, data, supported)
       if supported[kind] then
         result[kind .. "Detached"] = {
           type = "execute",
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
           name = "Add Detached " .. OptionsPrivate.Private.subRegionTypes[kind].displayName,
           desc = "Appears once at this display's anchor. Conditions from other triggers can change it in combat. It does not follow individual secret auras. To show it only under a condition, turn off Show Text or Show Texture, then use a Visibility condition.",
           order = order,
@@ -182,7 +182,7 @@ function OptionsPrivate.GetDisplayOptions(data)
 
     for _, option in pairs(options) do
       if option.type == "range" then
-        option.control = "ForeverAurasSpinBox"
+        option.control = "WeakAurasSpinBox"
       end
     end
 
@@ -213,8 +213,8 @@ function OptionsPrivate.GetDisplayOptions(data)
         else
           base[property] = (v ~= "" and v) or nil;
         end
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.Private.AddParents(data)
         OptionsPrivate.ResetMoverSizer();
       end,
@@ -310,7 +310,7 @@ function OptionsPrivate.GetDisplayOptions(data)
           allOptions.secretAura = OptionsPrivate.GetSecretAuraSettings(child)
         end
         if child.regionType == "icon" and allOptions.icon and not allOptions.icon.secretSwipeColor then
-          allOptions.icon.secretSwipeColor = {type = "color", name = "Swipe Color", hasAlpha = true, order = 11.9, width = ForeverAuras.normalWidth}
+          allOptions.icon.secretSwipeColor = {type = "color", name = "Swipe Color", hasAlpha = true, order = 11.9, width = WeakAuras.normalWidth}
         end
       end
     end
@@ -333,8 +333,8 @@ function OptionsPrivate.GetDisplayOptions(data)
     region.set = function(info, ...)
       setAll(data, info, ...);
       if(type(data.id) == "string") then
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.ResetMoverSizer();
       end
     end

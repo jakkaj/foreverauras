@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-29.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -9,12 +9,12 @@ local tinsert, tremove = table.insert, table.remove
 local select, pairs, type, unpack = select, pairs, type, unpack
 local error = error
 
-local Type, Version = "ForeverAurasDisplayButton", 62
+local Type, Version = "WeakAurasDisplayButton", 62
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 local fullName;
 local clipboard = {};
 
@@ -156,21 +156,21 @@ clipboard.pasteMenuEntry = {
       -- Copy from a single aura to a group => paste it to each individual aura
       for child in OptionsPrivate.Private.TraverseLeafs(clipboard.current) do
         copyAuraPart(clipboard.source, child, clipboard.part);
-        ForeverAuras.Add(child)
-        ForeverAuras.ClearAndUpdateOptions(child.id)
+        WeakAuras.Add(child)
+        WeakAuras.ClearAndUpdateOptions(child.id)
       end
     else
       copyAuraPart(clipboard.source, clipboard.current, clipboard.part);
-      ForeverAuras.Add(clipboard.current)
-      ForeverAuras.ClearAndUpdateOptions(clipboard.current.id)
+      WeakAuras.Add(clipboard.current)
+      WeakAuras.ClearAndUpdateOptions(clipboard.current.id)
     end
 
-    ForeverAuras.FillOptions()
+    WeakAuras.FillOptions()
     OptionsPrivate.Private.ScanForLoads({[clipboard.current.id] = true});
     OptionsPrivate.SortDisplayButtons(nil, true);
-    ForeverAuras.PickDisplay(clipboard.current.id);
-    ForeverAuras.UpdateThumbnail(clipboard.current.id);
-    ForeverAuras.ClearAndUpdateOptions(clipboard.current.id);
+    WeakAuras.PickDisplay(clipboard.current.id);
+    WeakAuras.UpdateThumbnail(clipboard.current.id);
+    WeakAuras.ClearAndUpdateOptions(clipboard.current.id);
   end
 }
 
@@ -370,23 +370,23 @@ local Actions = {
           end
           source:SetGroup(groupId)
           source.data.parent = groupId
-          ForeverAuras.Add(source.data)
-          ForeverAuras.Add(group.data)
+          WeakAuras.Add(source.data)
+          WeakAuras.Add(group.data)
           OptionsPrivate.Private.AddParents(group.data)
-          ForeverAuras.UpdateGroupOrders(group.data)
-          ForeverAuras.ClearAndUpdateOptions(group.data.id)
-          ForeverAuras.ClearAndUpdateOptions(source.data.id)
+          WeakAuras.UpdateGroupOrders(group.data)
+          WeakAuras.ClearAndUpdateOptions(group.data.id)
+          WeakAuras.ClearAndUpdateOptions(source.data.id)
           group.callbacks.UpdateExpandButton();
           group:UpdateParentWarning()
           group:ReloadTooltip()
         else
-          ForeverAuras.Add(source.data)
-          ForeverAuras.ClearAndUpdateOptions(source.data.id)
+          WeakAuras.Add(source.data)
+          WeakAuras.ClearAndUpdateOptions(source.data.id)
         end
       else
         -- move source into the top-level list
-        ForeverAuras.Add(source.data)
-        ForeverAuras.ClearAndUpdateOptions(source.data.id)
+        WeakAuras.Add(source.data)
+        WeakAuras.ClearAndUpdateOptions(source.data.id)
       end
     else
       error("Calling 'Group' with invalid source. Reload your UI to fix the display list.")
@@ -395,17 +395,17 @@ local Actions = {
   -- remove source from its group or top-level list
   ["Ungroup"] =  function(source)
     if source and source.data.parent then
-      local parent = ForeverAuras.GetData(source.data.parent)
+      local parent = WeakAuras.GetData(source.data.parent)
       local children = parent.controlledChildren
       local index = source:GetGroupOrder()
       if ensure(children, index, source.data.id) then
         tremove(children, index)
         source:SetGroup()
         source.data.parent = nil
-        ForeverAuras.Add(parent);
+        WeakAuras.Add(parent);
         OptionsPrivate.Private.AddParents(parent)
-        ForeverAuras.UpdateGroupOrders(parent);
-        ForeverAuras.ClearAndUpdateOptions(parent.id);
+        WeakAuras.UpdateGroupOrders(parent);
+        WeakAuras.ClearAndUpdateOptions(parent.id);
         local group = OptionsPrivate.GetDisplayButton(parent.id)
         group.callbacks.UpdateExpandButton();
         group:UpdateParentWarning()
@@ -514,7 +514,7 @@ local function IsParentRecursive(needle, parent)
     return true
   end
   if needle.parent then
-    local needleParent = ForeverAuras.GetData(needle.parent)
+    local needleParent = WeakAuras.GetData(needle.parent)
     return IsParentRecursive(needleParent, parent)
   end
 end
@@ -582,15 +582,15 @@ local methods = {
         if(mouseButton == "RightButton") then
           Hide_Tooltip();
           if(OptionsPrivate.IsDisplayPicked(self.data.id) and OptionsPrivate.IsPickedMultiple()) then
-            LibDD:EasyMenu(OptionsPrivate.MultipleDisplayTooltipMenu(), ForeverAuras_DropDownMenu, self.frame, 0, 0, "MENU");
+            LibDD:EasyMenu(OptionsPrivate.MultipleDisplayTooltipMenu(), WeakAuras_DropDownMenu, self.frame, 0, 0, "MENU");
           else
             UpdateClipboardMenuEntry(self.data);
-            LibDD:EasyMenu(self.menu, ForeverAuras_DropDownMenu, self.frame, 0, 0, "MENU");
+            LibDD:EasyMenu(self.menu, WeakAuras_DropDownMenu, self.frame, 0, 0, "MENU");
             if not(OptionsPrivate.IsDisplayPicked(self.data.id)) then
               if self.data.controlledChildren then
-                ForeverAuras.PickDisplay(self.data.id, "group")
+                WeakAuras.PickDisplay(self.data.id, "group")
               else
-                ForeverAuras.PickDisplay(self.data.id);
+                WeakAuras.PickDisplay(self.data.id);
               end
             end
           end
@@ -599,9 +599,9 @@ local methods = {
             OptionsPrivate.ClearPicks();
           else
             if self.data.controlledChildren then
-              ForeverAuras.PickDisplay(self.data.id, "group")
+              WeakAuras.PickDisplay(self.data.id, "group")
             else
-              ForeverAuras.PickDisplay(self.data.id);
+              WeakAuras.PickDisplay(self.data.id);
             end
           end
           self:ReloadTooltip();
@@ -618,9 +618,9 @@ local methods = {
     end
 
     function self.callbacks.OnClickGrouping()
-      if (ForeverAuras.IsImporting()) then return end;
+      if (WeakAuras.IsImporting()) then return end;
       for index, selectedId in ipairs(self.grouping) do
-        local selectedData = ForeverAuras.GetData(selectedId);
+        local selectedData = WeakAuras.GetData(selectedId);
         tinsert(self.data.controlledChildren, selectedId);
         local selectedButton = OptionsPrivate.GetDisplayButton(selectedId);
         while selectedData.parent do
@@ -633,7 +633,7 @@ local methods = {
           selectedData.xOffset = 0
           selectedData.yOffset = 0
         end
-        ForeverAuras.Add(selectedData);
+        WeakAuras.Add(selectedData);
         OptionsPrivate.ClearOptions(selectedId)
 
         if (selectedData.controlledChildren) then
@@ -644,14 +644,14 @@ local methods = {
         end
       end
 
-      ForeverAuras.Add(self.data);
+      WeakAuras.Add(self.data);
       OptionsPrivate.Private.AddParents(self.data)
       self.callbacks.UpdateExpandButton();
       self:UpdateParentWarning();
       OptionsPrivate.StopGrouping();
       OptionsPrivate.ClearOptions(self.data.id);
-      ForeverAuras.FillOptions();
-      ForeverAuras.UpdateGroupOrders(self.data);
+      WeakAuras.FillOptions();
+      WeakAuras.UpdateGroupOrders(self.data);
       OptionsPrivate.SortDisplayButtons();
       self:ReloadTooltip();
       self:Expand()
@@ -671,7 +671,7 @@ local methods = {
       local parent = data.parent
       if parent then
         hash[parent] = true
-        local parentData = ForeverAuras.GetData(parent)
+        local parentData = WeakAuras.GetData(parent)
         if parentData then
           addParents(hash, parentData)
         end
@@ -679,7 +679,7 @@ local methods = {
     end
 
     function self.callbacks.OnDeleteClick()
-      if (ForeverAuras.IsImporting()) then return end;
+      if (WeakAuras.IsImporting()) then return end;
       local toDelete = {self.data}
       local parents = {}
       addParents(parents, self.data)
@@ -688,7 +688,7 @@ local methods = {
 
     local function DuplicateGroups(sourceParent, targetParent, mapping)
       for index, childId in pairs(sourceParent.controlledChildren) do
-        local childData = ForeverAuras.GetData(childId)
+        local childData = WeakAuras.GetData(childId)
         if childData.controlledChildren then
           local newChildGroup = OptionsPrivate.DuplicateAura(childData, targetParent.id)
           mapping[childData] = newChildGroup
@@ -699,7 +699,7 @@ local methods = {
 
     local function DuplicateAuras(sourceParent, targetParent, mapping)
       for index, childId in pairs(sourceParent.controlledChildren) do
-        local childData = ForeverAuras.GetData(childId)
+        local childData = WeakAuras.GetData(childId)
         if childData.controlledChildren then
           DuplicateAuras(childData, mapping[childData], mapping)
         else
@@ -709,7 +709,7 @@ local methods = {
     end
 
     function self.callbacks.OnDuplicateClick()
-      if (ForeverAuras.IsImporting()) then return end;
+      if (WeakAuras.IsImporting()) then return end;
       if self.data.controlledChildren then
         local newGroup = OptionsPrivate.DuplicateAura(self.data)
 
@@ -743,7 +743,7 @@ local methods = {
     end
 
     function self.callbacks.OnDeleteAllClick()
-      if (ForeverAuras.IsImporting()) then return end;
+      if (WeakAuras.IsImporting()) then return end;
       local toDelete = {}
       if(self.data.controlledChildren) then
         for child in OptionsPrivate.Private.TraverseAllChildren(self.data) do
@@ -761,10 +761,10 @@ local methods = {
     end
 
     function self.callbacks.OnUpGroupClick()
-      if (ForeverAuras.IsImporting()) then return end;
+      if (WeakAuras.IsImporting()) then return end;
       if(self.data.parent) then
         local id = self.data.id;
-        local parentData = ForeverAuras.GetData(self.data.parent);
+        local parentData = WeakAuras.GetData(self.data.parent);
         local index;
         for childIndex, childId in pairs(parentData.controlledChildren) do
           if(childId == id) then
@@ -778,18 +778,18 @@ local methods = {
           else
             tremove(parentData.controlledChildren, index);
             tinsert(parentData.controlledChildren, index - 1, id);
-            ForeverAuras.Add(parentData);
+            WeakAuras.Add(parentData);
             OptionsPrivate.Private.AddParents(parentData)
-            ForeverAuras.ClearAndUpdateOptions(parentData.id)
+            WeakAuras.ClearAndUpdateOptions(parentData.id)
             self:SetGroupOrder(index - 1, #parentData.controlledChildren);
             local otherbutton = OptionsPrivate.GetDisplayButton(parentData.controlledChildren[index]);
             otherbutton:SetGroupOrder(index, #parentData.controlledChildren);
             OptionsPrivate.SortDisplayButtons();
             local updata = {duration = 0.15, type = "custom", use_translate = true, x = 0, y = -32};
             local downdata = {duration = 0.15, type = "custom", use_translate = true, x = 0, y = 32};
-            OptionsPrivate.Private.Animate("button", ForeverAuras.GetData(parentData.controlledChildren[index-1]).uid, "main", updata, self.frame, true, function() OptionsPrivate.SortDisplayButtons() end);
-            OptionsPrivate.Private.Animate("button", ForeverAuras.GetData(parentData.controlledChildren[index]).uid, "main", downdata, otherbutton.frame, true, function() OptionsPrivate.SortDisplayButtons() end);
-            ForeverAuras.FillOptions()
+            OptionsPrivate.Private.Animate("button", WeakAuras.GetData(parentData.controlledChildren[index-1]).uid, "main", updata, self.frame, true, function() OptionsPrivate.SortDisplayButtons() end);
+            OptionsPrivate.Private.Animate("button", WeakAuras.GetData(parentData.controlledChildren[index]).uid, "main", downdata, otherbutton.frame, true, function() OptionsPrivate.SortDisplayButtons() end);
+            WeakAuras.FillOptions()
           end
         else
           error("Display thinks it is a member of a group which does not control it");
@@ -800,10 +800,10 @@ local methods = {
     end
 
     function self.callbacks.OnDownGroupClick()
-      if (ForeverAuras.IsImporting()) then return end;
+      if (WeakAuras.IsImporting()) then return end;
       if(self.data.parent) then
         local id = self.data.id;
-        local parentData = ForeverAuras.GetData(self.data.parent);
+        local parentData = WeakAuras.GetData(self.data.parent);
         local index;
         for childIndex, childId in pairs(parentData.controlledChildren) do
           if(childId == id) then
@@ -817,18 +817,18 @@ local methods = {
           else
             tremove(parentData.controlledChildren, index);
             tinsert(parentData.controlledChildren, index + 1, id);
-            ForeverAuras.Add(parentData);
+            WeakAuras.Add(parentData);
             OptionsPrivate.Private.AddParents(parentData)
-            ForeverAuras.ClearAndUpdateOptions(parentData.id)
+            WeakAuras.ClearAndUpdateOptions(parentData.id)
             self:SetGroupOrder(index + 1, #parentData.controlledChildren);
             local otherbutton = OptionsPrivate.GetDisplayButton(parentData.controlledChildren[index]);
             otherbutton:SetGroupOrder(index, #parentData.controlledChildren);
             OptionsPrivate.SortDisplayButtons()
             local updata = {duration = 0.15, type = "custom", use_translate = true, x = 0, y = -32};
             local downdata = {duration = 0.15, type = "custom", use_translate = true, x = 0, y = 32};
-            OptionsPrivate.Private.Animate("button", ForeverAuras.GetData(parentData.controlledChildren[index+1]).uid, "main", downdata, self.frame, true, function() OptionsPrivate.SortDisplayButtons() end);
-            OptionsPrivate.Private.Animate("button", ForeverAuras.GetData(parentData.controlledChildren[index]).uid, "main", updata, otherbutton.frame, true, function() OptionsPrivate.SortDisplayButtons() end);
-            ForeverAuras.FillOptions()
+            OptionsPrivate.Private.Animate("button", WeakAuras.GetData(parentData.controlledChildren[index+1]).uid, "main", downdata, self.frame, true, function() OptionsPrivate.SortDisplayButtons() end);
+            OptionsPrivate.Private.Animate("button", WeakAuras.GetData(parentData.controlledChildren[index]).uid, "main", updata, otherbutton.frame, true, function() OptionsPrivate.SortDisplayButtons() end);
+            WeakAuras.FillOptions()
           end
         else
           error("Display thinks it is a member of a group which does not control it");
@@ -856,7 +856,7 @@ local methods = {
     end
 
     function self.callbacks.OnRenameClick()
-      if (ForeverAuras.IsImporting()) then return end;
+      if (WeakAuras.IsImporting()) then return end;
       if(self.title:IsVisible()) then
         self.title:Hide();
         self.renamebox:SetText(self.title:GetText());
@@ -868,18 +868,18 @@ local methods = {
     end
 
     function self.callbacks.OnRenameAction(newid)
-      if (ForeverAuras.IsImporting()) then return end;
+      if (WeakAuras.IsImporting()) then return end;
       local oldid = self.data.id;
       if not(newid == oldid) then
-        ForeverAuras.Rename(self.data, newid);
+        WeakAuras.Rename(self.data, newid);
       end
       self:UpdateParentWarning()
     end
 
     function self.callbacks.OnDragStart()
-      if ForeverAuras.IsImporting() then return end;
+      if WeakAuras.IsImporting() then return end;
       if not OptionsPrivate.IsDisplayPicked(self.data.id) then
-        ForeverAuras.PickDisplay(self.data.id)
+        WeakAuras.PickDisplay(self.data.id)
       end
       OptionsPrivate.StartDrag(self.data);
     end
@@ -1037,7 +1037,7 @@ local methods = {
     self.view:SetScript("OnClick", self.callbacks.OnViewClick);
 
     if self.data.parent then
-      local parentData = ForeverAuras.GetData(self.data.parent);
+      local parentData = WeakAuras.GetData(self.data.parent);
       local index;
       for childIndex, childId in pairs(parentData.controlledChildren) do
         if(childId == self.data.id) then
@@ -1063,7 +1063,7 @@ local methods = {
       local function addChildrenNames(data, indent)
         for index, childId in pairs(data.controlledChildren) do
           tinsert(namestable, indent .. childId);
-          local childData = ForeverAuras.GetData(childId)
+          local childData = WeakAuras.GetData(childId)
           if not childData then
             return
           end
@@ -1161,20 +1161,20 @@ local methods = {
     end
   end,
   ["Ungroup"] = function(self)
-    if (ForeverAuras.IsImporting()) then return end;
-    local parentData = ForeverAuras.GetData(self.data.parent);
+    if (WeakAuras.IsImporting()) then return end;
+    local parentData = WeakAuras.GetData(self.data.parent);
     if not parentData then return end;
     local index = tIndexOf(parentData.controlledChildren, self.data.id);
     if(index) then
       tremove(parentData.controlledChildren, index);
-      ForeverAuras.Add(parentData);
+      WeakAuras.Add(parentData);
       OptionsPrivate.Private.AddParents(parentData)
-      ForeverAuras.ClearAndUpdateOptions(parentData.id);
+      WeakAuras.ClearAndUpdateOptions(parentData.id);
     else
       error("Display thinks it is a member of a group which does not control it");
     end
 
-    local newParent = parentData.parent and ForeverAuras.GetData(parentData.parent)
+    local newParent = parentData.parent and WeakAuras.GetData(parentData.parent)
     if newParent then
       local insertIndex = tIndexOf(newParent.controlledChildren, parentData.id)
       if not insertIndex then
@@ -1186,16 +1186,16 @@ local methods = {
 
     self:SetGroup(newParent and newParent.id);
     self.data.parent = newParent and newParent.id;
-    ForeverAuras.Add(self.data);
+    WeakAuras.Add(self.data);
     self:UpdateIconsVisible()
     if newParent then
-      ForeverAuras.Add(newParent)
+      WeakAuras.Add(newParent)
       OptionsPrivate.Private.AddParents(newParent)
-      ForeverAuras.ClearAndUpdateOptions(newParent.id)
-      ForeverAuras.UpdateGroupOrders(newParent)
+      WeakAuras.ClearAndUpdateOptions(newParent.id)
+      WeakAuras.UpdateGroupOrders(newParent)
     end
-    ForeverAuras.ClearAndUpdateOptions(self.data.id);
-    ForeverAuras.UpdateGroupOrders(parentData);
+    WeakAuras.ClearAndUpdateOptions(self.data.id);
+    WeakAuras.UpdateGroupOrders(parentData);
     local parentButton = OptionsPrivate.GetDisplayButton(parentData.id)
     if(#parentData.controlledChildren == 0) then
       parentButton:DisableExpand()
@@ -1288,7 +1288,7 @@ local methods = {
         if self.data.regionType == "dynamicgroup" then
           self:Disable()
         else
-          local parentData = self.data.parent and ForeverAuras.GetData(self.data.parent)
+          local parentData = self.data.parent and WeakAuras.GetData(self.data.parent)
           if (parentData and parentData.regionType == "dynamicgroup") then
             self:Disable()
           end
@@ -1354,7 +1354,7 @@ local methods = {
       local depth = 0
       while(group) do
         depth = depth + 1
-        group = ForeverAuras.GetData(group).parent
+        group = WeakAuras.GetData(group).parent
       end
       self.offset:SetWidth(depth * 8 + 1)
     else
@@ -1548,7 +1548,7 @@ local methods = {
           onClick = function()
             MenuUtil.CreateContextMenu(UIParent, function(ownerRegion, root)
               root:CreateButton(soundText, function()
-                ForeverAuras.PickDisplay(warning.auraId, tabsForWarning[warning.key] or "information")
+                WeakAuras.PickDisplay(warning.auraId, tabsForWarning[warning.key] or "information")
               end)
               root:CreateButton(removeText, function()
                 OptionsPrivate.Private.ClearSounds(self.data.uid, severity)
@@ -1557,7 +1557,7 @@ local methods = {
           end
         else
           onClick = function()
-            ForeverAuras.PickDisplay(warning.auraId, tabsForWarning[warning.key] or "information")
+            WeakAuras.PickDisplay(warning.auraId, tabsForWarning[warning.key] or "information")
           end
         end
 
@@ -1635,7 +1635,7 @@ local methods = {
     end
   end,
   ["SyncVisibility"] = function(self)
-    if (not ForeverAuras.IsOptionsOpen()) then
+    if (not WeakAuras.IsOptionsOpen()) then
       return;
     end
     if self.view.visibility >= 1 then
@@ -1661,7 +1661,7 @@ local methods = {
     end
   end,
   ["PriorityShow"] = function(self, priority)
-    if (not ForeverAuras.IsOptionsOpen()) then
+    if (not WeakAuras.IsOptionsOpen()) then
       return;
     end
     if(priority >= self.view.visibility and self.view.visibility ~= priority) then
@@ -1675,7 +1675,7 @@ local methods = {
     end
   end,
   ["PriorityHide"] = function(self, priority)
-    if (not ForeverAuras.IsOptionsOpen()) then
+    if (not WeakAuras.IsOptionsOpen()) then
       return;
     end
     if(priority >= self.view.visibility and self.view.visibility ~= 0) then
@@ -1857,7 +1857,7 @@ local methods = {
     end
   end,
   ["OverrideIcon"] = function(self)
-    self.icon:SetTexture("Interface\\Addons\\ForeverAuras\\Media\\Textures\\foreverauras_logo.tga")
+    self.icon:SetTexture("Interface\\Addons\\ForeverAuras\\Media\\Textures\\foreverauras_logo_64.tga")
     self.icon:Show()
     if(self.iconRegion and self.iconRegion.Hide) then
       self.iconRegion:Hide();
@@ -1873,7 +1873,7 @@ Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
-  local name = "ForeverAurasDisplayButton"..AceGUI:GetNextWidgetNum(Type);
+  local name = "WeakAurasDisplayButton"..AceGUI:GetNextWidgetNum(Type);
   ---@class Button
   local button = CreateFrame("Button", name, UIParent, "OptionsListButtonTemplate");
   button:SetHeight(32);
@@ -1976,7 +1976,7 @@ local function Constructor()
   renamebox:SetScript("OnEnterPressed", function()
     local oldid = button.title:GetText();
     local newid = renamebox:GetText();
-    if(newid == "" or (newid ~= oldid and ForeverAuras.GetData(newid))) then
+    if(newid == "" or (newid ~= oldid and WeakAuras.GetData(newid))) then
       renamebox:SetText(button.title:GetText());
     else
       renamebox.func();

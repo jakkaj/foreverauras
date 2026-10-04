@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -10,14 +10,14 @@ local CreateFrame = CreateFrame
 
 local AceGUI = LibStub("AceGUI-3.0")
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local debugLog
 
 local function ConstructDebugLog(frame)
-  local group = AceGUI:Create("ForeverAurasInlineGroup");
+  local group = AceGUI:Create("WeakAurasInlineGroup");
   group.frame:SetParent(frame);
   group.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", 17, -63);
   group.frame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -17, 46);

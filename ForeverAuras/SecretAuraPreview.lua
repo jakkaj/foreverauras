@@ -1,5 +1,5 @@
 -- Editor-only sample frames reuse native appearance styling without binding live auras.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local Display = Private.BlizzardAuraDisplay
 
@@ -87,7 +87,7 @@ local function CreateSample(region)
   -- Loop sample progress just as the framework renews expired OPTIONS timers.
   -- Only shown samples receive OnUpdate; keep text and bars in step with the swipe.
   button:SetScript("OnUpdate", function(self, elapsed)
-    if not ForeverAuras.IsOptionsOpen() then
+    if not WeakAuras.IsOptionsOpen() then
       Display.HidePreview(region)
       if Display.FlushInstanceQueue then Display.FlushInstanceQueue(region) end
       return
@@ -153,11 +153,28 @@ function Display.ShowPreview(region, data, StyleSample)
     -- Use the configured entry once, not every expanded rank of that entry.
     sample.name, sample.iconID = info and info.name or "Aura", info and info.iconID or 134400
     StyleSample(sample, data)
-    local offset = (index - 1 - (centered and (count - 1) / 2 or 0)) * ((vertical and height or width) + spacing)
-    local x = not vertical and (growth == "LEFT" and -offset or offset) or 0
-    local y = vertical and (growth == "UP" and offset or -offset) or 0
     button:ClearAllPoints()
-    button:SetPoint(centered and "CENTER" or anchor, region, centered and "CENTER" or anchor, x, y)
+    local perRow = Display.IconsPerRow(data)
+    if perRow then
+      local corner, point, horizontal, verticalDirection = Display.WrapLayout(growth, settings.rowGrowth)
+      local column, row = (index - 1) % perRow, math.floor((index - 1) / perRow)
+      local hSign, vSign = horizontal == "LEFT" and -1 or 1, verticalDirection == "UP" and 1 or -1
+      local line = math.min(count, perRow)
+      local x, y = 0, 0
+      if growth == "CENTER_HORIZONTAL" then x = -(line * (width + spacing) - spacing) / 2
+      elseif growth == "CENTER_VERTICAL" then y = (line * (height + spacing) - spacing) / 2 end
+      if vertical then
+        x, y = x + hSign * row * (width + spacing), y + vSign * column * (height + spacing)
+      else
+        x, y = x + hSign * column * (width + spacing), y + vSign * row * (height + spacing)
+      end
+      button:SetPoint(corner, region, point, x, y)
+    else
+      local offset = (index - 1 - (centered and (count - 1) / 2 or 0)) * ((vertical and height or width) + spacing)
+      local x = not vertical and (growth == "LEFT" and -offset or offset) or 0
+      local y = vertical and (growth == "UP" and offset or -offset) or 0
+      button:SetPoint(centered and "CENTER" or anchor, region, centered and "CENTER" or anchor, x, y)
+    end
     -- Like ordinary OPTIONS states, each sample has a six-second duration.
     -- Show On: Aura Missing previews the static look drawn while the aura is absent.
     button.staticSample = missingLook

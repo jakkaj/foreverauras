@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 local MSQ = LibStub("Masque", true);
 if MSQ then
   MSQ:AddType("WA_Aura", {"Icon", "Cooldown"})
@@ -303,17 +303,17 @@ local function create(parent, data)
   -- (i.e., put on its ignore list for timer overlays)
   local id = data.id;
   local frameId = id:lower():gsub(" ", "_");
-  if(_G["ForeverAurasCooldown"..frameId]) then
+  if(_G["WeakAurasCooldown"..frameId]) then
     local baseFrameId = frameId;
     local num = 2;
-    while(_G["ForeverAurasCooldown"..frameId]) do
+    while(_G["WeakAurasCooldown"..frameId]) do
       frameId = baseFrameId..num;
       num = num + 1;
     end
   end
   region.frameId = frameId;
 
-  local cooldown = CreateFrame("Cooldown", "ForeverAurasCooldown"..frameId, region, "CooldownFrameTemplate");
+  local cooldown = CreateFrame("Cooldown", "WeakAurasCooldown"..frameId, region, "CooldownFrameTemplate");
   region.cooldown = cooldown;
   cooldown:SetAllPoints(icon);
   cooldown:SetDrawBling(false)
@@ -581,7 +581,9 @@ local function modify(parent, region, data)
       end
     end
 
-    iconPath = iconPath or self.displayIcon or "Interface\\Icons\\INV_Misc_QuestionMark"
+    if iconPath == "" then iconPath = nil end
+    local displayIcon = self.displayIcon ~= "" and self.displayIcon or nil
+    iconPath = iconPath or displayIcon or "Interface\\Icons\\INV_Misc_QuestionMark"
     Private.SetTextureOrAtlas(self.icon, iconPath)
   end
 

@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 
 local formatters = {}
@@ -24,9 +24,9 @@ end
 function Private.UsesDurationText(state)
   if not state then return false end
   if state.cdmHideGCDText and not state.cdmTextPreview then
-    return ForeverAuras.IsDurationObject(state.cdmTextDurationObject)
+    return WeakAuras.IsDurationObject(state.cdmTextDurationObject)
   end
-  return state.progressType == "durationObject" and ForeverAuras.IsDurationObject(state.durationObject)
+  return state.progressType == "durationObject" and WeakAuras.IsDurationObject(state.durationObject)
 end
 
 function Private.GetDurationTextFormatter(format, threshold, precision, secondsOnly)

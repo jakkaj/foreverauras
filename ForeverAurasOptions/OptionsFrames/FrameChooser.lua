@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -12,9 +12,9 @@ local pairs = pairs
 local CreateFrame, IsMouseButtonDown, SetCursor, ResetCursor
   = CreateFrame, IsMouseButtonDown, SetCursor, ResetCursor
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local frameChooserFrame
 local frameChooserBox
@@ -42,7 +42,7 @@ function OptionsPrivate.StartFrameChooser(data, path)
   local frame = OptionsPrivate.Private.OptionsFrame();
   if not(frameChooserFrame) then
     frameChooserFrame = CreateFrame("Frame");
-    frameChooserBox = CreateFrame("Frame", nil, frameChooserFrame, "BackdropTemplateForeverAuras");
+    frameChooserBox = CreateFrame("Frame", nil, frameChooserFrame, "BackdropTemplateWeakAuras");
     frameChooserBox:SetFrameStrata("TOOLTIP");
     frameChooserBox:SetBackdrop({
       edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -62,7 +62,7 @@ function OptionsPrivate.StartFrameChooser(data, path)
     if(IsMouseButtonDown("RightButton")) then
       OptionsPrivate.Private.ValueToPath(data, path, givenValue);
       OptionsPrivate.StopFrameChooser(data);
-      ForeverAuras.FillOptions()
+      WeakAuras.FillOptions()
     else
       SetCursor("CAST_CURSOR");
 
@@ -117,7 +117,7 @@ function OptionsPrivate.StartFrameChooser(data, path)
           if(focusName ~= oldFocusName) then
             OptionsPrivate.Private.ValueToPath(data, path, focusName);
             oldFocusName = focusName;
-            ForeverAuras.FillOptions()
+            WeakAuras.FillOptions()
           end
           oldFocus = focus;
         end
@@ -140,5 +140,5 @@ function OptionsPrivate.StopFrameChooser(data)
     frameChooserBox:Hide();
   end
   ResetCursor();
-  ForeverAuras.Add(data);
+  WeakAuras.Add(data);
 end

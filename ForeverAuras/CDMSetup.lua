@@ -1,5 +1,5 @@
 -- Save class-pack CDM settings for Blizzard to apply on reload.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local pending, timer, needsReload
 local attempts = 0
@@ -196,7 +196,7 @@ local function RunSetup()
   end
 end
 
-function ForeverAuras.SetupClassPackCDM(class)
+function WeakAuras.SetupClassPackCDM(class)
   -- Init also runs when inspecting auras whose Load conditions are unmet.
   local _, playerClass = UnitClass("player")
   if type(class) ~= "string" or class ~= playerClass then return false end

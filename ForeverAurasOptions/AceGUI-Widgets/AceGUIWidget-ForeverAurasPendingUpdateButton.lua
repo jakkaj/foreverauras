@@ -1,14 +1,14 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local pairs, next, type, unpack = pairs, next, type, unpack
 
-local Type, Version = "ForeverAurasPendingUpdateButton", 6
+local Type, Version = "WeakAurasPendingUpdateButton", 6
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
@@ -68,7 +68,7 @@ local methods = {
         end
       end
 
-      ForeverAuras.Import(self.companionData.encoded, nil, nil, linkedAuras)
+      WeakAuras.Import(self.companionData.encoded, nil, nil, linkedAuras)
     end
 
     function self.callbacks.OnFollowLinkClick()
@@ -82,12 +82,12 @@ local methods = {
             {
               text = auraId,
               notCheckable = true,
-              func = function() ForeverAuras.PickDisplay(auraId, "information") end
+              func = function() WeakAuras.PickDisplay(auraId, "information") end
             }
           )
         end
       end
-      LibDD:EasyMenu(self.menu, ForeverAuras_DropDownMenu, self.followLink, 0, 0, "MENU", 5)
+      LibDD:EasyMenu(self.menu, WeakAuras_DropDownMenu, self.followLink, 0, 0, "MENU", 5)
     end
 
     self:SetTitle(self.companionData.name)
@@ -95,7 +95,7 @@ local methods = {
     self.update:SetScript("OnClick", self.callbacks.OnUpdateClick)
     self.followLink:SetScript("OnClick", self.callbacks.OnFollowLinkClick)
     local data = OptionsPrivate.Private.StringToTable(self.companionData.encoded, true)
-    ForeverAuras.PreAdd(data.d)
+    WeakAuras.PreAdd(data.d)
     self.data = data.d
     self.frame:EnableKeyboard(false)
     self:Enable()
@@ -276,7 +276,7 @@ Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
-  local name = "ForeverAurasPendingUpdateButton" .. AceGUI:GetNextWidgetNum(Type)
+  local name = "WeakAurasPendingUpdateButton" .. AceGUI:GetNextWidgetNum(Type)
   local button = CreateFrame("Button", name, UIParent)
   button:SetHeight(32)
   button:SetWidth(1000)

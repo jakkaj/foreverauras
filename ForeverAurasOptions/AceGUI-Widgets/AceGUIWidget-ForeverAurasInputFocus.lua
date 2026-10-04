@@ -2,9 +2,9 @@
 --[[-----------------------------------------------------------------------------
 Input Widget that allows to show an alternative text when it does not have focus
 -------------------------------------------------------------------------------]]
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
-local Type, Version = "ForeverAurasInputFocus", 1
+local Type, Version = "WeakAurasInputFocus", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 

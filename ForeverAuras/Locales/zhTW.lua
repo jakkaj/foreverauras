@@ -3,7 +3,7 @@ if (GAME_LOCALE or GetLocale()) ~= "zhTW" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- ForeverAuras
 L[ [=[ Filter formats: 'Name', 'Name-Realm', '-Realm'.
@@ -63,7 +63,7 @@ L["25 Player Raid (Normal)"] = "25 人團隊 (普通)"
 L["40 Man Raid"] = "40人團隊"
 L["40 Player Raid"] = "40 人團隊"
 L["5 Man Dungeon"] = "5 人地城"
-L[ [=[A detailed overview of your auras and ForeverAuras systems
+L[ [=[A detailed overview of your auras and WeakAuras systems
 Copy the whole text to Weakaura's Discord if you need assistance.]=] ] = "您的光環和ForeverAuras系統的詳細概述 如果您需要協助，請將全文複製到Weakaura的Discord。"
 L["A trigger in this aura is set up to track a soft target unit, but you don't have the CVars set up for this to work correctly. Consider either changing the unit tracked, or configuring the Soft Target CVars."] = "此提醒效果設定為追蹤軟目標單位，但是並沒有設定好相關的 CVars 遊戲參數讓它能正常運作。請更改追蹤的目標，或是設定軟目標的 CVars。"
 L["Abbreviate"] = "縮寫"
@@ -1467,8 +1467,8 @@ L["Use Legacy floor rounding"] = "使用舊版最小捨入"
 L["Use Texture"] = "使用材質"
 L["Use Watched Faction"] = "使用追蹤的陣營"
 L["Uses UnitInRange() to check if in range. Matches default raid frames out of range behavior, which is between 25 to 40 yards depending on your class and spec."] = "使用 UnitInRange() 來檢查是否在範圍內。符合團隊框架預設的超出範圍行為時，範圍是在 25 到 40 碼之間，具體取決於您的職業和專精。"
-L["Using ForeverAuras.clones is deprecated. Use ForeverAuras.GetRegion(id, cloneId) instead."] = "ForeverAuras.clones 已經被移除，請改用 ForeverAuras.GetRegion(id, cloneId)。"
-L["Using ForeverAuras.regions is deprecated. Use ForeverAuras.GetRegion(id) instead."] = "ForeverAuras.regions 已經被移除，請改用 ForeverAuras.GetRegion(id)。"
+L["Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."] = "WeakAuras.clones 已經被移除，請改用 WeakAuras.GetRegion(id, cloneId)。"
+L["Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."] = "WeakAuras.regions 已經被移除，請改用 WeakAuras.GetRegion(id)。"
 L["Vaelastrasz the Corrupt"] = "墮落的瓦拉斯塔茲"
 L["Versatility (%)"] = "臨機應變 (%)"
 L["Versatility Rating"] = "臨機應變分數"
@@ -1489,12 +1489,12 @@ L["Warning: Full Scan auras checking for both name and spell id can't be convert
 L["Warning: Name info is now available via %affected, %unaffected. Number of affected group members via %unitCount. Some options behave differently now. This is not automatically adjusted."] = "警告: 現在改為使用 %affected, %unaffected 來取得名字資訊，使用 %unitCount 取得受影響的隊友數量。一些選項的行為已經和以往不同了，並且不會自動調整。"
 L["Warning: Tooltip values are now available via %tooltip1, %tooltip2, %tooltip3 instead of %s. This is not automatically adjusted."] = "警告: 現在改為使用 %tooltip1, %tooltip2, %tooltip3 來取得浮動提示資訊中的值，而不是 %s。這不會自動調整。"
 L["ForeverAuras Built-In (63:42 | 3:07 | 10 | 2.4)"] = "ForeverAuras 內建的 (63:42 | 3:07 | 10 | 2.4)"
-L[ [=[ForeverAuras has detected that it has been downgraded.
+L[ [=[WeakAuras has detected that it has been downgraded.
 Your saved auras may no longer work properly.
 Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
 Last upgrade: %s
 
-|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[ForeverAuras 偵測到它被降回舊版本，你所儲存的提醒效果已無法正常運作。
+|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[WeakAuras 偵測到它被降回舊版本，你所儲存的提醒效果已無法正常運作。
 是否要執行|cffff0000實驗性的|r修復工具? 將會覆蓋自上次資料庫升級以來所做的任何更改。
 上次升級是: %s
 

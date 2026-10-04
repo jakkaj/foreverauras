@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-30.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, OptionsPrivate = ...
 
 local function GetOptions(data, triggernum)
   local trigger = data.triggers[triggernum].trigger
   local display = OptionsPrivate.Private.BlizzardAuraDisplay
-  local width = ForeverAuras.normalWidth
+  local width = WeakAuras.normalWidth
   local function Save(key, value)
     trigger[key] = value
     OptionsPrivate.SaveAuraTrigger(data, triggernum)
@@ -291,4 +291,4 @@ local function GetOptions(data, triggernum)
   return {["trigger." .. triggernum .. ".secretAura"] = options}
 end
 
-ForeverAuras.RegisterTriggerSystemOptions({"secretAura"}, GetOptions)
+WeakAuras.RegisterTriggerSystemOptions({"secretAura"}, GetOptions)

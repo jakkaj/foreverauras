@@ -1,16 +1,16 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
 local SharedMedia = LibStub("LibSharedMedia-3.0");
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 local FontStringScaleAnimationMode = Enum and Enum.FontStringScaleAnimationMode
 
-local defaultFont = ForeverAuras.defaultFont
-local defaultFontSize = ForeverAuras.defaultFontSize
+local defaultFont = WeakAuras.defaultFont
+local defaultFontSize = WeakAuras.defaultFontSize
 
 local default = {
   displayText = "%p",
@@ -74,7 +74,7 @@ local properties = {
     display = L["Text"],
     setter = "ChangeText",
     type = "string",
-    control = "ForeverAurasInputWithIndentation"
+    control = "WeakAurasInputWithIndentation"
   },
 }
 
@@ -226,7 +226,7 @@ local function modify(parent, region, data)
     region.width = data.fixedWidth;
     SetText = function(textStr)
       if text:GetFont() then
-        text:SetText(ForeverAuras.ReplaceRaidMarkerSymbols(textStr));
+        text:SetText(WeakAuras.ReplaceRaidMarkerSymbols(textStr));
       end
 
       local height = text:GetStringHeight();
@@ -252,7 +252,7 @@ local function modify(parent, region, data)
     SetText = function(textStr)
       if issecretvalue(textStr) or textStr ~= text.displayText then
         if text:GetFont() then
-          text:SetText(ForeverAuras.ReplaceRaidMarkerSymbols(textStr));
+          text:SetText(WeakAuras.ReplaceRaidMarkerSymbols(textStr));
         end
         -- If the text changes we need to figure out the text size
         -- To unset scaling we need to temporarily detach the text from
@@ -322,7 +322,7 @@ local function modify(parent, region, data)
 
   local customTextFunc = nil
   if containsCustomText and data.customText and data.customText ~= "" then
-    customTextFunc = ForeverAuras.LoadFunction("return "..data.customText, data.id)
+    customTextFunc = WeakAuras.LoadFunction("return "..data.customText, data.id)
     region.values.customTextUpdateThrottle = data.customTextUpdateThrottle or 0
   end
 
@@ -469,7 +469,7 @@ local function fallbackmodify(parent, region, data)
   -- The fallback also attaches only after its font is ready.
   text:SetFontObject(fontObject)
   if text:GetFont() then
-    text:SetText(ForeverAuras.L["Region type %s not supported"]:format(data.regionType));
+    text:SetText(WeakAuras.L["Region type %s not supported"]:format(data.regionType));
   end
 
   text:ClearAllPoints();

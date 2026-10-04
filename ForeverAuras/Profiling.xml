@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI_shared.xsd">
 
-  <Frame name="ForeverAurasProfilingLineTemplate" mixin="ForeverAurasProfilingLineMixin" virtual="true">
+  <Frame name="WeakAurasProfilingLineTemplate" mixin="WeakAurasProfilingLineMixin" virtual="true">
     <Size y="20"/>
     <Layers>
       <Layer level="overlay">
@@ -66,7 +66,7 @@
     </Frames>
   </Frame>
 
-  <Frame name="ForeverAurasProfilingFrame" mixin="ForeverAurasProfilingMixin" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" movable="true" resizable="true" enableMouse="true" clampedToScreen="true" frameStrata="DIALOG" hidden="true">
+  <Frame name="WeakAurasProfilingFrame" mixin="WeakAurasProfilingMixin" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" movable="true" resizable="true" enableMouse="true" clampedToScreen="true" frameStrata="DIALOG" hidden="true">
     <Size x="450" y="400"/>
     <Anchors>
       <Anchor point="CENTER"/>
@@ -125,7 +125,7 @@
               <Anchor point="TOPLEFT" x="15"/>
             </Anchors>
             <Scripts>
-              <OnClick function="ForeverAurasProfilingResultButton_OnClick"/>
+              <OnClick function="WeakAurasProfilingResultButton_OnClick"/>
               <OnEnter>
                 if self.tooltip then
                   GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -145,7 +145,7 @@
               <Anchor point="TOPRIGHT" x="-10"/>
             </Anchors>
             <Scripts>
-              <OnClick function="ForeverAurasProfilingStopButton_OnClick"/>
+              <OnClick function="WeakAurasProfilingStopButton_OnClick"/>
               <OnEnter>
                 if self.tooltip then
                   GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -198,7 +198,7 @@
           <Anchor point="TOPRIGHT" x="-5" y="-30"/>
         </Anchors>
         <KeyValues>
-          <KeyValue key="sortingFunction" value="ForeverAurasProfilingColumnDisplay_OnClick" type="global"/>
+          <KeyValue key="sortingFunction" value="WeakAurasProfilingColumnDisplay_OnClick" type="global"/>
         </KeyValues>
       </Frame>
 
@@ -236,7 +236,7 @@
     </Scripts>
   </Frame>
 
-  <Frame name="ForeverAurasProfilingReport" mixin="ForeverAurasProfilingReportMixin" parent="ForeverAurasProfilingFrame" movable="true" inherits="PortraitFrameTemplate" enableMouse="true" clampedToScreen="true" frameStrata="DIALOG" hidden="true">
+  <Frame name="WeakAurasProfilingReport" mixin="WeakAurasProfilingReportMixin" parent="WeakAurasProfilingFrame" movable="true" inherits="PortraitFrameTemplate" enableMouse="true" clampedToScreen="true" frameStrata="DIALOG" hidden="true">
     <Size x="450" y="400"/>
     <HitRectInsets>
       <RelInset top="8" bottom="8" right="8" left="8" />

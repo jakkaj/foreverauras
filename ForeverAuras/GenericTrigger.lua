@@ -46,7 +46,7 @@ GetProgressSources(data, triggernum, outValues)
 GetTriggerConditions(data, triggernum)
 Returns potential conditions that this trigger provides.
 ]]--
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
@@ -61,14 +61,14 @@ local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo;
 -- WoW APIs
 local IsPlayerMoving = IsPlayerMoving
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras;
-local L = ForeverAuras.L;
+---@class WeakAuras
+local WeakAuras = WeakAuras;
+local L = WeakAuras.L;
 local GenericTrigger = {};
 
 local event_prototypes = Private.event_prototypes;
 
-local timer = ForeverAuras.timer;
+local timer = WeakAuras.timer;
 
 local events = {}
 local loaded_events = {}
@@ -86,7 +86,7 @@ local nameplateExists = {}
 ---@param unit UnitToken
 ---@param smart? boolean
 ---@return boolean unitExists
-function ForeverAuras.UnitExistsFixed(unit, smart)
+function WeakAuras.UnitExistsFixed(unit, smart)
   if #unit > 9 and unit:sub(1, 9) == "nameplate" then
     return nameplateExists[unit]
   end
@@ -100,7 +100,7 @@ end
 
 ---@param input string
 ---@return string[] subStrings
-function ForeverAuras.split(input)
+function WeakAuras.split(input)
   input = input or "";
   local ret = {};
   local split, element = nil, nil
@@ -682,7 +682,7 @@ local function RunTriggerFunc(allStates, data, id, triggernum, event, arg1, arg2
   -- Native CDM callbacks and filter timers dispatch internally even while the
   -- editor pauses normal game events. Only OPTIONS may replace its sample states.
   if not optionsEvent and data.prototype and data.prototype.cooldownViewerProgress
-      and ForeverAuras.IsOptionsOpen() then return false end
+      and WeakAuras.IsOptionsOpen() then return false end
   local errorHandler = (optionsEvent and data.ignoreOptionsEventErrors) and ignoreErrorHandler or Private.GetErrorHandlerId(id, L["Trigger %s"]:format(triggernum))
   local updateTriggerState = false;
 
@@ -907,7 +907,7 @@ function Private.ScanEventsByID(event, id, ...)
   end
 end
 
-function ForeverAuras.ScanEventsByID(event, id, ...)
+function WeakAuras.ScanEventsByID(event, id, ...)
   scannerFrame:Queue(Private.ScanEventsByID, event, id, ...)
 end
 
@@ -927,7 +927,7 @@ function Private.ScanEvents(event, arg1, arg2, ...)
   Private.StopProfileSystem("generictrigger " .. system)
 end
 
-function ForeverAuras.ScanEvents(event, arg1, arg2, ...)
+function WeakAuras.ScanEvents(event, arg1, arg2, ...)
   if type(event) ~= "string" then
     return
   end
@@ -961,7 +961,7 @@ function Private.ScanUnitEvents(event, unit, ...)
           else
             local delay = GenericTrigger.GetDelay(data)
             if delay == 0 then
-              local allStates = ForeverAuras.GetTriggerStateForTrigger(id, triggernum);
+              local allStates = WeakAuras.GetTriggerStateForTrigger(id, triggernum);
               if (RunTriggerFunc(allStates, data, id, triggernum, event, unit, ...)) then
                 updateTriggerState = true;
               end
@@ -982,7 +982,7 @@ function Private.ScanUnitEvents(event, unit, ...)
   Private.cdmScanBatch = previousCDMBatch
 end
 
-function ForeverAuras.ScanUnitEvents(event, unit, ...)
+function WeakAuras.ScanUnitEvents(event, unit, ...)
   scannerFrame:Queue(Private.ScanUnitEvents, event, unit, ...)
 end
 
@@ -1016,7 +1016,7 @@ function Private.ScanEventsInternal(event_list, event, arg1, arg2, ... )
     for triggernum, data in pairs(triggers) do
       if event == "FRAME_UPDATE" then
         if checkOnUpdateThrottle(data) then
-          local allStates = ForeverAuras.GetTriggerStateForTrigger(id, triggernum);
+          local allStates = WeakAuras.GetTriggerStateForTrigger(id, triggernum);
           if (RunTriggerFunc(allStates, data, id, triggernum, event, arg1, arg2, ...)) then
             updateTriggerState = true
           end
@@ -1024,7 +1024,7 @@ function Private.ScanEventsInternal(event_list, event, arg1, arg2, ... )
       else
         local delay = GenericTrigger.GetDelay(data)
         if delay == 0 then
-          local allStates = ForeverAuras.GetTriggerStateForTrigger(id, triggernum);
+          local allStates = WeakAuras.GetTriggerStateForTrigger(id, triggernum);
           if (RunTriggerFunc(allStates, data, id, triggernum, event, arg1, arg2, ...)) then
             updateTriggerState = true
           end
@@ -1042,7 +1042,7 @@ function Private.ScanEventsInternal(event_list, event, arg1, arg2, ... )
   Private.cdmScanBatch = previousCDMBatch
 end
 
-function ForeverAuras.ScanEventsInternal(event_list, event, arg1, arg2, ... )
+function WeakAuras.ScanEventsInternal(event_list, event, arg1, arg2, ... )
   scannerFrame:Queue(Private.ScanEventsInternal, event_list, event, arg1, arg2, ...)
 end
 
@@ -1050,7 +1050,7 @@ do
   local function RunTriggerFuncForDelay(id, triggernum, data, event, ...)
     Private.StartProfileAura(id)
     Private.ActivateAuraEnvironment(id)
-    local allStates = ForeverAuras.GetTriggerStateForTrigger(id, triggernum)
+    local allStates = WeakAuras.GetTriggerStateForTrigger(id, triggernum)
     if (RunTriggerFunc(allStates, data, id, triggernum, event, ...)) then
       Private.UpdatedTriggerState(id)
     end
@@ -1101,10 +1101,10 @@ function Private.ScanEventsWatchedTrigger(id, watchedTriggernums)
 
   for _, watchedTrigger in ipairs(watchedTriggernums) do
     if watched_trigger_events[id] and watched_trigger_events[id][watchedTrigger] then
-      local updatedTriggerStates = ForeverAuras.GetTriggerStateForTrigger(id, watchedTrigger)
+      local updatedTriggerStates = WeakAuras.GetTriggerStateForTrigger(id, watchedTrigger)
       for observerTrigger in pairs(watched_trigger_events[id][watchedTrigger]) do
         local data = events and events[id] and events[id][observerTrigger]
-        local allstates = ForeverAuras.GetTriggerStateForTrigger(id, observerTrigger)
+        local allstates = WeakAuras.GetTriggerStateForTrigger(id, observerTrigger)
         if data and allstates and updatedTriggerStates then
           if RunTriggerFunc(allstates, data, id, observerTrigger, "TRIGGER", watchedTrigger, updatedTriggerStates) then
             updateTriggerState = true
@@ -1176,11 +1176,11 @@ end
 
 ---@type fun(id: auraId, triggernum: integer)
 function GenericTrigger.CreateFakeStates(id, triggernum)
-  local data = ForeverAuras.GetData(id)
+  local data = WeakAuras.GetData(id)
   local eventData = events[id][triggernum]
 
   Private.ActivateAuraEnvironment(id);
-  local allStates = ForeverAuras.GetTriggerStateForTrigger(id, triggernum);
+  local allStates = WeakAuras.GetTriggerStateForTrigger(id, triggernum);
 
   local arg1
   if eventData.statesParameter == "unit" then
@@ -1218,7 +1218,7 @@ function GenericTrigger.ScanWithFakeEvent(id, fake)
   local updateTriggerState = false;
   Private.ActivateAuraEnvironment(id);
   for triggernum, event in pairs(events[id] or {}) do
-    local allStates = ForeverAuras.GetTriggerStateForTrigger(id, triggernum);
+    local allStates = WeakAuras.GetTriggerStateForTrigger(id, triggernum);
     if (event.force_events) then
       if (type(event.force_events) == "string") then
         updateTriggerState = RunTriggerFunc(allStates, events[id][triggernum], id, triggernum, event.force_events) or updateTriggerState;
@@ -1253,7 +1253,7 @@ function HandleEvent(frame, event, arg1, arg2, ...)
     nameplateExists[arg1] = false
   end
 
-  if not(ForeverAuras.IsPaused()) then
+  if not(WeakAuras.IsPaused()) then
     Private.ScanEvents(event, arg1, arg2, ...);
   end
   if (event == "PLAYER_ENTERING_WORLD") then
@@ -1290,7 +1290,7 @@ local brokenUnitMap = {
 
 function HandleUnitEvent(frame, event, unit, ...)
   Private.StartProfileSystem("generictrigger " .. event .. " " .. unit);
-  if not(ForeverAuras.IsPaused()) then
+  if not(WeakAuras.IsPaused()) then
     if Private.ExecEnv.UnitIsUnit(unit, frame.unit)
        or (brokenUnitMap[unit] == frame.unit and not UnitExists(unit))
     then
@@ -1328,7 +1328,7 @@ end
 local genericTriggerRegisteredEvents = {};
 local genericTriggerRegisteredUnitEvents = {};
 
----@class ForeverAurasGenericTriggerFrame: FrameScriptObject
+---@class WeakAurasGenericTriggerFrame: FrameScriptObject
 local frame = CreateFrame("Frame");
 frame.unitFrames = {};
 Private.frames["ForeverAuras Generic Trigger Frame"] = frame;
@@ -1688,12 +1688,12 @@ function GenericTrigger.Add(data, region)
         local fixUpShowNil
         if(Private.category_event_prototype[triggerType]) then
           if not(trigger.event) then
-            error("Improper arguments to ForeverAuras.Add - trigger type is \"event\" but event is not defined");
+            error("Improper arguments to WeakAuras.Add - trigger type is \"event\" but event is not defined");
           elseif not(event_prototypes[trigger.event]) then
             if(event_prototypes["Conditions"]) then
               trigger.event = "Conditions";
             else
-              error("Improper arguments to ForeverAuras.Add - no event prototype can be found for event type \""..trigger.event.."\" and default prototype reset failed.");
+              error("Improper arguments to WeakAuras.Add - no event prototype can be found for event type \""..trigger.event.."\" and default prototype reset failed.");
             end
           else
             if (trigger.event == "Combat Log") then
@@ -1746,7 +1746,7 @@ function GenericTrigger.Add(data, region)
               automaticAutoHide = true
               duration = tonumber(trigger.duration or "1")
             else
-              ForeverAuras.prettyPrint("Invalid Prototype found: " .. prototype.name)
+              WeakAuras.prettyPrint("Invalid Prototype found: " .. prototype.name)
             end
 
             if prototype.countEvents then
@@ -1790,9 +1790,9 @@ function GenericTrigger.Add(data, region)
             end
           end
         else -- CUSTOM
-          triggerFunc = ForeverAuras.LoadFunction("return "..(trigger.custom or ""), data.id);
+          triggerFunc = WeakAuras.LoadFunction("return "..(trigger.custom or ""), data.id);
           if (trigger.custom_type == "stateupdate") then
-            tsuConditionVariables = ForeverAuras.LoadFunction("return function() return \n" .. (trigger.customVariables or "") .. "\n end", data.id);
+            tsuConditionVariables = WeakAuras.LoadFunction("return function() return \n" .. (trigger.customVariables or "") .. "\n end", data.id);
             if not tsuConditionVariables then
               tsuConditionVariables = function() end
             end
@@ -1800,41 +1800,41 @@ function GenericTrigger.Add(data, region)
           end
 
           if(trigger.custom_type == "status" or trigger.custom_type == "event" and trigger.custom_hide == "custom") then
-            untriggerFunc = ForeverAuras.LoadFunction("return "..(untrigger.custom or ""), data.id);
+            untriggerFunc = WeakAuras.LoadFunction("return "..(untrigger.custom or ""), data.id);
             if (not untriggerFunc) then
               untriggerFunc = trueFunction;
             end
           end
 
           if(trigger.custom_type ~= "stateupdate" and trigger.customDuration and trigger.customDuration ~= "") then
-            durationFunc = ForeverAuras.LoadFunction("return "..trigger.customDuration, data.id);
+            durationFunc = WeakAuras.LoadFunction("return "..trigger.customDuration, data.id);
           end
           if(trigger.custom_type ~= "stateupdate") then
             overlayFuncs = {};
             for i = 1, 7 do
               local property = "customOverlay" .. i;
               if (trigger[property] and trigger[property] ~= "") then
-                overlayFuncs[i] = ForeverAuras.LoadFunction("return ".. trigger[property], data.id);
+                overlayFuncs[i] = WeakAuras.LoadFunction("return ".. trigger[property], data.id);
               end
             end
           end
           if(trigger.custom_type ~= "stateupdate" and trigger.customName and trigger.customName ~= "") then
-            nameFunc = ForeverAuras.LoadFunction("return "..trigger.customName, data.id);
+            nameFunc = WeakAuras.LoadFunction("return "..trigger.customName, data.id);
           end
           if(trigger.custom_type ~= "stateupdate" and trigger.customIcon and trigger.customIcon ~= "") then
-            iconFunc = ForeverAuras.LoadFunction("return "..trigger.customIcon, data.id);
+            iconFunc = WeakAuras.LoadFunction("return "..trigger.customIcon, data.id);
           end
           if(trigger.custom_type ~= "stateupdate" and trigger.customTexture and trigger.customTexture ~= "") then
-            textureFunc = ForeverAuras.LoadFunction("return "..trigger.customTexture, data.id);
+            textureFunc = WeakAuras.LoadFunction("return "..trigger.customTexture, data.id);
           end
           if(trigger.custom_type ~= "stateupdate" and trigger.customStacks and trigger.customStacks ~= "") then
-            stacksFunc = ForeverAuras.LoadFunction("return "..trigger.customStacks, data.id);
+            stacksFunc = WeakAuras.LoadFunction("return "..trigger.customStacks, data.id);
           end
 
           if((trigger.custom_type == "status" or trigger.custom_type == "stateupdate") and trigger.check == "update") then
             trigger_events = {"FRAME_UPDATE"};
           else
-            local rawEvents = ForeverAuras.split(trigger.events);
+            local rawEvents = WeakAuras.split(trigger.events);
             for index, event in pairs(rawEvents) do
               -- custom events in the form of event:unit1:unit2:unitX are registered with RegisterUnitEvent
               local trueEvent
@@ -1962,7 +1962,7 @@ do
     end
     if not(updating) then
       update_frame:SetScript("OnUpdate", function(self, elapsed)
-        if not(ForeverAuras.IsPaused()) then
+        if not(WeakAuras.IsPaused()) then
           Private.ScanEvents("FRAME_UPDATE", elapsed);
         end
       end);
@@ -2048,7 +2048,7 @@ do
   local function CheckGCD(deferEvent)
     if C_Secrets.ShouldSpellCooldownBeSecret(61304) then
       if deferEvent then return "GCD_UPDATE" end
-      if not ForeverAuras.IsPaused() then Private.ScanEvents("GCD_UPDATE") end
+      if not WeakAuras.IsPaused() then Private.ScanEvents("GCD_UPDATE") end
       return
     end
     local event;
@@ -2085,7 +2085,7 @@ do
     end
     -- Cooldown batches publish GCD changes after their per-spell caches are fresh.
     if deferEvent then return event end
-    if(event and not ForeverAuras.IsPaused()) then
+    if(event and not WeakAuras.IsPaused()) then
       Private.ScanEvents(event);
     end
   end
@@ -2131,7 +2131,7 @@ do
     local changed = false
     local nowReady = false
     if C_Secrets.ShouldSpellCooldownBeSecret(id) then
-      local isReady = ForeverAuras.IsSpellReady(id)
+      local isReady = WeakAuras.IsSpellReady(id)
       changed = self.readyState[id] ~= isReady
       self.readyState[id] = isReady
       return changed, isReady
@@ -2353,7 +2353,7 @@ do
       self.data[effectiveSpellId].watched[userSpellId] = 1
 
       local spellDetail = self.data[effectiveSpellId]
-      spellDetail.known = ForeverAuras.IsSpellKnownIncludingPet(effectiveSpellId)
+      spellDetail.known = WeakAuras.IsSpellKnownIncludingPet(effectiveSpellId)
 
       if C_Secrets.ShouldSpellCooldownBeSecret(effectiveSpellId) then
         return
@@ -2362,7 +2362,7 @@ do
       local charges, maxCharges, startTime, duration, unifiedCooldownBecauseRune,
             startTimeCooldown, durationCooldown, cooldownBecauseRune, startTimeCharges, durationCharges,
             spellCount, unifiedModRate, modRate, modRateCharges, paused
-            = ForeverAuras.GetSpellCooldownUnified(effectiveSpellId, GetRuneDuration());
+            = WeakAuras.GetSpellCooldownUnified(effectiveSpellId, GetRuneDuration());
 
       spellDetail.charges = charges
       spellDetail.chargesMax = maxCharges
@@ -2443,7 +2443,7 @@ do
       -- Check for changes in the effective spells
       local changed = {}
       for effectiveSpellId, spellDetailsData in pairs(self.data) do
-        local known = ForeverAuras.IsSpellKnownIncludingPet(effectiveSpellId)
+        local known = WeakAuras.IsSpellKnownIncludingPet(effectiveSpellId)
         if (known ~= spellDetailsData.known) then
           spellDetailsData.known = known
           changed[effectiveSpellId] = true
@@ -2460,7 +2460,7 @@ do
         end
       end
 
-      if not ForeverAuras.IsPaused() then
+      if not WeakAuras.IsPaused() then
         for id in pairs(changed) do
           self:SendEventsForSpell(id, "SPELL_COOLDOWN_CHANGED", id)
         end
@@ -2498,7 +2498,7 @@ do
         end
         detail.wandOnlyCooldown, detail.ownCooldownEnd = nil, nil
         if detail.ready == false and ready == true and detail.notReadySince and not wandOnly
-        and now - detail.notReadySince > SECRET_MIN_COOLDOWN and not ForeverAuras.IsPaused() then
+        and now - detail.notReadySince > SECRET_MIN_COOLDOWN and not WeakAuras.IsPaused() then
           self:SendEventsForSpell(effectiveSpellId, "SPELL_COOLDOWN_READY", effectiveSpellId)
         end
         if ready == false then
@@ -2522,7 +2522,7 @@ do
         end
         detail.charges, detail.chargesMax, detail.count = charges, maxCharges, count
         detail.chargeGainTime, detail.chargeLostTime = nil, nil
-        if (stateChanged or not self.quietSecretCheck) and not ForeverAuras.IsPaused() then
+        if (stateChanged or not self.quietSecretCheck) and not WeakAuras.IsPaused() then
           self:SendEventsForSpell(effectiveSpellId, "SPELL_COOLDOWN_CHANGED", effectiveSpellId)
         end
         return
@@ -2530,7 +2530,7 @@ do
       local charges, maxCharges, startTime, duration, unifiedCooldownBecauseRune,
         startTimeCooldown, durationCooldown, cooldownBecauseRune, startTimeCharges, durationCharges,
         spellCount, unifiedModRate, modRate, modRateCharges, paused
-        = ForeverAuras.GetSpellCooldownUnified(effectiveSpellId, runeDuration);
+        = WeakAuras.GetSpellCooldownUnified(effectiveSpellId, runeDuration);
 
       local time = GetTime();
 
@@ -2578,7 +2578,7 @@ do
       end
       local ownEnded = spellDetail.ownCooldownEnd and spellDetail.ownCooldownEnd <= time + 0.05
 
-      if not ForeverAuras.IsPaused() then
+      if not WeakAuras.IsPaused() then
         if nowReady and (not endedWandOnly or ownEnded) then
           spellDetail.ownCooldownEnd = nil
           self:SendEventsForSpell(effectiveSpellId, "SPELL_COOLDOWN_READY", effectiveSpellId)
@@ -2608,7 +2608,7 @@ do
 
       if ignoreRunes and true then
         for i = 1, 6 do
-          ForeverAuras.WatchRuneCooldown(i)
+          WeakAuras.WatchRuneCooldown(i)
         end
       end
 
@@ -2641,7 +2641,7 @@ do
 
     GetSpellCharges = function(self, effectiveSpellId, ignoreSpellKnown)
       if C_Secrets.ShouldSpellCooldownBeSecret(effectiveSpellId) then
-        if not ignoreSpellKnown and not ForeverAuras.IsSpellKnownIncludingPet(effectiveSpellId) then return end
+        if not ignoreSpellKnown and not WeakAuras.IsSpellKnownIncludingPet(effectiveSpellId) then return end
         local cooldown = Private.GetSpellCooldownData(effectiveSpellId)
         if cooldown then return cooldown.charges, cooldown.maxCharges, cooldown.count end
         return
@@ -2822,7 +2822,7 @@ do
             local icon = Private.ExecEnv.GetSpellIcon(name);
             gcdSpellName = name;
             gcdSpellIcon = icon;
-            if not ForeverAuras.IsPaused() then
+            if not WeakAuras.IsPaused() then
               Private.ScanEvents("GCD_UPDATE")
             end
           end
@@ -2845,7 +2845,7 @@ do
   ---@param id number
   ---@return number cooldownStart
   ---@return number cooldownDuration
-  function ForeverAuras.GetRuneCooldown(id)
+  function WeakAuras.GetRuneCooldown(id)
     if(runes[id] and runeCdExps[id] and runeCdDurs[id]) then
       return runeCdExps[id] - runeCdDurs[id], runeCdDurs[id];
     else
@@ -2856,7 +2856,7 @@ do
   local initEssenceCooldown = false
   local essenceCache = {{},{},{},{},{},{}}
   ---@private
-  function ForeverAuras.InitEssenceCooldown()
+  function WeakAuras.InitEssenceCooldown()
     if initEssenceCooldown then
       return true
     end
@@ -2943,7 +2943,7 @@ do
   ---@return boolean|nil paused
   ---@return number|nil power
   ---@return number|nil total
-  function ForeverAuras.GetEssenceCooldown(essence)
+  function WeakAuras.GetEssenceCooldown(essence)
     local power = UnitPower("player", Enum.PowerType.Essence)
     local total = UnitPowerMax("player", Enum.PowerType.Essence)
     if essence then
@@ -2965,7 +2965,7 @@ do
 
   ---@param identifier string | number
   ---@return number? startTime, number? duration
-  function ForeverAuras.GetSpellLossOfControlCooldown(identifier)
+  function WeakAuras.GetSpellLossOfControlCooldown(identifier)
     local info = C_Spell.GetSpellLossOfControlCooldownInfo(identifier)
     if info then return info.startTime, info.duration end
   end
@@ -2981,7 +2981,7 @@ do
   ---@return number? readyTime
   ---@return number? modRate
   ---@return boolean? paused
-  function ForeverAuras.GetSpellCooldown(id, ignoreRuneCD, showgcd, ignoreSpellKnown, track)
+  function WeakAuras.GetSpellCooldown(id, ignoreRuneCD, showgcd, ignoreSpellKnown, track)
     return SpellDetails:GetSpellCooldown(id, ignoreRuneCD, showgcd, ignoreSpellKnown, track)
   end
 
@@ -2992,7 +2992,7 @@ do
   ---@return integer? count
   ---@return number? chargeGainTime
   ---@return number? chargeLostTime
-  function ForeverAuras.GetSpellCharges(id, ignoreSpellKnown)
+  function WeakAuras.GetSpellCharges(id, ignoreSpellKnown)
     return SpellDetails:GetSpellCharges(id, ignoreSpellKnown)
   end
 
@@ -3002,7 +3002,7 @@ do
   ---@return number duration
   ---@return boolean enabled
   ---@return number gcdCooldown
-  function ForeverAuras.GetItemCooldown(id, showgcd)
+  function WeakAuras.GetItemCooldown(id, showgcd)
     local startTime, duration, enabled, gcdCooldown;
     if(items[id] and itemCdExps[id] and itemCdDurs[id]) then
       startTime, duration, enabled = itemCdExps[id] - itemCdDurs[id], itemCdDurs[id], itemCdEnabled[id];
@@ -3026,7 +3026,7 @@ do
   ---@return string name
   ---@return number|string icon
   ---@return number modrate
-  function ForeverAuras.GetGCDInfo()
+  function WeakAuras.GetGCDInfo()
     if(gcdStart) then
       return gcdDuration, gcdStart + gcdDuration, gcdSpellName or "Invalid", gcdSpellIcon or "Interface\\Icons\\INV_Misc_QuestionMark", gcdModrate;
     else
@@ -3035,12 +3035,12 @@ do
   end
 
   ---@return number duration
-  function ForeverAuras.gcdDuration()
+  function WeakAuras.gcdDuration()
     return gcdDuration or 0;
   end
 
   ---@return string name
-  function ForeverAuras.GcdSpellName()
+  function WeakAuras.GcdSpellName()
     return gcdSpellName;
   end
 
@@ -3050,7 +3050,7 @@ do
   ---@return number duration
   ---@return boolean enabled
   ---@return number gcdCooldown
-  function ForeverAuras.GetItemSlotCooldown(id, showgcd)
+  function WeakAuras.GetItemSlotCooldown(id, showgcd)
     local startTime, duration, enabled, gcdCooldown;
     if(itemSlots[id] and itemSlotsCdExps[id] and itemSlotsCdDurs[id]) then
       startTime, duration, enabled = itemSlotsCdExps[id] - itemSlotsCdDurs[id], itemSlotsCdDurs[id], itemSlotsEnable[id];
@@ -3108,7 +3108,7 @@ do
         duration = 0
       end
 
-      if(duration > 0 and duration ~= ForeverAuras.gcdDuration()) then
+      if(duration > 0 and duration ~= WeakAuras.gcdDuration()) then
         -- On non-GCD cooldown
         local endTime = startTime + duration;
 
@@ -3153,7 +3153,7 @@ do
 
   ---@param id string
   ---@param runeDuration? number
-  function ForeverAuras.GetSpellCooldownUnified(id, runeDuration)
+  function WeakAuras.GetSpellCooldownUnified(id, runeDuration)
     local startTimeCooldown, durationCooldown, enabled, modRate
     if GetSpellCooldown then
       startTimeCooldown, durationCooldown, enabled, modRate = GetSpellCooldown(id)
@@ -3262,22 +3262,22 @@ do
 
   ---@type fun(id): boolean|nil
   local queryScratch = {}
-  function ForeverAuras.IsSpellReady(id)
+  function WeakAuras.IsSpellReady(id)
     local cooldown = Private.GetSpellCooldownData(id, "cooldown", nil, nil, queryScratch)
     return cooldown and cooldown.ready
   end
 
-  function ForeverAuras.GetSpellCooldownDuration(id, track)
+  function WeakAuras.GetSpellCooldownDuration(id, track)
     local cooldown = Private.GetSpellCooldownData(id, track, true, nil, queryScratch)
     return cooldown and cooldown.duration
   end
 
-  function ForeverAuras.GetSpellCooldownDurationNoGCD(id, track)
+  function WeakAuras.GetSpellCooldownDurationNoGCD(id, track)
     local cooldown = Private.GetSpellCooldownData(id, track, false, nil, queryScratch)
     return cooldown and cooldown.duration
   end
 
-  function ForeverAuras.IsSpellReadyFromDuration(id)
+  function WeakAuras.IsSpellReadyFromDuration(id)
     local durationObj = C_Spell.GetSpellCooldownDuration(id, true)
     if not durationObj then
       return nil
@@ -3316,7 +3316,7 @@ do
 
       -- We check against 1.5 and gcdDuration, as apparently the durations might not match exactly.
       -- But there shouldn't be any trinket with a actual cd of less than 1.5 anyway
-      if(duration > 0 and duration > 1.5 and duration ~= ForeverAuras.gcdDuration()) then
+      if(duration > 0 and duration > 1.5 and duration ~= WeakAuras.gcdDuration()) then
         -- On non-GCD cooldown
         local endTime = startTime + duration;
 
@@ -3325,7 +3325,7 @@ do
           itemCdDurs[id] = duration;
           itemCdExps[id] = endTime;
           itemCdHandles[id] = timer:ScheduleTimerFixed(ItemCooldownFinished, endTime - time, id);
-          if not ForeverAuras.IsPaused() then
+          if not WeakAuras.IsPaused() then
             Private.ScanEventsByID("ITEM_COOLDOWN_STARTED", id)
           end
           itemCdEnabledChanged = false;
@@ -3337,7 +3337,7 @@ do
           itemCdDurs[id] = duration;
           itemCdExps[id] = endTime;
           itemCdHandles[id] = timer:ScheduleTimerFixed(ItemCooldownFinished, endTime - time, id);
-          if not ForeverAuras.IsPaused() then
+          if not WeakAuras.IsPaused() then
             Private.ScanEventsByID("ITEM_COOLDOWN_CHANGED", id)
           end
           itemCdEnabledChanged = false;
@@ -3355,7 +3355,7 @@ do
           itemCdEnabledChanged = false;
         end
       end
-      if (itemCdEnabledChanged and not ForeverAuras.IsPaused()) then
+      if (itemCdEnabledChanged and not WeakAuras.IsPaused()) then
         Private.ScanEventsByID("ITEM_COOLDOWN_CHANGED", id);
       end
     end
@@ -3376,7 +3376,7 @@ do
 
       -- We check against 1.5 and gcdDuration, as apparently the durations might not match exactly.
       -- But there shouldn't be any trinket with a actual cd of less than 1.5 anyway
-      if(duration > 0 and duration > 1.5 and duration ~= ForeverAuras.gcdDuration()) then
+      if(duration > 0 and duration > 1.5 and duration ~= WeakAuras.gcdDuration()) then
         -- On non-GCD cooldown
         local endTime = startTime + duration;
 
@@ -3385,7 +3385,7 @@ do
           itemSlotsCdDurs[id] = duration;
           itemSlotsCdExps[id] = endTime;
           itemSlotsCdHandles[id] = timer:ScheduleTimerFixed(ItemSlotCooldownFinished, endTime - time, id);
-          if not ForeverAuras.IsPaused() then
+          if not WeakAuras.IsPaused() then
             Private.ScanEventsByID("ITEM_SLOT_COOLDOWN_STARTED", id)
           end
         elseif(itemSlotsCdExps[id] ~= endTime) then
@@ -3396,7 +3396,7 @@ do
           itemSlotsCdDurs[id] = duration;
           itemSlotsCdExps[id] = endTime;
           itemSlotsCdHandles[id] = timer:ScheduleTimerFixed(ItemSlotCooldownFinished, endTime - time, id);
-          if not ForeverAuras.IsPaused() then
+          if not WeakAuras.IsPaused() then
             Private.ScanEventsByID("ITEM_SLOT_COOLDOWN_CHANGED", id)
           end
         end
@@ -3415,7 +3415,7 @@ do
 
       local newItemId = GetInventoryItemID("player", id);
       if (itemId ~= newItemId) then
-        if not ForeverAuras.IsPaused() then
+        if not WeakAuras.IsPaused() then
           Private.ScanEventsByID("ITEM_SLOT_COOLDOWN_ITEM_CHANGED", id)
         end
         itemSlots[id] = newItemId or 0;
@@ -3439,18 +3439,18 @@ do
       Private.CheckItemSlotCooldowns();
     end
     -- Refresh watched GCD timers even when the shared GCD clock emits no event.
-    if not ForeverAuras.IsPaused() then Private.ScanEvents(gcdEvent or "GCD_UPDATE") end
+    if not WeakAuras.IsPaused() then Private.ScanEvents(gcdEvent or "GCD_UPDATE") end
   end
 
   ---@private
-  function ForeverAuras.WatchGCD()
+  function WeakAuras.WatchGCD()
     if not(cdReadyFrame) then
       Private.InitCooldownReady();
     end
   end
 
   ---@private
-  function ForeverAuras.WatchRuneCooldown(id)
+  function WeakAuras.WatchRuneCooldown(id)
     if not(cdReadyFrame) then
       Private.InitCooldownReady();
     end
@@ -3466,7 +3466,7 @@ do
         duration = 0
       end
 
-      if(duration > 0 and duration ~= ForeverAuras.gcdDuration()) then
+      if(duration > 0 and duration ~= WeakAuras.gcdDuration()) then
         local time = GetTime();
         local endTime = startTime + duration;
         runeCdDurs[id] = duration;
@@ -3507,12 +3507,12 @@ do
   end
 
   ---@private
-  function ForeverAuras.WatchSpellCooldown(id, ignoreRunes, useExact, followoverride)
+  function WeakAuras.WatchSpellCooldown(id, ignoreRunes, useExact, followoverride)
     SpellDetails:WatchSpellCooldown(id, ignoreRunes, useExact, followoverride)
   end
 
   ---@private
-  function ForeverAuras.WatchItemCooldown(id)
+  function WeakAuras.WatchItemCooldown(id)
     if not(cdReadyFrame) then
       Private.InitCooldownReady();
     end
@@ -3531,7 +3531,7 @@ do
         startTime, duration = 0, 0
       end
       itemCdEnabled[id] = enabled;
-      if(duration and duration > 0 and duration > 1.5 and duration ~= ForeverAuras.gcdDuration()) then
+      if(duration and duration > 0 and duration > 1.5 and duration ~= WeakAuras.gcdDuration()) then
         local time = GetTime();
         local endTime = startTime + duration;
         itemCdDurs[id] = duration;
@@ -3544,7 +3544,7 @@ do
   end
 
   ---@private
-  function ForeverAuras.WatchItemSlotCooldown(id)
+  function WeakAuras.WatchItemSlotCooldown(id)
     if not(cdReadyFrame) then
       Private.InitCooldownReady();
     end
@@ -3555,7 +3555,7 @@ do
       itemSlots[id] = GetInventoryItemID("player", id) or true;
       local startTime, duration, enable = GetInventoryItemCooldown("player", id);
       itemSlotsEnable[id] = enable;
-      if(duration > 0 and duration > 1.5 and duration ~= ForeverAuras.gcdDuration()) then
+      if(duration > 0 and duration > 1.5 and duration ~= WeakAuras.gcdDuration()) then
         local time = GetTime();
         local endTime = startTime + duration;
         itemSlotsCdDurs[id] = duration;
@@ -3584,7 +3584,7 @@ do
         local active = (event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
         spellActivationSpellsCurrent[spell] = active
         spellActivationSpellsCurrent[spellName] = active
-        if not ForeverAuras.IsPaused() then
+        if not WeakAuras.IsPaused() then
           Private.ScanEventsByID("WA_UPDATE_OVERLAY_GLOW", spell)
           Private.ScanEventsByID("WA_UPDATE_OVERLAY_GLOW", spellName)
         end
@@ -3595,7 +3595,7 @@ do
   end
 
   ---@private
-  function ForeverAuras.WatchSpellActivation(id)
+  function WeakAuras.WatchSpellActivation(id)
     if (not id) then
       return;
     end
@@ -3607,7 +3607,7 @@ do
 
   ---@param id string
   ---@return boolean overlayGlowActive
-  function ForeverAuras.SpellActivationActive(id)
+  function WeakAuras.SpellActivationActive(id)
     return spellActivationSpellsCurrent[id];
   end
 end
@@ -3617,7 +3617,7 @@ local watchUnitChange
 -- Nameplates only distinguish between friends and everyone else
 ---@param unit UnitToken
 ---@return string? reaction
-function ForeverAuras.GetPlayerReaction(unit)
+function WeakAuras.GetPlayerReaction(unit)
   local r = UnitReaction("player", unit)
   if r then
     return r < 5 and "hostile" or "friendly"
@@ -3625,7 +3625,7 @@ function ForeverAuras.GetPlayerReaction(unit)
 end
 
 ---@param unit UnitToken
-function ForeverAuras.WatchUnitChange(unit)
+function WeakAuras.WatchUnitChange(unit)
   unit = string.lower(unit)
   if not watchUnitChange then
     ---@class UnitChangeFrame: FrameScriptObject
@@ -3665,7 +3665,7 @@ function ForeverAuras.WatchUnitChange(unit)
     local function unitUpdate(unitA, eventsToSend)
       local oldUnitExists = watchUnitChange.unitExists[unitA]
       local oldGUID = watchUnitChange.unitIdToGUID[unitA]
-      local newGUID = ForeverAuras.UnitExistsFixed(unitA) and UnitGUID(unitA)
+      local newGUID = WeakAuras.UnitExistsFixed(unitA) and UnitGUID(unitA)
       local unitExists = UnitExists(unitA) -- UnitExistsFixed check both UnitExists and UnitGUID, but in edge cases we are interested in UnitExists
       -- A secret GUID cannot be compared or used as a key. The event that led
       -- here (a target, focus or group change) may have changed the unit, so
@@ -3723,7 +3723,7 @@ function ForeverAuras.WatchUnitChange(unit)
 
     local function reactionUpdate(unit, eventsToSend)
       local oldReaction = watchUnitChange.nameplateFaction[unit]
-      local newReaction = ForeverAuras.GetPlayerReaction(unit)
+      local newReaction = WeakAuras.GetPlayerReaction(unit)
       if oldReaction ~= newReaction then
         eventsToSend["UNIT_CHANGED_" .. unit] = unit
         watchUnitChange.nameplateFaction[unit] = newReaction
@@ -3731,7 +3731,7 @@ function ForeverAuras.WatchUnitChange(unit)
     end
 
     local function reactionInit(unit)
-      watchUnitChange.nameplateFaction[unit] = ForeverAuras.GetPlayerReaction(unit)
+      watchUnitChange.nameplateFaction[unit] = WeakAuras.GetPlayerReaction(unit)
     end
 
     local function reactionClear(unit)
@@ -3808,7 +3808,7 @@ function ForeverAuras.WatchUnitChange(unit)
         handleUnit(unit, eventsToSend, reactionUpdate)
       end,
       UNIT_PET = function(unit, eventsToSend)
-        local pet = ForeverAuras.unitToPetUnit[unit]
+        local pet = WeakAuras.unitToPetUnit[unit]
         if pet and watchUnitChange.trackedUnits[pet] then
           eventsToSend["UNIT_CHANGED_" .. pet] = pet
         end
@@ -3857,7 +3857,7 @@ function ForeverAuras.WatchUnitChange(unit)
   watchUnitChange.trackedUnits[unit] = true
   -- A secret GUID is not kept: later comparisons with it would stop every
   -- change report for this unit (see unitUpdate).
-  local knownGUID = ForeverAuras.UnitExistsFixed(unit) and UnitGUID(unit)
+  local knownGUID = WeakAuras.UnitExistsFixed(unit) and UnitGUID(unit)
   watchUnitChange.unitIdToGUID[unit] = not issecretvalue(knownGUID) and knownGUID or false
   watchUnitChange.secretGUID[unit] = issecretvalue(knownGUID) or nil
   local exists = UnitExists(unit)
@@ -3872,7 +3872,7 @@ function ForeverAuras.WatchUnitChange(unit)
   watchUnitChange.inRaid = IsInRaid()
 end
 
-function ForeverAuras.GetEquipmentSetInfo(itemSetName, partial)
+function WeakAuras.GetEquipmentSetInfo(itemSetName, partial)
   local bestMatchNumItems = 0;
   local bestMatchNumEquipped = 0;
   local bestMatchName = nil;
@@ -3997,10 +3997,38 @@ local totemSlots = {}
 local lastTotemCast = {time = -math.huge}
 local TOTEM_CAST_WINDOW = 0.5
 
+local knownTotemSlots = {}
+for slot, families in pairs({
+  [1] = {{3599, 6363, 6364, 6365, 10437, 10438}, {8190, 10585, 10586, 10587}, {8227, 8249, 10526, 16387}, {8181, 10478, 10479}},
+  [2] = {{8071, 8154, 8155, 10406, 10407, 10408}, {5730, 6390, 6391, 6392, 10427, 10428}, {8075, 8160, 8161, 10442, 25361}, {2484}, {8143}},
+  [3] = {{5394, 6375, 6377, 10462, 10463}, {5675, 10495, 10496, 10497}, {16190, 17354, 17359}, {8166}, {8170}, {8184, 10537, 10538}},
+  [4] = {{8835, 10627, 25359}, {8177}, {10595, 10600, 10601}, {8512, 10613, 10614}, {15107, 15111, 15112}, {6495}},
+}) do
+  for _, family in ipairs(families) do
+    for _, spellId in ipairs(family) do knownTotemSlots[spellId] = slot end
+  end
+end
+
 local function LearnedTotemSpells()
   if not Private.db then return end
   Private.db.totemSpells = Private.db.totemSpells or {}
   return Private.db.totemSpells
+end
+
+local function LearnedTotemNames()
+  if not Private.db then return end
+  Private.db.totemNames = Private.db.totemNames or {}
+  return Private.db.totemNames
+end
+
+local function TotemSlotForSpell(spellId)
+  if type(spellId) ~= "number" then return end
+  local learned = LearnedTotemSpells()
+  local slot = learned and learned[spellId] or knownTotemSlots[spellId]
+  if slot then return slot end
+  local names = LearnedTotemNames()
+  local name = names and Private.ExecEnv.GetSpellName(spellId)
+  return name and names[name]
 end
 
 local function ReadTotemSlot(slot)
@@ -4009,7 +4037,12 @@ local function ReadTotemSlot(slot)
   if haveTotem and startTime and startTime ~= 0 then
     totemSlots[slot] = {name = name, icon = icon, spellId = spellId}
     local learned = LearnedTotemSpells()
-    if learned and type(spellId) == "number" and spellId > 0 then learned[spellId] = slot end
+    if learned and type(spellId) == "number" and spellId > 0 then
+      learned[spellId] = slot
+      local spellName = Private.ExecEnv.GetSpellName(spellId)
+      local names = LearnedTotemNames()
+      if names and spellName then names[spellName] = slot end
+    end
   else
     totemSlots[slot] = nil
   end
@@ -4017,9 +4050,8 @@ local function ReadTotemSlot(slot)
 end
 
 local function UpdateSecretTotemSlot(slot)
-  local learned = LearnedTotemSpells()
   local spellId = lastTotemCast.spellId
-  if spellId and learned and learned[spellId] == slot and GetTime() - lastTotemCast.time <= TOTEM_CAST_WINDOW then
+  if spellId and TotemSlotForSpell(spellId) == slot and GetTime() - lastTotemCast.time <= TOTEM_CAST_WINDOW then
     totemSlots[slot] = {name = Private.ExecEnv.GetSpellName(spellId), icon = Private.ExecEnv.GetSpellIcon(spellId), spellId = spellId}
     return true
   end
@@ -4037,8 +4069,7 @@ totemFrame:SetScript("OnEvent", function(_, event, arg1, _, spellId)
   if event == "UNIT_SPELLCAST_SUCCEEDED" then
     local public = not issecretvalue(spellId) and type(spellId) == "number"
     lastTotemCast.time, lastTotemCast.spellId = GetTime(), public and spellId or nil
-    local learned = public and LearnedTotemSpells()
-    local slot = learned and learned[spellId]
+    local slot = public and TotemSlotForSpell(spellId)
     if slot and C_Secrets.ShouldTotemSlotBeSecret(slot) and UpdateSecretTotemSlot(slot) then
       Private.ScanEvents("FA_TOTEM_UPDATE", slot)
     end
@@ -4046,7 +4077,7 @@ totemFrame:SetScript("OnEvent", function(_, event, arg1, _, spellId)
     if type(arg1) == "number" and not issecretvalue(arg1) and not ReadTotemSlot(arg1) then
       UpdateSecretTotemSlot(arg1)
     end
-    Private.ScanEvents("FA_TOTEM_UPDATE", arg1)
+    Private.ScanEvents("FA_TOTEM_UPDATE", not issecretvalue(arg1) and arg1 or nil)
   else
     for slot = 1, 5 do
       if not C_Secrets.ShouldTotemSlotBeSecret(slot) then ReadTotemSlot(slot) end
@@ -4086,8 +4117,8 @@ local GetSpellPowerCost = GetSpellPowerCost or C_Spell and C_Spell.GetSpellPower
 
 ---@param powerTypeToCheck integer
 ---@return number? cost
-function ForeverAuras.GetSpellCost(powerTypeToCheck)
-  local spellID = select(9, ForeverAuras.UnitCastingInfo("player"))
+function WeakAuras.GetSpellCost(powerTypeToCheck)
+  local spellID = select(9, WeakAuras.UnitCastingInfo("player"))
   
   if spellID then
     local costTable = GetSpellPowerCost(spellID);
@@ -4129,7 +4160,7 @@ do
   local tenchTip;
 
   ---@private
-  function ForeverAuras.TenchInit()
+  function WeakAuras.TenchInit()
     if not(tenchFrame) then
       tenchFrame = CreateFrame("Frame");
       tenchFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -4251,15 +4282,15 @@ do
     end
   end
 
-  function ForeverAuras.GetMHTenchInfo()
+  function WeakAuras.GetMHTenchInfo()
     return mh_exp, mh_dur, mh_name, mh_shortenedName, mh_icon, mh_charges, mh_EnchantID;
   end
 
-  function ForeverAuras.GetOHTenchInfo()
+  function WeakAuras.GetOHTenchInfo()
     return oh_exp, oh_dur, oh_name, oh_shortenedName, oh_icon, oh_charges, oh_EnchantID;
   end
 
-  function ForeverAuras.GetRangeTenchInfo()
+  function WeakAuras.GetRangeTenchInfo()
     return rw_exp, rw_dur, rw_name, rw_shortenedName, rw_icon, rw_charges, rw_EnchantID;
   end
 end
@@ -4269,7 +4300,7 @@ do
   local petFrame = nil
   Private.frames["Pet Use Handler"] = petFrame;
   ---@private
-  function ForeverAuras.WatchForPetDeath()
+  function WeakAuras.WatchForPetDeath()
     if not(petFrame) then
       petFrame = CreateFrame("Frame");
       petFrame:RegisterUnitEvent("UNIT_PET", "player")
@@ -4302,7 +4333,7 @@ do
   local castLatencyFrame
 
   ---@private
-  function ForeverAuras.WatchForCastLatency()
+  function WeakAuras.WatchForCastLatency()
     if not castLatencyFrame then
       ---@class CastLatencyFrame: FrameScriptObject
       castLatencyFrame = CreateFrame("Frame")
@@ -4338,7 +4369,7 @@ do
   end
 
   ---@return number castLatencyF
-  function ForeverAuras.GetCastLatency()
+  function WeakAuras.GetCastLatency()
     return castLatencyFrame and castLatencyFrame.timeDiff or 0
   end
 
@@ -4379,7 +4410,7 @@ do
 
   Private.frames["Nameplate Target Handler"] = nameplateTargetFrame
   ---@private
-  function ForeverAuras.WatchForNameplateTargetChange()
+  function WeakAuras.WatchForNameplateTargetChange()
     if not nameplateTargetFrame then
       nameplateTargetFrame = CreateFrame("Frame")
       nameplateTargetFrame:SetScript("OnUpdate", nameplateTargetOnUpdate)
@@ -4416,7 +4447,7 @@ do
   end
 
   ---@private
-  function ForeverAuras.WatchForPlayerMoving()
+  function WeakAuras.WatchForPlayerMoving()
     if not(playerMovingFrame) then
       playerMovingFrame = CreateFrame("Frame");
       --- @cast playerMovingFrame PlayerMovingFrame
@@ -4442,7 +4473,7 @@ if C_AssistedCombat and C_AssistedCombat.GetNextCastSpell then
   end
 
   ---@private
-  function ForeverAuras.WatchForAssistedCombatNextCast()
+  function WeakAuras.WatchForAssistedCombatNextCast()
     if not assistedCombatFrame then
       assistedCombatFrame = CreateFrame("Frame")
       Private.frames["Assisted Combat Next Cast Frame"] = assistedCombatFrame
@@ -4455,7 +4486,7 @@ end
 -- Item Count
 local itemCountWatchFrame
 ---@private
-function ForeverAuras.RegisterItemCountWatch()
+function WeakAuras.RegisterItemCountWatch()
   if not itemCountWatchFrame then
     itemCountWatchFrame = CreateFrame("Frame")
     itemCountWatchFrame:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
@@ -4488,7 +4519,7 @@ end
 do
   Private.LibSpecWrapper.Register(function(unit)
     Private.ScanEvents("UNIT_SPEC_CHANGED_" .. unit, unit)
-    ForeverAuras.ScanEvents("UNIT_SPEC_CHANGED", unit)
+    WeakAuras.ScanEvents("UNIT_SPEC_CHANGED", unit)
   end)
 end
 
@@ -4525,7 +4556,7 @@ end
 
 local uniqueId = 0;
 ---@return integer cloneId
-function ForeverAuras.GetUniqueCloneId()
+function WeakAuras.GetUniqueCloneId()
   uniqueId = (uniqueId + 1) % 1000000;
   return uniqueId;
 end
@@ -4865,7 +4896,7 @@ local commonConditions = {
     type = "string"
   },
   itemInRange = {
-    display = ForeverAuras.newFeatureString .. L["Item in Range"],
+    display = WeakAuras.newFeatureString .. L["Item in Range"],
     hidden = true,
     type = "bool",
     test = function(state, needle)
@@ -4985,12 +5016,12 @@ function GenericTrigger.GetTriggerConditions(data, triggernum)
           }
           if (result[v.name].type == "select" or result[v.name].type == "unit") then
             if (v.conditionValues) then
-              result[v.name].values = Private[v.conditionValues] or ForeverAuras[v.conditionValues];
+              result[v.name].values = Private[v.conditionValues] or WeakAuras[v.conditionValues];
             else
               if type(v.values) == "function" then
                 result[v.name].values = v.values()
               else
-                result[v.name].values = Private[v.values] or ForeverAuras[v.values];
+                result[v.name].values = Private[v.values] or WeakAuras[v.values];
               end
             end
           end
@@ -5189,18 +5220,18 @@ do
     or class == "DEATHKNIGHT" or class == "PALADIN" or class == "WARRIOR"
     or class == "EVOKER"
   then
-    function ForeverAuras.CalculatedGcdDuration()
+    function WeakAuras.CalculatedGcdDuration()
       local haste = GetHaste()
       return max(0.75, 1.5 * 100 / (100+haste))
     end
   elseif class == "DRUID" then
-    function ForeverAuras.CalculatedGcdDuration()
+    function WeakAuras.CalculatedGcdDuration()
       local id = GetShapeshiftFormID()
       local haste = GetHaste()
       return id == 1 and 1 or max(0.75, 1.5 * 100 / (100+haste))
     end
   elseif class == "MONK" then
-    function ForeverAuras.CalculatedGcdDuration()
+    function WeakAuras.CalculatedGcdDuration()
       local spec = Private.ExecEnv.GetSpecialization()
       local primaryStat = select(6, Private.ExecEnv.GetSpecializationInfo(spec))
       if primaryStat == LE_UNIT_STAT_AGILITY then
@@ -5210,7 +5241,7 @@ do
       return max(0.75, 1.5 * 100 / (100+haste))
     end
   elseif class == "ROGUE" then
-    function ForeverAuras.CalculatedGcdDuration()
+    function WeakAuras.CalculatedGcdDuration()
       return 1
     end
   end
@@ -5223,7 +5254,7 @@ end
 
 ---@param ids string
 ---@return boolean isItemBonusId
-ForeverAuras.CheckForItemBonusId = function(ids)
+WeakAuras.CheckForItemBonusId = function(ids)
   for id in tostring(ids):gmatch('([^,]+)') do
     for slot in pairs(Private.item_slot_types) do
       local itemLink = GetInventoryItemLink('player', slot)
@@ -5247,7 +5278,7 @@ end
 ---@return number|nil icon
 ---@return number|nil slot
 ---@return number|nil itemSlot
-ForeverAuras.GetBonusIdInfo = function(ids, specificSlot)
+WeakAuras.GetBonusIdInfo = function(ids, specificSlot)
   local checkSlots = specificSlot and {[specificSlot] = true} or Private.item_slot_types
   for id in tostring(ids):gmatch('([^,]+)') do
     for slot in pairs(checkSlots) do
@@ -5264,7 +5295,7 @@ end
 ---@param itemId string
 ---@param specificSlot? number
 ---@return boolean|nil isItemEquipped
-ForeverAuras.CheckForItemEquipped = function(itemId, specificSlot)
+WeakAuras.CheckForItemEquipped = function(itemId, specificSlot)
   if not specificSlot then
     return C_Item.IsEquippedItem(itemId or '')
   else
@@ -5296,7 +5327,7 @@ Private.ExecEnv.IsEquippedItemType = function(itemType, itemSlot)
 end
 
 ---@return integer critChance
-ForeverAuras.GetCritChance = function()
+WeakAuras.GetCritChance = function()
   -- Based on what the wow paper doll does
   if C_Secrets.ShouldUnitStatsBeSecret() then
     return 0
@@ -5309,7 +5340,7 @@ ForeverAuras.GetCritChance = function()
 end
 
 ---@return number hitChance
-ForeverAuras.GetHitChance = function()
+WeakAuras.GetHitChance = function()
   if C_Secrets.ShouldUnitStatsBeSecret() then
     return 0
   end
@@ -5388,6 +5419,6 @@ end
 -- to the Private table.
 
 -- So for now make it simply a member of ForeverAuras
-ForeverAuras.genericTriggerTypes = types
+WeakAuras.genericTriggerTypes = types
 
-ForeverAuras.RegisterTriggerSystem(types, GenericTrigger);
+WeakAuras.RegisterTriggerSystem(types, GenericTrigger);

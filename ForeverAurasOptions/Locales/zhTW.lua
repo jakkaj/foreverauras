@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 if (GAME_LOCALE or GetLocale()) ~= "zhTW" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- ForeverAuras/Options
 	L[" and |cFFFF0000mirrored|r"] = "和 |cFFFF0000鏡射|r"
@@ -113,7 +113,7 @@ local L = ForeverAuras.L
 	L["A 64x64 pixels icon"] = "64x64 大小的圖示"
 	L["A group that dynamically controls the positioning of its children"] = "可動態控制子項目位置的群組"
 	L[ [=[A timer will automatically be displayed according to default Interface Settings (overridden by some addons).
-Enable this setting if you want this timer to be hidden, or when using a ForeverAuras text to display the timer]=] ] = "時間數字會自動依照遊戲內建的選項 (或被其他插件取代) 來決定是否顯示。如果你想要隱藏這個時間數字，或是使用 ForeverAuras  的文字來顯示時間，請啟用此設定。"
+Enable this setting if you want this timer to be hidden, or when using a WeakAuras text to display the timer]=] ] = "時間數字會自動依照遊戲內建的選項 (或被其他插件取代) 來決定是否顯示。如果你想要隱藏這個時間數字，或是使用 ForeverAuras  的文字來顯示時間，請啟用此設定。"
 	L["A Unit ID (e.g., party1)."] = "單位 ID (例如 party1)。"
 	L["Ace: Funkeh, Nevcairiel"] = "Ace: Funkeh, Nevcairiel"
 	L["Active Aura Filters and Info"] = "啟用光環過濾以及訊息"
@@ -276,7 +276,7 @@ Off Screen]=] ] = [=[提醒效果
 |cFF4444FF例如:|r
 UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Custom trigger status tooltip"] = [=[選擇自訂觸發要檢查的事件。
-因為這是狀態類型的觸發，所指定的事件必須不用加參數就能夠被 ForeverAuras 呼叫。
+因為這是狀態類型的觸發，所指定的事件必須不用加參數就能夠被 WeakAuras 呼叫。
 可用逗號分隔多個事件。
 
 |cFF4444FF例如:|r
@@ -831,9 +831,9 @@ Make sure you can trust the person who sent it!]=] ] = "這個提醒效果包含
 	L["This aura is marked as an update to auras '%s', but cannot be used to update them. This usually happens if an aura is moved out of a group."] = "此提醒效果被標記為更新 '%s'，但無法用於更新它們。這通常發生在將提醒效果移出群組時。"
 	L[ [=[This aura was created with a different version (%s) of World of Warcraft.
 It might not work correctly!]=] ] = "這個提醒效果是由不同版本 (%s) 的魔獸世界建立的，可能無法正常運作!"
-	L[ [=[This aura was created with a newer version of ForeverAuras.
-Upgrade your version of ForeverAuras or wait for next release before installing this aura.]=] ] = [=[這個提醒效果是用較新版本的 ForeverAuras 建立的。
-安裝這個提醒效果之前，請先升級你的 ForeverAuras 版本，或是等待下次發佈更新。]=]
+	L[ [=[This aura was created with a newer version of WeakAuras.
+Upgrade your version of WeakAuras or wait for next release before installing this aura.]=] ] = [=[這個提醒效果是用較新版本的 WeakAuras 建立的。
+安裝這個提醒效果之前，請先升級你的 WeakAuras 版本，或是等待下次發佈更新。]=]
 	L["This display is currently loaded"] = "這個提醒效果已經載入"
 	L["This display is not currently loaded"] = "這個提醒效果尚未載入"
 	L["This display is on standby, it will be loaded when needed."] = "此顯示已準備就緒，需要用到時會載入。"
@@ -927,12 +927,12 @@ Upgrade your version of ForeverAuras or wait for next release before installing 
 |cFFFF0000There is a risk the custom code could be used to kill your hardcore character!|r
 
 Would you like to continue?]=] ] = "你即將在專家伺服器上匯入一個包含自訂 Lua 程式碼的提醒效果。|cFFFF0000存在自訂程式碼可能被利用來殺死你的專家角色的風險!|r 你確定要繼續嗎?"
-	L[ [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Anchor Code on.
+	L[ [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Anchor Code on.
 
-ForeverAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = "您可以在此處添加一個以逗號分隔的狀態值清單，當這些值發生變化時，ForeverAuras 也會運行錨點程式碼 (Anchor Code)。如果您在此清單中包含 'changed'，或者新增、刪除或重新排序某個區塊時，ForeverAuras 將會永遠運行自定錨點程式碼。"
-	L[ [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Grow Code on.
+WeakAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = "您可以在此處添加一個以逗號分隔的狀態值清單，當這些值發生變化時，ForeverAuras 也會運行錨點程式碼 (Anchor Code)。如果您在此清單中包含 'changed'，或者新增、刪除或重新排序某個區塊時，ForeverAuras 將會永遠運行自定錨點程式碼。"
+	L[ [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Grow Code on.
 
-ForeverAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = "你可以在此處加入以逗號分隔的狀態值清單，(更改後) ForeverAuras 也會執行 '增長程式碼'。如果你更改了這個清單，或是加入、刪除或重新排序時，ForeverAuras 永遠都會執行自訂增長程式碼。"
+WeakAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = "你可以在此處加入以逗號分隔的狀態值清單，(更改後) ForeverAuras 也會執行 '增長程式碼'。如果你更改了這個清單，或是加入、刪除或重新排序時，ForeverAuras 永遠都會執行自訂增長程式碼。"
 	L["You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the sort code on.ForeverAuras will always run custom sort code if you include 'changed' in this list, or when a region is added, removed."] = "你可以在此處加入以逗號分隔的狀態值清單，(更改後) ForeverAuras 也會執行 '排序程式碼'。如果你更改了這個清單，或是加入、刪除或重新排序時，ForeverAuras 永遠都會執行自訂排序程式碼。"
 	L["Your Saved Snippets"] = "已儲存的程式碼片段"
 	L["Z Offset"] = "Z軸位移"

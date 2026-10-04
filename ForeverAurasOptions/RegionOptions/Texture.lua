@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local function createOptions(id, data)
   local options = {
@@ -13,7 +13,7 @@ local function createOptions(id, data)
     __order = 1,
     texture = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Texture"],
       order = 1
     },
@@ -37,26 +37,26 @@ local function createOptions(id, data)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     color = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Color"],
       hasAlpha = true,
       order = 2
     },
     desaturate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Desaturate"],
       order = 3,
     },
     alpha = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Alpha"],
       order = 4,
       min = 0,
@@ -66,20 +66,20 @@ local function createOptions(id, data)
     },
     blendMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Blend Mode"],
       order = 5,
       values = OptionsPrivate.Private.blend_types
     },
     mirror = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Mirror"],
       order = 6
     },
     textureWrapMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Texture Wrap"],
       order = 7,
       values = OptionsPrivate.Private.texture_wrap_types,
@@ -87,15 +87,15 @@ local function createOptions(id, data)
     },
     rotate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Allow Full Rotation"],
       order = 8,
       hidden = OptionsPrivate.Private.TextureBase.IsAtlas(data.texture)
     },
     rotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Rotation"],
       min = 0,
       max = 360,

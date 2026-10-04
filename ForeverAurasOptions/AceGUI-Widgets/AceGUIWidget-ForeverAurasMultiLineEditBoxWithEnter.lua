@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
@@ -22,12 +22,12 @@ local _G = _G
 Support functions
 -------------------------------------------------------------------------------]]
 
-if not AceGUIForeverAurasMultiLineEditBoxWithEnterInsertLink then
+if not AceGUIWeakAurasMultiLineEditBoxWithEnterInsertLink then
   -- upgradeable hook
-  hooksecurefunc("ChatEdit_InsertLink", function(...) return _G.AceGUIForeverAurasMultiLineEditBoxWithEnterInsertLink(...) end)
+  hooksecurefunc("ChatEdit_InsertLink", function(...) return _G.AceGUIWeakAurasMultiLineEditBoxWithEnterInsertLink(...) end)
 end
 
-function _G.AceGUIForeverAurasMultiLineEditBoxWithEnterInsertLink(text)
+function _G.AceGUIWeakAurasMultiLineEditBoxWithEnterInsertLink(text)
   for i = 1, AceGUI:GetWidgetCount(Type) do
     local editbox = _G[("MultiLineEditBox%uEdit"):format(i)]
     if editbox and editbox:IsVisible() and editbox:HasFocus() then
@@ -324,7 +324,7 @@ local function Constructor()
   text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -5, 1)
   text:SetJustifyV("MIDDLE")
 
-  local scrollBG = CreateFrame("Frame", nil, frame, "BackdropTemplateForeverAuras")
+  local scrollBG = CreateFrame("Frame", nil, frame, "BackdropTemplateWeakAuras")
   scrollBG:SetBackdrop(backdrop)
   scrollBG:SetBackdropColor(0, 0, 0)
   scrollBG:SetBackdropBorderColor(0.4, 0.4, 0.4)

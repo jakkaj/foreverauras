@@ -1,13 +1,13 @@
 -- Modified for ForeverAuras, 2026-09-29.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 -- Native aura descendants can protect their ancestor control points and group.
@@ -143,7 +143,7 @@ local function create(parent)
   region.updatedChildren = {}
   region.sortStates = {}
   region.growStates = {}
-  local background = CreateFrame("Frame", nil, region, "BackdropTemplateForeverAuras")
+  local background = CreateFrame("Frame", nil, region, "BackdropTemplateWeakAuras")
   region.background = background
   region.selfPoint = "TOPLEFT"
   region.controlPoints = CreateObjectPool(createControlPoint, releaseControlPoint)
@@ -160,7 +160,7 @@ local function create(parent)
   return region
 end
 
-function ForeverAuras.GetPolarCoordinates(x, y, originX, originY)
+function WeakAuras.GetPolarCoordinates(x, y, originX, originY)
   local dX, dY = x - originX, y - originY;
 
   local r = math.sqrt(dX * dX + dY * dY);
@@ -169,7 +169,7 @@ function ForeverAuras.GetPolarCoordinates(x, y, originX, originY)
   return r, theta;
 end
 
-function ForeverAuras.InvertSort(sortFunc)
+function WeakAuras.InvertSort(sortFunc)
   -- takes a comparator and returns the "inverse"
   -- i.e. when sortFunc returns true/false, inverseSortFunc returns false/true
   -- nils are preserved to ensure that inverseSortFunc composes well
@@ -184,7 +184,7 @@ function ForeverAuras.InvertSort(sortFunc)
   end
 end
 
-function ForeverAuras.SortNilLast(a, b)
+function WeakAuras.SortNilLast(a, b)
   -- sorts nil values to the end
   -- only returns nil if both values are non-nil
   -- Useful as a high priority sorter in a composition,
@@ -203,8 +203,8 @@ function ForeverAuras.SortNilLast(a, b)
   end
 end
 
-local sortNilFirst = ForeverAuras.InvertSort(ForeverAuras.SortNilLast)
-function ForeverAuras.SortNilFirst(a, b)
+local sortNilFirst = WeakAuras.InvertSort(WeakAuras.SortNilLast)
+function WeakAuras.SortNilFirst(a, b)
   if a == nil and b == nil then
     -- we want SortNil to always prevent nils from propagating
     -- as well as to sort nils onto one side
@@ -216,7 +216,7 @@ function ForeverAuras.SortNilFirst(a, b)
   end
 end
 
-function ForeverAuras.SortGreaterLast(a, b)
+function WeakAuras.SortGreaterLast(a, b)
   -- sorts values in ascending order
   -- values of disparate types are sorted according to the value of type(value)
   -- which is a bit weird but at least guarantees a stable sort
@@ -241,9 +241,9 @@ function ForeverAuras.SortGreaterLast(a, b)
   end
 end
 
-ForeverAuras.SortGreaterFirst = ForeverAuras.InvertSort(ForeverAuras.SortGreaterLast)
+WeakAuras.SortGreaterFirst = WeakAuras.InvertSort(WeakAuras.SortGreaterLast)
 
-function ForeverAuras.SortRegionData(path, sortFunc)
+function WeakAuras.SortRegionData(path, sortFunc)
   -- takes an array-like table, and a function that takes 2 values and returns true/false/nil
   -- creates function that accesses the value indicated by path, and compares using sortFunc
   if type(path) ~= "table" then
@@ -251,7 +251,7 @@ function ForeverAuras.SortRegionData(path, sortFunc)
   end
   if type(sortFunc) ~= "function" then
     -- if sortFunc not provided, compare by default as "<"
-    sortFunc = ForeverAuras.SortGreaterLast
+    sortFunc = WeakAuras.SortGreaterLast
   end
   return function(a, b)
     local aValue, bValue = a, b
@@ -264,15 +264,15 @@ function ForeverAuras.SortRegionData(path, sortFunc)
   end
 end
 
-function ForeverAuras.SortAscending(path)
-  return ForeverAuras.SortRegionData(path, ForeverAuras.ComposeSorts(ForeverAuras.SortNilFirst, ForeverAuras.SortGreaterLast))
+function WeakAuras.SortAscending(path)
+  return WeakAuras.SortRegionData(path, WeakAuras.ComposeSorts(WeakAuras.SortNilFirst, WeakAuras.SortGreaterLast))
 end
 
-function ForeverAuras.SortDescending(path)
-  return ForeverAuras.InvertSort(ForeverAuras.SortAscending(path))
+function WeakAuras.SortDescending(path)
+  return WeakAuras.InvertSort(WeakAuras.SortAscending(path))
 end
 
-function ForeverAuras.ComposeSorts(...)
+function WeakAuras.ComposeSorts(...)
   -- accepts vararg of sort funcs
   -- returns new sort func that combines the functions passed in
   -- order of functions passed in determines their priority in new sort
@@ -300,9 +300,9 @@ local function noop() end
 
 local sorters = {
   none = function(data)
-    return ForeverAuras.ComposeSorts(
-      ForeverAuras.SortAscending({"dataIndex"}),
-      ForeverAuras.SortAscending({"region", "state", "index"})
+    return WeakAuras.ComposeSorts(
+      WeakAuras.SortAscending({"dataIndex"}),
+      WeakAuras.SortAscending({"region", "state", "index"})
     ), { index = true }
   end,
   hybrid = function(data)
@@ -326,33 +326,33 @@ local sorters = {
     end
     local sortExpirationTime
     if hybridSortAscending then
-      sortExpirationTime = ForeverAuras.SortAscending({"region", "state", "expirationTime"})
+      sortExpirationTime = WeakAuras.SortAscending({"region", "state", "expirationTime"})
     else
-      sortExpirationTime = ForeverAuras.SortDescending({"region", "state", "expirationTime"})
+      sortExpirationTime = WeakAuras.SortDescending({"region", "state", "expirationTime"})
     end
-    return ForeverAuras.ComposeSorts(
+    return WeakAuras.ComposeSorts(
       sortHybridStatus,
       sortExpirationTime,
-      ForeverAuras.SortAscending({"dataIndex"})
+      WeakAuras.SortAscending({"dataIndex"})
     ), {expirationTime = true}
   end,
   ascending = function(data)
-    return ForeverAuras.ComposeSorts(
-      ForeverAuras.SortAscending({"region", "state", "expirationTime"}),
-      ForeverAuras.SortAscending({"dataIndex"})
+    return WeakAuras.ComposeSorts(
+      WeakAuras.SortAscending({"region", "state", "expirationTime"}),
+      WeakAuras.SortAscending({"dataIndex"})
     ), {expirationTime = true}
   end,
   descending = function(data)
-    return ForeverAuras.ComposeSorts(
-      ForeverAuras.SortDescending({"region", "state", "expirationTime"}),
-      ForeverAuras.SortAscending({"dataIndex"})
+    return WeakAuras.ComposeSorts(
+      WeakAuras.SortDescending({"region", "state", "expirationTime"}),
+      WeakAuras.SortAscending({"dataIndex"})
     ), {expirationTime = true}
   end,
   custom = function(data)
     local sortStr = data.customSort or ""
-    local sortFunc = ForeverAuras.LoadFunction("return " .. sortStr, data.id) or noop
+    local sortFunc = WeakAuras.LoadFunction("return " .. sortStr, data.id) or noop
     local sortOn = nil
-    local events = ForeverAuras.split(data.sortOn or "")
+    local events = WeakAuras.split(data.sortOn or "")
     if #events > 0 then
       sortOn = {}
       for _, event in ipairs(events) do
@@ -369,7 +369,7 @@ local sorters = {
     end, sortOn
   end
 }
-ForeverAuras.SortFunctions = sorters
+WeakAuras.SortFunctions = sorters
 
 local function createSortFunc(data)
   local sorter = sorters[data.sort] or sorters.none
@@ -405,14 +405,14 @@ local anchorers = {
         local unit = regionData.region.state and regionData.region.state.unit
         local found
         if unit then
-          local frame = ForeverAuras.GetUnitNameplate(unit)
+          local frame = WeakAuras.GetUnitNameplate(unit)
           if frame then
             frames[frame] = frames[frame] or {}
             tinsert(frames[frame], regionData)
             found = true
           end
         end
-        if not found and ForeverAuras.IsOptionsOpen() and regionData.region.state then
+        if not found and WeakAuras.IsOptionsOpen() and regionData.region.state then
           Private.ensurePRDFrame()
           Private.personalRessourceDisplayFrame:anchorFrame(regionData.region.state.id, "NAMEPLATE")
           frames[Private.personalRessourceDisplayFrame] = frames[Private.personalRessourceDisplayFrame] or {}
@@ -426,7 +426,7 @@ local anchorers = {
       for _, regionData in ipairs(activeRegions) do
         local unit = regionData.region.state and regionData.region.state.unit
         if unit then
-          local frame = ForeverAuras.GetUnitFrame(unit) or ForeverAuras.HiddenFrames
+          local frame = WeakAuras.GetUnitFrame(unit) or WeakAuras.HiddenFrames
           if frame then
             frames[frame] = frames[frame] or {}
             tinsert(frames[frame], regionData)
@@ -437,10 +437,10 @@ local anchorers = {
   end,
   ["CUSTOM"] = function(data)
     local anchorStr = data.customAnchorPerUnit or ""
-    local anchorFunc = ForeverAuras.LoadFunction("return " .. anchorStr, data.id) or noop
+    local anchorFunc = WeakAuras.LoadFunction("return " .. anchorStr, data.id) or noop
 
     local anchorOn = nil
-    local events = ForeverAuras.split(data.anchorOn or "")
+    local events = WeakAuras.split(data.anchorOn or "")
     if #events > 0 then
       anchorOn = {}
       for _, event in ipairs(events) do
@@ -992,9 +992,9 @@ local growers = {
   end,
   CUSTOM = function(data)
     local growStr = data.customGrow or ""
-    local growFunc = ForeverAuras.LoadFunction("return " .. growStr, data.id) or noop
+    local growFunc = WeakAuras.LoadFunction("return " .. growStr, data.id) or noop
     local growOn = nil
-    local events = ForeverAuras.split(data.growOn or "")
+    local events = WeakAuras.split(data.growOn or "")
     if #events > 0 then
       growOn = {}
       for _, event in ipairs(events) do
@@ -1011,7 +1011,7 @@ local growers = {
     end, growOn
   end
 }
-ForeverAuras.GrowFunctions = growers
+WeakAuras.GrowFunctions = growers
 
 local function createGrowFunc(data)
   local grower = growers[data.grow] or growers.DOWN
@@ -1105,7 +1105,7 @@ local function modify(parent, region, data)
   end
 
   function region:IsSuspended()
-    return not ForeverAuras.IsLoginFinished() or self.suspended > 0
+    return not WeakAuras.IsLoginFinished() or self.suspended > 0
   end
 
   function region:Suspend()
@@ -1209,7 +1209,7 @@ local function modify(parent, region, data)
       self.updatedChildren = {}
       self.controlPoints:ReleaseAll()
       for dataIndex, childID in ipairs(data.controlledChildren) do
-        local childRegion, childData = ForeverAuras.GetRegion(childID), ForeverAuras.GetData(childID)
+        local childRegion, childData = WeakAuras.GetRegion(childID), WeakAuras.GetData(childID)
         if childRegion and childData then
           local regionData = createRegionData(childData, childRegion, childID, nil, dataIndex)
           if childRegion.toShow then
@@ -1245,8 +1245,8 @@ local function modify(parent, region, data)
     end
     local dataIndex = tIndexOf(data.controlledChildren, childID)
     if not dataIndex then return end
-    local childData = ForeverAuras.GetData(childID)
-    local childRegion = ForeverAuras.GetRegion(childID, cloneID)
+    local childData = WeakAuras.GetData(childID)
+    local childRegion = WeakAuras.GetRegion(childID, cloneID)
     if not childData or not childRegion then return end
     local regionData = createRegionData(childData, childRegion, childID, cloneID, dataIndex)
     if childRegion.toShow then
@@ -1400,7 +1400,7 @@ local function modify(parent, region, data)
           x + data.xOffset, y + data.yOffset
         )
       end
-      controlPoint:SetShown(show and frame ~= ForeverAuras.HiddenFrames)
+      controlPoint:SetShown(show and frame ~= WeakAuras.HiddenFrames)
       controlPoint:SetWidth(regionData.dimensions.width)
       controlPoint:SetHeight(regionData.dimensions.height)
       if (data.anchorFrameParent or data.anchorFrameParent == nil)
@@ -1453,8 +1453,8 @@ local function modify(parent, region, data)
           local anim
           if data.grow == "CIRCLE" or data.grow == "COUNTERCIRCLE" then
             local originX, originY = 0,0
-            local radius1, previousAngle = ForeverAuras.GetPolarCoordinates(xPrev, yPrev, originX, originY)
-            local radius2, newAngle = ForeverAuras.GetPolarCoordinates(x, y, originX, originY)
+            local radius1, previousAngle = WeakAuras.GetPolarCoordinates(xPrev, yPrev, originX, originY)
+            local radius2, newAngle = WeakAuras.GetPolarCoordinates(x, y, originX, originY)
             local dAngle = newAngle - previousAngle
             dAngle = ((dAngle > 180 and dAngle - 360) or (dAngle < -180 and dAngle + 360) or dAngle)
             if(math.abs(radius1 - radius2) > 0.1) then
@@ -1573,7 +1573,7 @@ local function modify(parent, region, data)
       Private.StartProfileAura(data.id)
       local numVisible, minX, maxX, maxY, minY = 0, nil, nil, nil, nil
       local isRestricted = region:IsAnchoringRestricted()
-      if isRestricted and not ForeverAuras.IsOptionsOpen() then
+      if isRestricted and not WeakAuras.IsOptionsOpen() then
         -- workaround for restricted anchor families (mostly PRD)
         -- if region is in a restricted anchor family, we're not allowed to get the rect of its children
         -- and via Blizzard's extremely finite wisdom, the personal resource display is one such restricted family
@@ -1624,7 +1624,7 @@ local function modify(parent, region, data)
       else
         self:Hide()
       end
-      if ForeverAuras.IsOptionsOpen() then
+      if WeakAuras.IsOptionsOpen() then
         Private.OptionsFrame().moversizer:ReAnchor()
       elseif isRestricted then
         self:ReAnchor()

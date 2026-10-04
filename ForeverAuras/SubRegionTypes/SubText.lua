@@ -1,18 +1,18 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
 local SharedMedia = LibStub("LibSharedMedia-3.0");
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 local FontStringScaleAnimationMode = Enum and Enum.FontStringScaleAnimationMode
 
 local screenWidth, screenHeight = math.ceil(GetScreenWidth() / 20) * 20, math.ceil(GetScreenHeight() / 20) * 20
 
-local defaultFont = ForeverAuras.defaultFont
-local defaultFontSize = ForeverAuras.defaultFontSize
+local defaultFont = WeakAuras.defaultFont
+local defaultFontSize = WeakAuras.defaultFontSize
 
 local default = function(parentType)
   if parentType == "icon" then
@@ -83,7 +83,7 @@ local properties = {
     display = L["Text"],
     setter = "ChangeText",
     type = "string",
-    control = "ForeverAurasInputWithIndentation"
+    control = "WeakAurasInputWithIndentation"
   },
   text_color = {
     display = L["Color"],
@@ -210,6 +210,7 @@ end
 local function onRelease(subRegion)
   -- A pooled subtext must not resume the previous aura's native timer slot.
   Private.CDMAuraProgress.HideText(subRegion)
+  Private.BlizzardAuraDisplay.HideLinkedText(subRegion)
   subRegion:Hide()
 end
 
@@ -233,7 +234,7 @@ local function modify(parent, region, parentData, data, first)
     data.text_shadowColor, data.text_shadowXOffset, data.text_shadowYOffset)
   if text:GetFont() then
     text:SetText("") -- SetJustifyH is broken unless the text changes
-    text:SetText(ForeverAuras.ReplaceRaidMarkerSymbols(data.text_text));
+    text:SetText(WeakAuras.ReplaceRaidMarkerSymbols(data.text_text));
   end
 
   text:SetTextHeight(data.text_fontSize);
@@ -281,7 +282,7 @@ local function modify(parent, region, parentData, data, first)
       end
     end
     if containsCustomText and parentData.customText and parentData.customText ~= "" then
-      parent.customTextFunc = ForeverAuras.LoadFunction("return "..parentData.customText, parentData.id)
+      parent.customTextFunc = WeakAuras.LoadFunction("return "..parentData.customText, parentData.id)
       parent.values.customTextUpdateThrottle = parentData.customTextUpdateThrottle or 0
     else
       parent.customTextFunc = nil
@@ -358,7 +359,7 @@ local function modify(parent, region, parentData, data, first)
         textStr = Private.ReplacePlaceHolders(textStr, parent, nil, false, self.subTextFormatters)
 
         if text:GetFont() then
-          text:SetText(ForeverAuras.ReplaceRaidMarkerSymbols(textStr))
+          text:SetText(WeakAuras.ReplaceRaidMarkerSymbols(textStr))
         end
         region:UpdateAnchorOnTextChange()
       end
@@ -401,6 +402,22 @@ local function modify(parent, region, parentData, data, first)
       end
     end
 
+    local linkedKind, linkedTrigger = Private.BlizzardAuraDisplay.LinkedTextKind(region.text_text, parentData)
+    if linkedKind and Update then
+      local standard, standardTick = Update, FrameTick
+      Private.BlizzardAuraDisplay.ResetLinkedText(region)
+      Update = function()
+        if Private.BlizzardAuraDisplay.UpdateLinkedText(region, data, parentData, linkedKind, linkedTrigger) then return end
+        standard()
+      end
+      FrameTick = standardTick and function()
+        if region.linkedTextActive then return end
+        standardTick()
+      end
+    else
+      Private.BlizzardAuraDisplay.HideLinkedText(region)
+    end
+
     region.Update = Update
     region.FrameTick = FrameTick
 
@@ -408,7 +425,7 @@ local function modify(parent, region, parentData, data, first)
       if text:GetFont() then
         local textStr = region.text_text
         textStr = textStr:gsub("\\n", "\n");
-        text:SetText(ForeverAuras.ReplaceRaidMarkerSymbols(textStr))
+        text:SetText(WeakAuras.ReplaceRaidMarkerSymbols(textStr))
       end
     end
   end
@@ -639,5 +656,5 @@ local function supports(regionType)
          or regionType == "empty"
 end
 
-ForeverAuras.RegisterSubRegionType("subtext", L["Text"], supports, create, modify, onAcquire, onRelease,
+WeakAuras.RegisterSubRegionType("subtext", L["Text"], supports, create, modify, onAcquire, onRelease,
                                 default, addDefaultsForNewAura, properties)

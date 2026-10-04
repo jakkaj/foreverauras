@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local function createOptions(id, data)
   local options = {
@@ -13,8 +13,8 @@ local function createOptions(id, data)
     __order = 1,
     alpha = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Alpha"],
       order = 1,
       min = 0,
@@ -25,7 +25,7 @@ local function createOptions(id, data)
 
     thumbnailIcon = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Thumbnail Icon"],
       order = 2,
       get = function()
@@ -33,8 +33,8 @@ local function createOptions(id, data)
       end,
       set = function(info, v)
         data.thumbnailIcon = v
-        ForeverAuras.Add(data)
-        ForeverAuras.UpdateThumbnail(data)
+        WeakAuras.Add(data)
+        WeakAuras.UpdateThumbnail(data)
       end
     },
     chooseIcon = {
@@ -47,7 +47,7 @@ local function createOptions(id, data)
        end,
        imageWidth = 24,
        imageHeight = 24,
-       control = "ForeverAurasIcon",
+       control = "WeakAurasIcon",
        image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
   }

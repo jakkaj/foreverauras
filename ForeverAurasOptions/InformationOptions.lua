@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 --- Creates the options for one aura
 ---@param data auraData
@@ -36,15 +36,15 @@ function OptionsPrivate.GetInformationOptions(data)
     args.name = {
       type = "input",
       name = L["Name:"],
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = order,
       get = function()
         return data.id
       end,
       set = function(info, newid)
-        if data.id ~= newid and not ForeverAuras.GetData(newid) then
+        if data.id ~= newid and not WeakAuras.GetData(newid) then
           local oldid = data.id
-          ForeverAuras.Rename(data, newid);
+          WeakAuras.Rename(data, newid);
         end
       end
     }
@@ -76,7 +76,7 @@ function OptionsPrivate.GetInformationOptions(data)
   args.url = {
     type = "input",
     name = sameURL and L["URL"] or "|cFF4080FF" .. L["URL"],
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     get = function()
       return sameURL and commonURL or ""
     end,
@@ -102,7 +102,7 @@ function OptionsPrivate.GetInformationOptions(data)
       type = "description",
       name = isTmpGroup and L["|cFFE0E000Note:|r This sets the URL on all selected auras"]
                          or L["|cFFE0E000Note:|r This sets the URL on this group and all its members."],
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = order
     }
     order = order + 1
@@ -112,10 +112,10 @@ function OptionsPrivate.GetInformationOptions(data)
       type = "toggle",
       name = L["Ignore Wago updates"],
       desc = OptionsPrivate.IsWagoUpdateIgnored(data.id) and L["Do you want to enable updates for this aura"] or L["Do you want to ignore updates for this aura"],
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       get = function() return OptionsPrivate.IsWagoUpdateIgnored(data.id) end,
       set = function(info, v)
-          local auraData = ForeverAuras.GetData(data.id)
+          local auraData = WeakAuras.GetData(data.id)
           if auraData then
             local ignoreUpdate
             if OptionsPrivate.IsWagoUpdateIgnored(data.id) then
@@ -127,7 +127,7 @@ function OptionsPrivate.GetInformationOptions(data)
               child.ignoreWagoUpdate = ignoreUpdate
               OptionsPrivate.ClearOptions(child.id)
             end
-            ForeverAuras.ClearAndUpdateOptions(data.id)
+            WeakAuras.ClearAndUpdateOptions(data.id)
           end
           OptionsPrivate.SortDisplayButtons(nil, true)
 
@@ -145,7 +145,7 @@ function OptionsPrivate.GetInformationOptions(data)
     args.description = {
       type = "input",
       name = isGroup and L["Group Description"] or L["Description"],
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       multiline = true,
       order = order,
       get = function()
@@ -153,8 +153,8 @@ function OptionsPrivate.GetInformationOptions(data)
       end,
       set = function(info, v)
         data.desc = v
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     }
     order = order + 1
@@ -163,7 +163,7 @@ function OptionsPrivate.GetInformationOptions(data)
       args.description_note = {
         type = "description",
         name = string.format(L["|cFFE0E000Note:|r This sets the description only on '%s'"], data.id),
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         order = order,
       }
       order = order + 1
@@ -177,7 +177,7 @@ function OptionsPrivate.GetInformationOptions(data)
       args.warningTitle = {
         type = "header",
         name = title,
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         order = order,
       }
       order = order + 1
@@ -185,7 +185,7 @@ function OptionsPrivate.GetInformationOptions(data)
       args.warnings = {
         type = "description",
         name = message,
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         order = order,
         fontSize = "medium"
       }
@@ -197,7 +197,7 @@ function OptionsPrivate.GetInformationOptions(data)
   args.compabilityTitle = {
     type = "header",
     name = L["Compatibility Options"],
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     order = order,
   }
   order = order + 1
@@ -266,7 +266,7 @@ function OptionsPrivate.GetInformationOptions(data)
       args["compatibility_" .. property] = {
         type = "toggle",
         name = same[property] and propertyData.name or "|cFF4080FF" .. propertyData.name,
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         get = function()
           if propertyData.onParent then
             return data.information[property]
@@ -277,18 +277,18 @@ function OptionsPrivate.GetInformationOptions(data)
         set = function(info, v)
           if propertyData.onParent then
             data.information[property] = v
-            ForeverAuras.Add(data)
+            WeakAuras.Add(data)
             OptionsPrivate.ClearOptions(data.id)
           else
             for child in OptionsPrivate.Private.TraverseLeafsOrAura(data) do
               if not propertyData.regionType or propertyData.regionType == child.regionType then
                 child.information[property] = v
-                ForeverAuras.Add(child)
+                WeakAuras.Add(child)
                 OptionsPrivate.ClearOptions(child.id)
               end
             end
           end
-          ForeverAuras.ClearAndUpdateOptions(data.id)
+          WeakAuras.ClearAndUpdateOptions(data.id)
         end,
         desc = same[property] and "" or mergedDesc[property],
         order = order
@@ -310,7 +310,7 @@ function OptionsPrivate.GetInformationOptions(data)
     args.savedDataTitle = {
       type = "header",
       name = L["Saved Data"],
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = order,
     }
     order = order + 1
@@ -320,7 +320,7 @@ function OptionsPrivate.GetInformationOptions(data)
         args["savedData." .. child.uid] = {
           type = "description",
           name = L["%s stores around %s KB of data"]:format(child.id, ceil((#child.information.saved) / 1024)),
-          width = savedDataCount > 1 and ForeverAuras.doubleWidth or ForeverAuras.normalWidth,
+          width = savedDataCount > 1 and WeakAuras.doubleWidth or WeakAuras.normalWidth,
           order = order,
         }
         order = order + 1
@@ -330,15 +330,15 @@ function OptionsPrivate.GetInformationOptions(data)
     args.savedDataClear = {
       type = "execute",
       name = L["Clear Saved Data"],
-      width = savedDataCount > 1 and ForeverAuras.doubleWidth or ForeverAuras.normalWidth,
+      width = savedDataCount > 1 and WeakAuras.doubleWidth or WeakAuras.normalWidth,
       order = order,
       func = function()
         for child in OptionsPrivate.Private.TraverseLeafsOrAura(data) do
           OptionsPrivate.Private.ClearAuraEnvironmentSavedData(child.id)
-          ForeverAuras.Add(child)
+          WeakAuras.Add(child)
           OptionsPrivate.ClearOptions(child.id)
         end
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     }
     order = order + 1
@@ -348,7 +348,7 @@ function OptionsPrivate.GetInformationOptions(data)
   args.debugLogTitle = {
     type = "header",
     name = L["Enable Debug Log"],
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     order = order,
   }
   order = order + 1
@@ -356,7 +356,7 @@ function OptionsPrivate.GetInformationOptions(data)
   args.debugLogDesc = {
     type = "description",
     name = L["This enables the collection of debug logs. Custom code can add debug information to the log through the function DebugPrint."],
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     order = order,
   }
   order = order + 1
@@ -388,7 +388,7 @@ function OptionsPrivate.GetInformationOptions(data)
     type = "toggle",
     name = sameDebugLog and L["Enable Debug Logging"] or "|cFF4080FF" .. L["Enable Debug Logging"],
     desc = not sameDebugLog and debugLogDesc or nil,
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     order = order,
     get = function()
       return sameDebugLog and commonDebugLog
@@ -396,16 +396,16 @@ function OptionsPrivate.GetInformationOptions(data)
     set = function(info, v)
       if isGroup and not isTmpGroup then
         data.information.debugLog = v
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
       else
         for child in OptionsPrivate.Private.TraverseLeafsOrAura(data) do
           child.information.debugLog = v
-          ForeverAuras.Add(child)
+          WeakAuras.Add(child)
           OptionsPrivate.ClearOptions(child.id)
         end
       end
 
-      ForeverAuras.ClearAndUpdateOptions(data.id)
+      WeakAuras.ClearAndUpdateOptions(data.id)
     end
   }
   order = order + 1
@@ -414,11 +414,11 @@ function OptionsPrivate.GetInformationOptions(data)
     args.debugLogShow = {
       type = "execute",
       name = L["Show Debug Logs"],
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = order,
       func = function()
         --- @type string
-        local fullMessage = L["ForeverAuras %s on WoW %s"]:format(ForeverAuras.versionString, ForeverAuras.BuildInfo) .. "\n\n"
+        local fullMessage = L["ForeverAuras %s on WoW %s"]:format(WeakAuras.versionString, WeakAuras.BuildInfo) .. "\n\n"
         --- @type boolean
         local haveLogs = false
         if isGroup and not isTmpGroup then
@@ -462,7 +462,7 @@ function OptionsPrivate.GetInformationOptions(data)
     args.debugLogClear = {
       type = "execute",
       name = L["Clear Debug Logs"],
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = order,
       func = function()
         if isGroup and not isTmpGroup then

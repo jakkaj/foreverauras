@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
-local Type, Version = "ForeverAurasImportButton", 21
+local Type, Version = "WeakAurasImportButton", 21
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local function Hide_Tooltip()
   GameTooltip:Hide();
@@ -114,7 +114,7 @@ Constructor
 -------------------------------------------------------------------------------]]
 
 local function Constructor()
-  local name = "ForeverAurasImportButton"..AceGUI:GetNextWidgetNum(Type);
+  local name = "WeakAurasImportButton"..AceGUI:GetNextWidgetNum(Type);
   local button = CreateFrame("Button", name, UIParent, "OptionsListButtonTemplate");
   button:SetHeight(18);
   button:SetWidth(380);

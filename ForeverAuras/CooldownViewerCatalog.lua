@@ -1,4 +1,4 @@
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local identities = {}
 local requestedItems = {}
@@ -436,7 +436,7 @@ local function ApplyCachedAura(state, identity, info, frame, exactID, buffSpellI
     if hasInstance and Readable(unit) and (unit == "player" or unit == "target")
         and C_UnitAuras and C_UnitAuras.GetAuraDuration then
       local ok, duration = pcall(C_UnitAuras.GetAuraDuration, unit, instance)
-      if ok and ForeverAuras.IsDurationObject(duration) then
+      if ok and WeakAuras.IsDurationObject(duration) then
         state.progressType, state.durationObject = "durationObject", duration
         state.value, state.total = nil, nil
       end
@@ -562,7 +562,7 @@ function Private.CopyCDMCountdownText(destination, state, kind)
   -- native rules blank zero without inspecting restricted times or strings.
   -- Keep stack counts and the editor's sample on their existing paths.
   if kind ~= "bs" and state and state.cdmBuff and state.show and not state.cdmTextPreview
-      and ForeverAuras.IsDurationObject(state.durationObject) then
+      and WeakAuras.IsDurationObject(state.durationObject) then
     destination:SetText(Private.FormatDurationText(state.durationObject, false, 99, 0, 0))
     return
   end

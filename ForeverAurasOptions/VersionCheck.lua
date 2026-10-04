@@ -4,19 +4,19 @@ local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
-local optionsVersion = "0.44.2-BETA.1"
+local optionsVersion = "0.50.3-BETA.1"
 
 
-if optionsVersion ~= ForeverAuras.versionString then
+if optionsVersion ~= WeakAuras.versionString then
   local message = string.format(L["The ForeverAuras Options Addon version %s doesn't match the ForeverAuras version %s. If you updated the addon while the game was running, try restarting World of Warcraft. Otherwise try reinstalling ForeverAuras"],
-                    optionsVersion, ForeverAuras.versionString)
+                    optionsVersion, WeakAuras.versionString)
   ---@diagnostic disable-next-line: duplicate-set-field
-  ForeverAuras.IsLibsOk = function() return false end
+  WeakAuras.IsLibsOk = function() return false end
   ---@diagnostic disable-next-line: duplicate-set-field
-  ForeverAuras.ToggleOptions = function()
-       ForeverAuras.prettyPrint(message)
+  WeakAuras.ToggleOptions = function()
+       WeakAuras.prettyPrint(message)
   end
 
 end

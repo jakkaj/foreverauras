@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-BackdropTemplateForeverAurasMixin = { };
+BackdropTemplateWeakAurasMixin = { };
 
 local coordStart = 0.0625;
 local coordEnd = 1 - coordStart;
@@ -16,7 +16,7 @@ local textureUVs = {			-- keys have to match pieceNames in nineSliceSetup table
 };
 local defaultEdgeSize = 39;		-- the old default
 
-function BackdropTemplateForeverAurasMixin:OnBackdropLoaded()
+function BackdropTemplateWeakAurasMixin:OnBackdropLoaded()
 	if self.backdropInfo then
 		-- check for invalid info
 		if not self.backdropInfo.edgeFile and not self.backdropInfo.bgFile then
@@ -46,13 +46,13 @@ function BackdropTemplateForeverAurasMixin:OnBackdropLoaded()
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:OnBackdropSizeChanged()
+function BackdropTemplateWeakAurasMixin:OnBackdropSizeChanged()
 	if self.backdropInfo then
 		self:SetupTextureCoordinates();
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:GetEdgeSize()
+function BackdropTemplateWeakAurasMixin:GetEdgeSize()
 	if self.backdropInfo.edgeSize and self.backdropInfo.edgeSize > 0 then
 		return self.backdropInfo.edgeSize;
 	else
@@ -78,7 +78,7 @@ local function SetupBackdropTextureCoordinates(region, pieceSetup, repeatX, repe
 						GetBackdropCoordValue("LRx", pieceSetup, repeatX, repeatY), GetBackdropCoordValue("LRy", pieceSetup, repeatX, repeatY));
 end
 
-function BackdropTemplateForeverAurasMixin:SetupTextureCoordinates()
+function BackdropTemplateWeakAurasMixin:SetupTextureCoordinates()
 	local width = self:GetWidth();
 	local height = self:GetHeight();
 	local effectiveScale = self:GetEffectiveScale();
@@ -113,7 +113,7 @@ function BackdropTemplateForeverAurasMixin:SetupTextureCoordinates()
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:SetupPieceVisuals(piece, setupInfo, pieceLayout)
+function BackdropTemplateWeakAurasMixin:SetupPieceVisuals(piece, setupInfo, pieceLayout)
 	local textureInfo = textureUVs[setupInfo.pieceName];
 	local tileVerts = false;
 	local file;
@@ -133,7 +133,7 @@ function BackdropTemplateForeverAurasMixin:SetupPieceVisuals(piece, setupInfo, p
 	piece:SetSize(cornerWidth, cornerHeight);
 end
 
-function BackdropTemplateForeverAurasMixin:SetBorderBlendMode(blendMode)
+function BackdropTemplateWeakAurasMixin:SetBorderBlendMode(blendMode)
 	if not self.backdropInfo then
 		return;
 	end
@@ -145,11 +145,11 @@ function BackdropTemplateForeverAurasMixin:SetBorderBlendMode(blendMode)
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:HasBackdropInfo(backdropInfo)
+function BackdropTemplateWeakAurasMixin:HasBackdropInfo(backdropInfo)
 	return self.backdropInfo == backdropInfo;
 end
 
-function BackdropTemplateForeverAurasMixin:ClearBackdrop()
+function BackdropTemplateWeakAurasMixin:ClearBackdrop()
 	if self.backdropInfo then
 		for pieceName in pairs(textureUVs) do
 			local region = self[pieceName];
@@ -161,7 +161,7 @@ function BackdropTemplateForeverAurasMixin:ClearBackdrop()
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:ApplyBackdrop()
+function BackdropTemplateWeakAurasMixin:ApplyBackdrop()
 	local x, y, x1, y1 = 0, 0, 0, 0;
 	if self.backdropInfo.bgFile then
 		local edgeSize = self:GetEdgeSize();
@@ -187,7 +187,7 @@ function BackdropTemplateForeverAurasMixin:ApplyBackdrop()
 		LeftEdge = {  },
 		RightEdge = {  },
 		Center = { layer = "BACKGROUND", x = x, y = y, x1 = x1, y1 = y1 },
-		setupPieceVisualsFunction = BackdropTemplateForeverAurasMixin.SetupPieceVisuals,
+		setupPieceVisualsFunction = BackdropTemplateWeakAurasMixin.SetupPieceVisuals,
 	};
 	NineSliceUtil.ApplyLayout(self, layout);
 	self:SetBackdropColor(1, 1, 1, 1);
@@ -196,7 +196,7 @@ function BackdropTemplateForeverAurasMixin:ApplyBackdrop()
 end
 
 -- backwards compatibility API starts here
-function BackdropTemplateForeverAurasMixin:SetBackdrop(backdropInfo)
+function BackdropTemplateWeakAurasMixin:SetBackdrop(backdropInfo)
 	if backdropInfo then
 		if self:HasBackdropInfo(backdropInfo) then
 			return;
@@ -214,7 +214,7 @@ function BackdropTemplateForeverAurasMixin:SetBackdrop(backdropInfo)
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:GetBackdrop()
+function BackdropTemplateWeakAurasMixin:GetBackdrop()
 	if self.backdropInfo then
 		-- make a copy because it will be altered to match old API output
 		local backdropInfo = CopyTable(self.backdropInfo);
@@ -257,7 +257,7 @@ function BackdropTemplateForeverAurasMixin:GetBackdrop()
 	return nil;
 end
 
-function BackdropTemplateForeverAurasMixin:GetBackdropColor()
+function BackdropTemplateWeakAurasMixin:GetBackdropColor()
 	if not self.backdropInfo then
 		return;
 	end
@@ -266,7 +266,7 @@ function BackdropTemplateForeverAurasMixin:GetBackdropColor()
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:SetBackdropColor(r, g, b, a)
+function BackdropTemplateWeakAurasMixin:SetBackdropColor(r, g, b, a)
 	if not self.backdropInfo then
 		-- Ideally this would throw an error here but the old API just failed silently
 		return;
@@ -276,7 +276,7 @@ function BackdropTemplateForeverAurasMixin:SetBackdropColor(r, g, b, a)
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:GetBackdropBorderColor()
+function BackdropTemplateWeakAurasMixin:GetBackdropBorderColor()
 	if not self.backdropInfo then
 		return
 	end
@@ -289,7 +289,7 @@ function BackdropTemplateForeverAurasMixin:GetBackdropBorderColor()
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:SetBackdropBorderColor(r, g, b, a)
+function BackdropTemplateWeakAurasMixin:SetBackdropBorderColor(r, g, b, a)
 	if not self.backdropInfo then
 		-- Ideally this would throw an error here but the old API just failed silently
 		return;
@@ -302,7 +302,7 @@ function BackdropTemplateForeverAurasMixin:SetBackdropBorderColor(r, g, b, a)
 	end
 end
 
-function BackdropTemplateForeverAurasMixin:ForEachPiece(callback)
+function BackdropTemplateWeakAurasMixin:ForEachPiece(callback)
 	for pieceName in pairs(textureUVs) do
 		local region = self[pieceName];
 		if region then

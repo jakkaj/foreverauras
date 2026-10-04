@@ -1,10 +1,10 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 --[[-----------------------------------------------------------------------------
 ToolbarButton Widget, based on AceGUI Button
 Graphical Button.
 -------------------------------------------------------------------------------]]
-local Type, Version = "ForeverAurasToolbarButton", 7
+local Type, Version = "WeakAurasToolbarButton", 7
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local OptionsPrivate = select(2, ...)
 local function Modern() return OptionsPrivate.Theme.IsModern() end

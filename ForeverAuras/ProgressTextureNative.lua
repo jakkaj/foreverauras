@@ -1,5 +1,5 @@
 -- Native widgets consume restricted progress without exposing it to Lua geometry.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local Native = {}
 Private.ProgressTextureNative = Native
@@ -174,7 +174,7 @@ end
 function Native.UpdateDuration(region)
   local native = Start(region, "duration")
   if not StyleRegion(region, native, false) then return end
-  if not ForeverAuras.IsDurationObject(region.durationObject) then native.bar:Hide(); return end
+  if not WeakAuras.IsDurationObject(region.durationObject) then native.bar:Hide(); return end
   local inverse = not region.inverse ~= not region.inverseDirection
   native.bar:SetTimerDuration(region.durationObject, Enum.StatusBarInterpolation.Immediate,
     inverse and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime)

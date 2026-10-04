@@ -1,5 +1,5 @@
 -- Shared font setup for addon-owned text, including native aura text bindings.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local fontObjects = setmetatable({}, {__mode = "k"})
 local fontObjectCounter = 0

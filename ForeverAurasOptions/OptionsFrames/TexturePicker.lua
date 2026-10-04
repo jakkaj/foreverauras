@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -15,9 +15,9 @@ local CreateFrame = CreateFrame
 
 local AceGUI = LibStub("AceGUI-3.0")
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local function CompareValues(a, b)
   if type(a) ~= type(b) then
@@ -76,9 +76,9 @@ local function SetAll(baseObject, paths, property, value, width, height, adjustS
           child.width = width
           child.height = height
         end
-        ForeverAuras.Add(child)
-        ForeverAuras.ClearAndUpdateOptions(child.id)
-        ForeverAuras.UpdateThumbnail(child)
+        WeakAuras.Add(child)
+        WeakAuras.ClearAndUpdateOptions(child.id)
+        WeakAuras.UpdateThumbnail(child)
       end
   end
 end
@@ -104,7 +104,7 @@ local function ConstructTexturePicker(frame)
   dropdown.list = {};
   dropdown:SetGroupList(dropdown.list);
 
-  local scroll = AceGUI:Create("ForeverAurasScrollArea");
+  local scroll = AceGUI:Create("WeakAurasScrollArea");
   scroll:SetWidth(540);
   dropdown:AddChild(scroll);
 
@@ -128,7 +128,7 @@ local function ConstructTexturePicker(frame)
       local data = group.selectedGroupSorted[i]
       if data then
         local texturePath, textureName = data[1], data[2]
-        local textureWidget = AceGUI:Create("ForeverAurasTextureButton");
+        local textureWidget = AceGUI:Create("WeakAurasTextureButton");
         tinsert(group.textureWidgets, textureWidget)
         if (group.SetTextureFunc) then
           group.SetTextureFunc(textureWidget, texturePath, textureName);
@@ -332,7 +332,7 @@ local function ConstructTexturePicker(frame)
   function group.Close()
     frame.window = "default";
     frame:UpdateFrameVisible()
-    ForeverAuras.FillOptions()
+    WeakAuras.FillOptions()
   end
 
   function group.CancelClose()
@@ -341,8 +341,8 @@ local function ConstructTexturePicker(frame)
       local childObject = valueFromPath(child, group.paths[child.id])
       if childObject then
         childObject[group.properties.texture] = group.givenPath[child.id]
-        ForeverAuras.Add(child);
-        ForeverAuras.UpdateThumbnail(child);
+        WeakAuras.Add(child);
+        WeakAuras.UpdateThumbnail(child);
       end
     end
     group.Close();

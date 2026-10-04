@@ -1,7 +1,7 @@
 -- Modified for ForeverAuras, 2026-09-19.
 -- This file is only for base functions that work differently or are deprecated in some versions of wow
 
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private

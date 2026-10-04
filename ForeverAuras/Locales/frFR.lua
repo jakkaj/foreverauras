@@ -3,7 +3,7 @@ if (GAME_LOCALE or GetLocale()) ~= "frFR" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- ForeverAuras
 L[ [=[ Filter formats: 'Name', 'Name-Realm', '-Realm'.
@@ -62,8 +62,8 @@ L["40 Man Raid"] = "Raid 40 Personnes"
 L["40 Player Raid"] = "Raid 40 Joueurs"
 L["5 Man Dungeon"] = "Donjon 5 joueurs"
 --[[Translation missing --]]
-L[ [=[A detailed overview of your auras and ForeverAuras systems
-Copy the whole text to Weakaura's Discord if you need assistance.]=] ] = [=[A detailed overview of your auras and ForeverAuras systems
+L[ [=[A detailed overview of your auras and WeakAuras systems
+Copy the whole text to Weakaura's Discord if you need assistance.]=] ] = [=[A detailed overview of your auras and WeakAuras systems
 Copy the whole text to Weakaura's Discord if you need assistance.]=]
 --[[Translation missing --]]
 L["A trigger in this aura is set up to track a soft target unit, but you don't have the CVars set up for this to work correctly. Consider either changing the unit tracked, or configuring the Soft Target CVars."] = "A trigger in this aura is set up to track a soft target unit, but you don't have the CVars set up for this to work correctly. Consider either changing the unit tracked, or configuring the Soft Target CVars."
@@ -2062,8 +2062,8 @@ L["Use Texture"] = "Use Texture"
 L["Use Watched Faction"] = "Use Watched Faction"
 --[[Translation missing --]]
 L["Uses UnitInRange() to check if in range. Matches default raid frames out of range behavior, which is between 25 to 40 yards depending on your class and spec."] = "Uses UnitInRange() to check if in range. Matches default raid frames out of range behavior, which is between 25 to 40 yards depending on your class and spec."
-L["Using ForeverAuras.clones is deprecated. Use ForeverAuras.GetRegion(id, cloneId) instead."] = "L'utilisation de ForeverAuras.clones est obsolète. Utilisez plutôt ForeverAuras.GetRegion(id, cloneId)."
-L["Using ForeverAuras.regions is deprecated. Use ForeverAuras.GetRegion(id) instead."] = "L'utilisation de ForeverAuras.regions est obsolète. Utilisez plutôt ForeverAuras.GetRegion(id)."
+L["Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."] = "L'utilisation de WeakAuras.clones est obsolète. Utilisez plutôt WeakAuras.GetRegion(id, cloneId)."
+L["Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."] = "L'utilisation de WeakAuras.regions est obsolète. Utilisez plutôt WeakAuras.GetRegion(id)."
 L["Vaelastrasz the Corrupt"] = "Vaelastrasz le Corrompu"
 L["Versatility (%)"] = "Polyvalence (%)"
 L["Versatility Rating"] = "Score de Polyvalence"
@@ -2094,12 +2094,12 @@ L["Warning: Tooltip values are now available via %tooltip1, %tooltip2, %tooltip3
 L["ForeverAuras Built-In (63:42 | 3:07 | 10 | 2.4)"] = "ForeverAuras Built-In (63:42 | 3:07 | 10 | 2.4)"
 --[[Translation missing --]]
 --[[Translation missing --]]
-L[ [=[ForeverAuras has detected that it has been downgraded.
+L[ [=[WeakAuras has detected that it has been downgraded.
 Your saved auras may no longer work properly.
 Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
 Last upgrade: %s
 
-|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[ForeverAuras has detected that it has been downgraded.
+|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[WeakAuras has detected that it has been downgraded.
 Your saved auras may no longer work properly.
 Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
 Last upgrade: %s

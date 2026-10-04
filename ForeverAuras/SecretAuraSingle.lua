@@ -12,7 +12,7 @@
 --     duration text holding the icon as inline texture markup.
 --   Total Duration: a hidden text formatted from the total duration sizes a
 --     clip that holds the whole aura button (StyleDurationGate).
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local Display = Private.BlizzardAuraDisplay
 
@@ -160,10 +160,10 @@ function Display.FitsOneSlot(data, trigger)
 end
 
 function Display.InDynamicGroup(data)
-  local parent = data and data.parent and ForeverAuras.GetData(data.parent)
+  local parent = data and data.parent and WeakAuras.GetData(data.parent)
   while parent do
     if parent.regionType == "dynamicgroup" then return true end
-    parent = parent.parent and ForeverAuras.GetData(parent.parent)
+    parent = parent.parent and WeakAuras.GetData(parent.parent)
   end
   return false
 end
@@ -1274,7 +1274,7 @@ local function ReapplyWaiting(changed)
     end
   end
   for region, data in pairs(refresh) do
-    if ForeverAuras.GetData(data.id) == data then Display.Apply(region, data)
+    if WeakAuras.GetData(data.id) == data then Display.Apply(region, data)
     else Display.ReleaseAuraLearning(region) end
   end
 end

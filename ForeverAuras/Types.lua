@@ -1,14 +1,14 @@
 -- Modified for ForeverAuras, 2026-09-30.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras;
-local L = ForeverAuras.L;
+---@class WeakAuras
+local WeakAuras = WeakAuras;
+local L = WeakAuras.L;
 
 local LSM = LibStub("LibSharedMedia-3.0");
 
@@ -323,14 +323,14 @@ Private.format_types = {
       addOption(symbol .. "_abbreviate", {
         type = "toggle",
         name = L["Abbreviate"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
       addOption(symbol .. "_abbreviate_max", {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         name = L["Max Char "],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         min = 1,
         softMax = 20,
         hidden = hidden,
@@ -342,21 +342,21 @@ Private.format_types = {
       addOption(symbol .. "_pad", {
         type = "toggle",
         name = L["Pad"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_mode", {
         type = "select",
         name = L["Pad Mode"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         values = Private.pad_types,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_max", {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         name = L["Pad to"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         min = 1,
         max = 20,
         hidden = hidden,
@@ -371,15 +371,15 @@ Private.format_types = {
       local padLength = get(symbol .. "_pad_max", 8)
       if abbreviate and pad then
         return function(input)
-          return ForeverAuras.PadString(ForeverAuras.WA_Utf8Sub(input, abbreviateMax), padMode, padLength)
+          return WeakAuras.PadString(WeakAuras.WA_Utf8Sub(input, abbreviateMax), padMode, padLength)
         end
       elseif pad then
         return function(input)
-          return ForeverAuras.PadString(input, padMode, padLength)
+          return WeakAuras.PadString(input, padMode, padLength)
         end
       elseif abbreviate then
         return function(input)
-          return ForeverAuras.WA_Utf8Sub(input, abbreviateMax)
+          return WeakAuras.WA_Utf8Sub(input, abbreviateMax)
         end
       end
       return nil
@@ -391,26 +391,26 @@ Private.format_types = {
       addOption(symbol .. "_time_format", {
         type = "select",
         name = L["Format"],
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         values = Private.time_format_types,
         hidden = hidden
       })
 
       addOption(symbol .. "_time_dynamic_threshold", {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         min = 0,
         max = 60,
         step = 1,
         name = L["Increase Precision Below"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
 
       addOption(symbol .. "_time_precision", {
         type = "select",
         name = L["Precision"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.time_precision_types,
         hidden = hidden,
         disabled = function() return get(symbol .. "_time_dynamic_threshold") == 0 end
@@ -420,7 +420,7 @@ Private.format_types = {
         type = "toggle",
         name = L["Blizzard Cooldown Reduction"],
         desc = L["Cooldown Reduction changes the duration of seconds instead of showing the real time seconds."],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
 
@@ -428,7 +428,7 @@ Private.format_types = {
         type = "toggle",
         name = L["Use Legacy floor rounding"],
         desc = L["Enables (incorrect) round down of seconds, which was the previous default behavior."],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
         disabled = function() return get(symbol .. "_time_format", 0) ~= 0 end
       })
@@ -588,14 +588,14 @@ Private.format_types = {
       addOption(symbol .. "_money_format", {
         type = "select",
         name = L["Format Gold"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.big_number_types_with_disable,
         hidden = hidden
       })
       addOption(symbol .. "_money_precision", {
         type = "select",
         name = L["Coin Precision"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.money_precision_types,
         hidden = hidden
       })
@@ -643,34 +643,34 @@ Private.format_types = {
       addOption(symbol .. "_big_number_format", {
         type = "select",
         name = L["Format"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.big_number_types,
         hidden = hidden
       })
       addOption(symbol .. "_big_number_space", {
         type = "description",
         name = "",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden
       })
       addOption(symbol .. "_pad", {
         type = "toggle",
         name = L["Pad"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_mode", {
         type = "select",
         name = L["Pad Mode"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         values = Private.pad_types,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_max", {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         name = L["Pad to"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         min = 1,
         max = 20,
         hidden = hidden,
@@ -692,7 +692,7 @@ Private.format_types = {
       end
       if pad then
         return function(input)
-          return ForeverAuras.PadString(formatterFunc(input), padMode, padLength)
+          return WeakAuras.PadString(formatterFunc(input), padMode, padLength)
         end
       end
       return formatterFunc
@@ -704,14 +704,14 @@ Private.format_types = {
       addOption(symbol .. "_decimal_precision", {
         type = "select",
         name = L["Precision"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.precision_types,
         hidden = hidden
       })
       addOption(symbol .. "_round_type", {
         type = "select",
         name = L["Round Mode"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.round_types,
         hidden = hidden,
         disabled = function()
@@ -721,21 +721,21 @@ Private.format_types = {
       addOption(symbol .. "_pad", {
         type = "toggle",
         name = L["Pad"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_mode", {
         type = "select",
         name = L["Pad Mode"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         values = Private.pad_types,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_max", {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         name = L["Pad to"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         min = 1,
         max = 20,
         hidden = hidden,
@@ -760,7 +760,7 @@ Private.format_types = {
       end
       if pad then
         return function(input)
-          return ForeverAuras.PadString(formatterFunc(input), padMode, padLength)
+          return WeakAuras.PadString(formatterFunc(input), padMode, padLength)
         end
       end
       return formatterFunc
@@ -773,7 +773,7 @@ Private.format_types = {
         addOption(symbol .. "_color", {
           type = "select",
           name = L["Color"],
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
           values = Private.unit_color_types,
           hidden = hidden,
         })
@@ -781,21 +781,21 @@ Private.format_types = {
       addOption(symbol .. "_realm_name", {
         type = "select",
         name = L["Realm Name"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.unit_realm_name_types,
         hidden = hidden,
       })
       addOption(symbol .. "_abbreviate", {
         type = "toggle",
         name = L["Abbreviate"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
       addOption(symbol .. "_abbreviate_max", {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         name = L["Max Char"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         min = 1,
         max = 20,
         hidden = hidden,
@@ -807,21 +807,21 @@ Private.format_types = {
       addOption(symbol .. "_pad", {
         type = "toggle",
         name = L["Pad"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_mode", {
         type = "select",
         name = L["Pad Mode"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         values = Private.pad_types,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_max", {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         name = L["Pad to"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         min = 1,
         max = 20,
         hidden = hidden,
@@ -856,14 +856,14 @@ Private.format_types = {
 
       if realm == "never" then
         nameFunc = function(unit)
-          return unit and ForeverAuras.UnitName(unit) or ""
+          return unit and WeakAuras.UnitName(unit) or ""
         end
       elseif realm == "star" then
         nameFunc = function(unit)
           if not unit then
             return ""
           end
-          local name, realm = ForeverAuras.UnitName(unit)
+          local name, realm = WeakAuras.UnitName(unit)
           -- A secret realm cannot be tested; show the name alone.
           if issecretvalue(realm) then return name end
           if realm then
@@ -876,7 +876,7 @@ Private.format_types = {
           if not unit then
             return ""
           end
-          local name, realm = ForeverAuras.UnitName(unit)
+          local name, realm = WeakAuras.UnitName(unit)
           if issecretvalue(realm) then return name end
           if realm then
             return name .. "-" .. realm
@@ -888,22 +888,22 @@ Private.format_types = {
           if not unit then
             return ""
           end
-          local name, realm = ForeverAuras.UnitNameWithRealmCustomName(unit)
+          local name, realm = WeakAuras.UnitNameWithRealmCustomName(unit)
           return name .. "-" .. realm
         end
       end
 
       if pad and abbreviate then
         abbreviateFunc = function(input)
-          return ForeverAuras.PadString(ForeverAuras.WA_Utf8Sub(input, abbreviateMax), padMode, padLength)
+          return WeakAuras.PadString(WeakAuras.WA_Utf8Sub(input, abbreviateMax), padMode, padLength)
         end
       elseif pad then
         abbreviateFunc = function(input)
-          return ForeverAuras.PadString(input, padMode, padLength)
+          return WeakAuras.PadString(input, padMode, padLength)
         end
       elseif abbreviate then
         abbreviateFunc = function(input)
-          return ForeverAuras.WA_Utf8Sub(input, abbreviateMax)
+          return WeakAuras.WA_Utf8Sub(input, abbreviateMax)
         end
       end
 
@@ -940,7 +940,7 @@ Private.format_types = {
         addOption(symbol .. "_color", {
           type = "select",
           name = L["Color"],
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
           values = Private.unit_color_types,
           hidden = hidden,
         })
@@ -948,21 +948,21 @@ Private.format_types = {
       addOption(symbol .. "_realm_name", {
         type = "select",
         name = L["Realm Name"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.unit_realm_name_types,
         hidden = hidden,
       })
       addOption(symbol .. "_abbreviate", {
         type = "toggle",
         name = L["Abbreviate"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
       addOption(symbol .. "_abbreviate_max", {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         name = L["Max Char "],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         min = 1,
         max = 20,
         hidden = hidden,
@@ -973,21 +973,21 @@ Private.format_types = {
       addOption(symbol .. "_pad", {
         type = "toggle",
         name = L["Pad"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_mode", {
         type = "select",
         name = L["Pad Mode"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         values = Private.pad_types,
         hidden = hidden,
       })
       addOption(symbol .. "_pad_max", {
         type = "range",
-        control = "ForeverAurasSpinBox",
+        control = "WeakAurasSpinBox",
         name = L["Pad to"],
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         min = 1,
         max = 20,
         hidden = hidden,
@@ -1018,11 +1018,11 @@ Private.format_types = {
 
       if realm == "never" then
         nameFunc = function(name, realm)
-          return ForeverAuras.GetName(name)
+          return WeakAuras.GetName(name)
         end
       elseif realm == "star" then
         nameFunc = function(name, realm)
-          name = ForeverAuras.GetName(name)
+          name = WeakAuras.GetName(name)
           if realm ~= "" then
             return name .. "*"
           end
@@ -1030,7 +1030,7 @@ Private.format_types = {
         end
       elseif realm == "differentServer" then
         nameFunc = function(name, realm)
-          name = ForeverAuras.GetName(name)
+          name = WeakAuras.GetName(name)
           if realm ~= "" then
             return name .. "-" .. realm
           end
@@ -1038,9 +1038,9 @@ Private.format_types = {
         end
       elseif realm == "always" then
         nameFunc = function(name, realm)
-          name = ForeverAuras.GetName(name)
+          name = WeakAuras.GetName(name)
           if realm == "" then
-            realm = select(2, ForeverAuras.UnitNameWithRealm("player"))
+            realm = select(2, WeakAuras.UnitNameWithRealm("player"))
           end
           return name .. "-" .. realm
         end
@@ -1048,15 +1048,15 @@ Private.format_types = {
 
       if pad and abbreviate then
         abbreviateFunc = function(input)
-          return ForeverAuras.PadString(ForeverAuras.WA_Utf8Sub(input, abbreviateMax), padMode, padLength)
+          return WeakAuras.PadString(WeakAuras.WA_Utf8Sub(input, abbreviateMax), padMode, padLength)
         end
       elseif pad then
         abbreviateFunc = function(input)
-          return ForeverAuras.PadString(input, padMode, padLength)
+          return WeakAuras.PadString(input, padMode, padLength)
         end
       elseif abbreviate then
         abbreviateFunc = function(input)
-          return ForeverAuras.WA_Utf8Sub(input, abbreviateMax)
+          return WeakAuras.WA_Utf8Sub(input, abbreviateMax)
         end
       end
 
@@ -1104,39 +1104,39 @@ Private.format_types = {
       addOption(symbol .. "_gcd_gcd", {
         type = "toggle",
         name = L["Subtract GCD"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden
       })
       addOption(symbol .. "_gcd_cast", {
         type = "toggle",
         name = L["Subtract Cast"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden
       })
       addOption(symbol .. "_gcd_channel", {
         type = "toggle",
         name = L["Subtract Channel"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden
       })
       addOption(symbol .. "_gcd_hide_zero", {
         type = "toggle",
         name = L["Hide 0 cooldowns"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         hidden = hidden
       })
 
       addOption(symbol .. "_decimal_precision", {
         type = "select",
         name = L["Precision"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.precision_types,
         hidden = hidden
       })
       addOption(symbol .. "_round_type", {
         type = "select",
         name = L["Round Mode"],
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         values = Private.round_types,
         hidden = hidden,
         disabled = function()
@@ -1167,25 +1167,25 @@ Private.format_types = {
           return value
         end
 
-        ForeverAuras.WatchGCD()
+        WeakAuras.WatchGCD()
         local result = value
         local now = GetTime()
         if gcd then
-          local gcdDuration, gcdExpirationTime = ForeverAuras.GetGCDInfo()
+          local gcdDuration, gcdExpirationTime = WeakAuras.GetGCDInfo()
           if gcdDuration ~= 0 then
             result = now + value - gcdExpirationTime
           end
         end
 
         if cast then
-          local _, _, _, _, endTime = ForeverAuras.UnitCastingInfo("player")
+          local _, _, _, _, endTime = WeakAuras.UnitCastingInfo("player")
           local castExpirationTime = endTime and endTime > 0 and (endTime / 1000) or 0
           if castExpirationTime > 0 then
             result = min(result, now + value - castExpirationTime)
           end
         end
         if channel then
-          local _, _, _, _, endTime = ForeverAuras.UnitChannelInfo("player")
+          local _, _, _, _, endTime = WeakAuras.UnitChannelInfo("player")
           local castExpirationTime = endTime and endTime > 0 and (endTime / 1000) or 0
           if castExpirationTime > 0 then
             result = min(result, now + value - castExpirationTime)
@@ -1196,7 +1196,7 @@ Private.format_types = {
           return hideZero and "" or "0"
         end
 
-        return numberToStringFunc(result / ForeverAuras.CalculatedGcdDuration())
+        return numberToStringFunc(result / WeakAuras.CalculatedGcdDuration())
       end
     end
   }
@@ -1373,22 +1373,22 @@ Private.unit_threat_situation_types = {
   [3] = "|cFFFF0000"..L["Tanking And Highest"].."|r"
 }
 
-ForeverAuras.class_types = {}
+WeakAuras.class_types = {}
 for _, classID in ipairs({1, 2, 3, 4, 5, 7, 8, 9, 11}) do
   local classInfo = C_CreatureInfo.GetClassInfo(classID)
   if classInfo then
-    ForeverAuras.class_types[classInfo.classFile] = WrapTextInColorCode(classInfo.className, WA_GetClassColor(classInfo.classFile))
+    WeakAuras.class_types[classInfo.classFile] = WrapTextInColorCode(classInfo.className, WA_GetClassColor(classInfo.classFile))
   end
 end
 
-ForeverAuras.race_types = {}
+WeakAuras.race_types = {}
 do
   -- Skyborne has separate Alliance and Horde race records.
   local races = {1, 2, 3, 4, 5, 6, 7, 8, 95, 96}
   for _, raceId in ipairs(races) do
     local raceInfo = C_CreatureInfo.GetRaceInfo(raceId)
     if raceInfo then
-      ForeverAuras.race_types[raceInfo.clientFileString] = raceInfo.raceName
+      WeakAuras.race_types[raceInfo.clientFileString] = raceInfo.raceName
     end
   end
 end
@@ -2013,20 +2013,20 @@ Private.spec_types_2 = {
   [2] = SPECIALIZATION.." 2"
 }
 
-ForeverAuras.spec_types_specific = {}
+WeakAuras.spec_types_specific = {}
 
 ---@type table<number, string>
 Private.spec_types_all = {}
 Private.specs_sorted = {}
 local function update_specs()
-  for _, classFileName in pairs(ForeverAuras.classes_sorted) do
-    local classID = ForeverAuras.class_ids[classFileName]
-    ForeverAuras.spec_types_specific[classFileName] = {}
+  for _, classFileName in pairs(WeakAuras.classes_sorted) do
+    local classID = WeakAuras.class_ids[classFileName]
+    WeakAuras.spec_types_specific[classFileName] = {}
     local numSpecs = Private.ExecEnv.GetNumSpecializationsForClassID(classID) -- see https://github.com/Stanzilla/WoWUIBugs/issues/559
     for i = 1, numSpecs do
       local specId, tabName, _, icon = Private.ExecEnv.GetSpecializationInfoForClassID(classID, i);
       if tabName then
-        tinsert(ForeverAuras.spec_types_specific[classFileName], "|T"..(icon or "error")..":0|t "..(tabName or "error"));
+        tinsert(WeakAuras.spec_types_specific[classFileName], "|T"..(icon or "error")..":0|t "..(tabName or "error"));
         local classColor = WA_GetClassColor(classFileName)
         Private.spec_types_all[specId] = CreateAtlasMarkup(GetClassAtlas(classFileName:lower()))
         .. "|T"..(icon or "error")..":0|t "..(WrapTextInColorCode(tabName, classColor) or "error");
@@ -2453,8 +2453,8 @@ Private.texture_types = {
 }
 
 if C_Texture and C_Texture.GetAtlasElements then
-  if ForeverAuras.buildType == "dev" and Private.AtlasList then
-    ForeverAuras.prettyPrint("Private.AtlasList can be removed now.")
+  if WeakAuras.buildType == "dev" and Private.AtlasList then
+    WeakAuras.prettyPrint("Private.AtlasList can be removed now.")
   end
 
   Private.texture_types["Blizzard Atlas"] = function()
@@ -3243,7 +3243,7 @@ for name, path in next, LSM:HashTable("sound") do
   Private.sound_file_types[path] = name
 end
 
-LSM.RegisterCallback(ForeverAuras, "LibSharedMedia_Registered", function(_, mediatype, key)
+LSM.RegisterCallback(WeakAuras, "LibSharedMedia_Registered", function(_, mediatype, key)
   if mediatype == "sound" then
     local path = LSM:Fetch(mediatype, key)
     if path then
@@ -3851,7 +3851,7 @@ Private.author_option_media_controls = {
 
 ---@type table<string, string>
 Private.author_option_media_itemControls = {
-  sound = "ForeverAurasMediaSound"
+  sound = "WeakAurasMediaSound"
 }
 
 ---@type table<number, string>
@@ -4104,7 +4104,7 @@ Private.weapon_enchant_types = {
   showAlways = L["Always"],
 }
 
-ForeverAuras.EJIcons = {
+WeakAuras.EJIcons = {
   tank =      "|TInterface\\EncounterJournal\\UI-EJ-Icons:::::256:64:7:25:7:25|t",
   dps =       "|TInterface\\EncounterJournal\\UI-EJ-Icons:::::256:64:39:57:7:25|t",
   healer =    "|TInterface\\EncounterJournal\\UI-EJ-Icons:::::256:64:71:89:7:25|t",
@@ -4190,19 +4190,19 @@ end
 
 -- Shields
 Private.item_weapon_types[4 * 256 + 6] = C_Item.GetItemSubClassInfo(4, 6)
-ForeverAuras.item_weapon_types = Private.item_weapon_types
+WeakAuras.item_weapon_types = Private.item_weapon_types
 
-ForeverAuras.StopMotion = ForeverAuras.StopMotion or {}
-ForeverAuras.StopMotion.texture_types = ForeverAuras.StopMotion.texture_types or {}
-ForeverAuras.StopMotion.texture_data = ForeverAuras.StopMotion.texture_data or {}
+WeakAuras.StopMotion = WeakAuras.StopMotion or {}
+WeakAuras.StopMotion.texture_types = WeakAuras.StopMotion.texture_types or {}
+WeakAuras.StopMotion.texture_data = WeakAuras.StopMotion.texture_data or {}
 
-ForeverAuras.StopMotion.texture_types.Basic = {
+WeakAuras.StopMotion.texture_types.Basic = {
   ["Interface\\AddOns\\ForeverAuras\\Media\\Textures\\stopmotion"] = "Example",
 }
 
-ForeverAuras.StopMotion.texture_data["Interface\\AddOns\\ForeverAuras\\Media\\Textures\\stopmotion"] = { count = 64, rows = 8, columns = 8 }
+WeakAuras.StopMotion.texture_data["Interface\\AddOns\\ForeverAuras\\Media\\Textures\\stopmotion"] = { count = 64, rows = 8, columns = 8 }
 
-ForeverAuras.StopMotion.animation_types = {
+WeakAuras.StopMotion.animation_types = {
   loop = L["Loop"],
   bounce = L["Forward, Reverse Loop"],
   once = L["Forward"],
