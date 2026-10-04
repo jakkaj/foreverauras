@@ -3,7 +3,7 @@
 UI.xsd">
 	<Script file="BackdropTemplateForeverAuras.lua"/>
 
-	<Frame name="BackdropTemplateForeverAuras" mixin="BackdropTemplateForeverAurasMixin" virtual="true">
+	<Frame name="BackdropTemplateWeakAuras" mixin="BackdropTemplateWeakAurasMixin" virtual="true">
 		<Scripts>
 			<OnLoad method="OnBackdropLoaded"/>
 			<OnSizeChanged method="OnBackdropSizeChanged"/>

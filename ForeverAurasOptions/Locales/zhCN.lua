@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 if (GAME_LOCALE or GetLocale()) ~= "zhCN" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- ForeverAuras/Options
 	L[" and |cFFFF0000mirrored|r"] = "并且|cFFFF0000镜像|r"
@@ -121,7 +121,7 @@ local L = ForeverAuras.L
 	L["A 64x64 pixels icon"] = "64x64像素图标"
 	L["A group that dynamically controls the positioning of its children"] = "动态控制子项目位置的群组"
 	L[ [=[A timer will automatically be displayed according to default Interface Settings (overridden by some addons).
-Enable this setting if you want this timer to be hidden, or when using a ForeverAuras text to display the timer]=] ] = "冷却文本会根据原生界面设置（可能被某些插件改动）自动显示。当你想隐藏冷却文本时，或者使用ForeverAuras文本替代冷却文本时，启用此设置。"
+Enable this setting if you want this timer to be hidden, or when using a WeakAuras text to display the timer]=] ] = "冷却文本会根据原生界面设置（可能被某些插件改动）自动显示。当你想隐藏冷却文本时，或者使用ForeverAuras文本替代冷却文本时，启用此设置。"
 	L["A Unit ID (e.g., party1)."] = "单位 ID（如 party1）。"
 	L["Ace: Funkeh, Nevcairiel"] = "Ace: Funkeh, Nevcairiel"
 	L["Active Aura Filters and Info"] = "活跃光环过滤器与信息"
@@ -286,7 +286,7 @@ UNIT_POWER_UPDATE:player, UNIT_AURA:nameplate:group PLAYER_TARGET_CHANGED CLEU:S
 
 ]=]
 	L["Custom trigger status tooltip"] = [=[选择用于检查自定义触发器的事件。
-因为这一个是状态触发器, 指定的事件 可以被 ForeverAuras 调用, 而不需指定参数.
+因为这一个是状态触发器, 指定的事件 可以被 WeakAuras 调用, 而不需指定参数.
 如果有多个事件,可以用逗号或空白分隔。
 
 |cFF4444FF例：|r
@@ -841,9 +841,9 @@ Make sure you can trust the person who sent it!]=] ] = "此光环包含自定义
 	L["This aura is marked as an update to auras '%s', but cannot be used to update them. This usually happens if an aura is moved out of a group."] = "此光环被标记为光环‘%s’的新版本，但无法用于更新这些光环。此问题常见于某些光环曾被移出组。"
 	L[ [=[This aura was created with a different version (%s) of World of Warcraft.
 It might not work correctly!]=] ] = "此光环在一个不同版本（%s）的魔兽世界中创建。它可能无法正常工作！"
-	L[ [=[This aura was created with a newer version of ForeverAuras.
-Upgrade your version of ForeverAuras or wait for next release before installing this aura.]=] ] = [=[此光环由更新版本的ForeverAuras创建。
-在导入此光环前，请更新ForeverAuras版本或等待下次发布。]=]
+	L[ [=[This aura was created with a newer version of WeakAuras.
+Upgrade your version of WeakAuras or wait for next release before installing this aura.]=] ] = [=[此光环由更新版本的WeakAuras创建。
+在导入此光环前，请更新WeakAuras版本或等待下次发布。]=]
 	L["This display is currently loaded"] = "此图示已载入"
 	L["This display is not currently loaded"] = "此图示未载入"
 	L["This display is on standby, it will be loaded when needed."] = "此图示已就绪，将在需要的时候载入。"
@@ -937,19 +937,19 @@ Upgrade your version of ForeverAuras or wait for next release before installing 
 |cFFFF0000There is a risk the custom code could be used to kill your hardcore character!|r
 
 Would you like to continue?]=] ] = "您将在硬核服务器上导入带有自定义Lua代码的Aura。|cFFFF0000这有风险，自定义代码可以用来杀死你的硬核角色！你想继续吗？"
-	L[ [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Anchor Code on.
+	L[ [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Anchor Code on.
 
-ForeverAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[你可以添加一个由英文逗号分隔的状态键列表，当它对应的值被改变时，ForeverAuras 将运行自定义锚点代码。
+WeakAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[你可以添加一个由英文逗号分隔的状态键列表，当它对应的值被改变时，WeakAuras 将运行自定义锚点代码。
 
-如果你在此列表中包含 'changed'，或者一个框体被添加、移除、重新排序，ForeverAuras 始终会运行自定义锚点代码。]=]
-	L[ [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Grow Code on.
+如果你在此列表中包含 'changed'，或者一个框体被添加、移除、重新排序，WeakAuras 始终会运行自定义锚点代码。]=]
+	L[ [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Grow Code on.
 
-ForeverAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[你可以添加一个由英文逗号分隔的状态键列表，当它对应的值被改变时，ForeverAuras 将运行自定义生长代码。
+WeakAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[你可以添加一个由英文逗号分隔的状态键列表，当它对应的值被改变时，WeakAuras 将运行自定义生长代码。
 
-如果你在此列表中包含 'changed'，或者一个框体被添加、移除、重新排序，ForeverAuras 始终会运行自定义生长代码。]=]
-	L["You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the sort code on.ForeverAuras will always run custom sort code if you include 'changed' in this list, or when a region is added, removed."] = [=[你可以添加一个由英文逗号分隔的状态键列表，当它对应的值被改变时，ForeverAuras 将运行自定义排序代码。
+如果你在此列表中包含 'changed'，或者一个框体被添加、移除、重新排序，WeakAuras 始终会运行自定义生长代码。]=]
+	L["You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the sort code on.ForeverAuras will always run custom sort code if you include 'changed' in this list, or when a region is added, removed."] = [=[你可以添加一个由英文逗号分隔的状态键列表，当它对应的值被改变时，WeakAuras 将运行自定义排序代码。
 
-如果你在此列表中包含 'changed'，或者一个框体被添加、移除、重新排序，ForeverAuras 始终会运行自定义排序代码。]=]
+如果你在此列表中包含 'changed'，或者一个框体被添加、移除、重新排序，WeakAuras 始终会运行自定义排序代码。]=]
 	L["Your Saved Snippets"] = "已保存片段"
 	L["Z Offset"] = "Z 偏移"
 	L["Z Rotation"] = "Z轴旋转"

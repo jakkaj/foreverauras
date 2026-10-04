@@ -4,12 +4,12 @@ ForeverAurasMediaSound Widget
 
 This code come from https://www.curseforge.com/wow/addons/libddi-1-0 by Funkeh under "Ace3 Style BSD" licence
 -------------------------------------------------------------------------------]]
-local Type, Version = "ForeverAurasMediaSound", 1
+local Type, Version = "WeakAurasMediaSound", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then
   return
 end
-local L = ForeverAuras.L
+local L = WeakAuras.L
 local media = LibStub("LibSharedMedia-3.0")
 local prototype = LibStub("AceGUI-3.0-DropDown-ItemBase"):GetItemBase()
 

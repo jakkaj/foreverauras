@@ -4,9 +4,9 @@ Icon Widget that allows for a tooltip, by preventing SetLabel from actually
 setting a label
 Graphical Button.
 -------------------------------------------------------------------------------]]
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
-local Type, Version = "ForeverAurasIcon", 2
+local Type, Version = "WeakAurasIcon", 2
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 

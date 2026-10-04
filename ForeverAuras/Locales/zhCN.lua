@@ -3,7 +3,7 @@ if (GAME_LOCALE or GetLocale()) ~= "zhCN" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- ForeverAuras
 L[ [=[ Filter formats: 'Name', 'Name-Realm', '-Realm'.
@@ -68,9 +68,9 @@ L["25 Player Raid (Normal)"] = "25人团队副本（普通）"
 L["40 Man Raid"] = "40人团队"
 L["40 Player Raid"] = "40人团队副本"
 L["5 Man Dungeon"] = "5人地下城"
-L[ [=[A detailed overview of your auras and ForeverAuras systems
-Copy the whole text to Weakaura's Discord if you need assistance.]=] ] = [=[一个包括你的光环和ForeverAuras系统的详细信息。
-如果你需要帮助，复制整个文本到ForeverAuras Discord。]=]
+L[ [=[A detailed overview of your auras and WeakAuras systems
+Copy the whole text to Weakaura's Discord if you need assistance.]=] ] = [=[一个包括你的光环和WeakAuras系统的详细信息。
+如果你需要帮助，复制整个文本到WeakAuras Discord。]=]
 L["A trigger in this aura is set up to track a soft target unit, but you don't have the CVars set up for this to work correctly. Consider either changing the unit tracked, or configuring the Soft Target CVars."] = "此光环的触发器追踪了软目标单位，但是你还未启用软目标CVar。考虑更改追踪的单位，或启用软目标CVar。"
 L["Abbreviate"] = "缩写"
 L["AbbreviateLargeNumbers (Blizzard)"] = "缩写大数字（暴雪）"
@@ -1485,8 +1485,8 @@ L["Use Legacy floor rounding"] = "使用传统向下取整"
 L["Use Texture"] = "使用材质"
 L["Use Watched Faction"] = "使用追踪的阵营"
 L["Uses UnitInRange() to check if in range. Matches default raid frames out of range behavior, which is between 25 to 40 yards depending on your class and spec."] = "使用UnitInRange()检查是否在范围内。根据你的职业和专精决定范围为25或40码，与默认团队框架的在或不在范围表现一致。"
-L["Using ForeverAuras.clones is deprecated. Use ForeverAuras.GetRegion(id, cloneId) instead."] = "ForeverAuras.clones已被弃用。请使用ForeverAuras.GetRegion(id, cloneId)代替。"
-L["Using ForeverAuras.regions is deprecated. Use ForeverAuras.GetRegion(id) instead."] = "ForeverAuras.regions已被弃用。请使用ForeverAuras.GetRegion(id)代替。"
+L["Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."] = "WeakAuras.clones已被弃用。请使用WeakAuras.GetRegion(id, cloneId)代替。"
+L["Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."] = "WeakAuras.regions已被弃用。请使用WeakAuras.GetRegion(id)代替。"
 L["Vaelastrasz the Corrupt"] = "堕落的瓦拉斯塔兹"
 L["Versatility (%)"] = "全能 (%)"
 L["Versatility Rating"] = "全能等级"
@@ -1507,12 +1507,12 @@ L["Warning: Full Scan auras checking for both name and spell id can't be convert
 L["Warning: Name info is now available via %affected, %unaffected. Number of affected group members via %unitCount. Some options behave differently now. This is not automatically adjusted."] = "警告：现在名称信息通过 %affected, %unaffected，受影响的团队成员数量通过 %unitCount 提供。一些选项的工作方式发生了变化，且不会自动进行调整。"
 L["Warning: Tooltip values are now available via %tooltip1, %tooltip2, %tooltip3 instead of %s. This is not automatically adjusted."] = "警告：鼠标提示值现在将通过 %tooltip1, %tooltip2, %tooltip3 显示（取代通过 %s ）。这些变化将不会自动调整。"
 L["ForeverAuras Built-In (63:42 | 3:07 | 10 | 2.4)"] = "ForeverAuras内置格式 （63:42 | 3:07 | 10 | 2.4）"
-L[ [=[ForeverAuras has detected that it has been downgraded.
+L[ [=[WeakAuras has detected that it has been downgraded.
 Your saved auras may no longer work properly.
 Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
 Last upgrade: %s
 
-|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[ForeverAuras检测到它的版本已被降低。
+|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[WeakAuras检测到它的版本已被降低。
 已保存的光环可能无法再正常工作。
 是否要运行|cffff0000实验性|r修复工具？运行后将会丢失上次数据库升级后的所有改动。
 上次升级：%s

@@ -1,12 +1,12 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
 local SharedMedia = LibStub("LibSharedMedia-3.0");
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 -- Default settings
 local default = {
@@ -625,7 +625,7 @@ local barPrototype = {
             end
           end
 
-          if durationObject and ForeverAuras.IsDurationObject(durationObject) then
+          if durationObject and WeakAuras.IsDurationObject(durationObject) then
             -- elapsed is default
             local durDirection = durationObjectUseRemaining and Enum.StatusBarTimerDirection.RemainingTime or nil
             abar:SetTimerDuration(durationObject, nil, durDirection);
@@ -1240,7 +1240,7 @@ local funcs = {
     self:UseSecretMask()
     self:UpdateSecretMaskInverse()
 
-    if self.secretProgress == "duration" and ForeverAuras.IsDurationObject(self.durationObject) then
+    if self.secretProgress == "duration" and WeakAuras.IsDurationObject(self.durationObject) then
       local timerDirection = not self.inverse and Enum.StatusBarTimerDirection.RemainingTime or nil
       self.secretBar:SetTimerDuration(self.durationObject, nil, timerDirection or nil)
     elseif self.secretProgress == "value" then

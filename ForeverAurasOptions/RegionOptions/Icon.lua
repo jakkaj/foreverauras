@@ -1,12 +1,12 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
 local Masque = LibStub("Masque", true)
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local function createOptions(id, data)
   local hiddenIconExtra = function()
@@ -19,27 +19,27 @@ local function createOptions(id, data)
     __order = 1,
     color = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Color"],
       hasAlpha = true,
       order = 1
     },
     desaturate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Desaturate"],
       order = 2,
     },
     iconSource = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Icon Source"],
       order = 3,
       values = OptionsPrivate.Private.IconSources(data)
     },
     displayIcon = {
       type = "input",
-      width = ForeverAuras.normalWidth - 0.15,
+      width = WeakAuras.normalWidth - 0.15,
       name = L["Manual Icon"],
       order = 4,
       get = function()
@@ -47,8 +47,8 @@ local function createOptions(id, data)
       end,
       set = function(info, v)
         data.displayIcon = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
       end
     },
     chooseIcon = {
@@ -66,19 +66,19 @@ local function createOptions(id, data)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     useTooltip = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Tooltip on Mouseover"],
       hidden = function() return not OptionsPrivate.Private.CanHaveTooltip(data) end,
       order = 6
     },
     iconExtraDescription = {
       type = "execute",
-      control = "ForeverAurasExpandSmall",
+      control = "WeakAurasExpandSmall",
       name = function()
         local line = L["|cFFffcc00Extra Options:|r"]
         local changed = false
@@ -109,7 +109,7 @@ local function createOptions(id, data)
         end
         return line
       end,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = 7,
       image = function()
         local collapsed = OptionsPrivate.IsCollapsed("icon", "icon", "iconextra", true);
@@ -134,8 +134,8 @@ local function createOptions(id, data)
     },
     alpha = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth - indentWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth - indentWidth,
       name = L["Alpha"],
       order = 7.03,
       min = 0,
@@ -146,8 +146,8 @@ local function createOptions(id, data)
     },
     zoom = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Zoom"],
       order = 7.04,
       min = 0,
@@ -165,8 +165,8 @@ local function createOptions(id, data)
     },
     texXOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth - indentWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth - indentWidth,
       name = L["Texture X Offset"],
       order = 7.06,
       min = -1,
@@ -176,8 +176,8 @@ local function createOptions(id, data)
     },
     texYOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Texture Y Offset"],
       order = 7.07,
       min = -1,
@@ -194,8 +194,8 @@ local function createOptions(id, data)
     },
     iconInset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth - indentWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth - indentWidth,
       name = L["Icon Inset"],
       order = 7.09,
       min = 0,
@@ -208,7 +208,7 @@ local function createOptions(id, data)
     },
     keepAspectRatio = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Keep Aspect Ratio"],
       order = 7.10,
       hidden = hiddenIconExtra,
@@ -218,7 +218,7 @@ local function createOptions(id, data)
       name = "",
       order = 8,
       hidden = hiddenIconExtra,
-      control = "ForeverAurasExpandAnchor",
+      control = "WeakAurasExpandAnchor",
       arg = {
         expanderName = "icon"
       }
@@ -230,7 +230,7 @@ local function createOptions(id, data)
     },
     cooldown = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Enable Swipe"],
       order = 11.1,
       desc = L["Enable the \"Swipe\" radial overlay"],
@@ -238,7 +238,7 @@ local function createOptions(id, data)
     },
     inverse = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Inverse"],
       order = 11.2,
       desc = L["Invert the direction of progress"],
@@ -247,7 +247,7 @@ local function createOptions(id, data)
     },
     cooldownSwipe = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Show \"Swipe\""],
       order = 11.3,
       desc = "|TInterface\\AddOns\\ForeverAuras\\Media\\Textures\\swipe-example:30|t\n"..L["Enable \"swipe\" part of the overlay"],
@@ -255,7 +255,7 @@ local function createOptions(id, data)
     },
     cooldownEdge = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Show \"Edge\""],
       order = 11.4,
       desc = "|TInterface\\AddOns\\ForeverAuras\\Media\\Textures\\edge-example:30|t\n"..L["Enable \"Edge\" part of the overlay"],
@@ -263,7 +263,7 @@ local function createOptions(id, data)
     },
     cooldownTextDisabled = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Hide Timer Text"],
       order = 11.5,
       desc = L["A timer will automatically be displayed according to default Interface Settings (overridden by some addons).\nEnable this setting if you want this timer to be hidden, or when using a ForeverAuras text to display the timer"],
@@ -271,7 +271,7 @@ local function createOptions(id, data)
     },
     useCooldownModRate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Blizzard Cooldown Reduction"],
       order = 11.6,
       desc = L["Cooldown Reduction changes the duration of seconds instead of showing the real time seconds."],
@@ -321,7 +321,7 @@ local function modifyThumbnail(parent, frame, data)
   end
 
   if data then
-    local name, icon = ForeverAuras.GetNameAndIcon(data);
+    local name, icon = WeakAuras.GetNameAndIcon(data);
     frame:SetIcon(icon)
   end
 end

@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-30.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local Display = Private.BlizzardAuraDisplay
 local Trigger = {}
@@ -32,7 +32,7 @@ end
 local function IsActive(data, triggernum)
   if not (not Display.Enabled(data) or Display.Validate(data) == nil) then return false end
   local entry = data.triggers[triggernum]
-  return ForeverAuras.IsOptionsOpen() or not UnitMissing(entry and entry.trigger)
+  return WeakAuras.IsOptionsOpen() or not UnitMissing(entry and entry.trigger)
 end
 
 -- Also the framework's fallback state when this trigger supplies a shown
@@ -43,8 +43,8 @@ function Trigger.CreateFallbackState(data, triggernum, state)
   state.progressType = "static"
   state.value, state.total = 1, 1
   state.name, state.icon = Trigger.GetNameAndIcon(data, triggernum)
-  state.unit = ForeverAuras.IsOptionsOpen() and Display.GetPreviewUnit(data) or nil
-  if ForeverAuras.IsOptionsOpen() then
+  state.unit = WeakAuras.IsOptionsOpen() and Display.GetPreviewUnit(data) or nil
+  if WeakAuras.IsOptionsOpen() then
     state.progressType = "timed"
     -- Standard sample duration, independent of active aura timers.
     state.duration, state.expirationTime = 6, GetTime() + 6
@@ -53,10 +53,10 @@ function Trigger.CreateFallbackState(data, triggernum, state)
 end
 
 function Trigger.CreateFakeStates(id, triggernum)
-  local states = ForeverAuras.GetTriggerStateForTrigger(id, triggernum)
+  local states = WeakAuras.GetTriggerStateForTrigger(id, triggernum)
   wipe(states)
   states[""] = {}
-  local data = ForeverAuras.GetData(id)
+  local data = WeakAuras.GetData(id)
   Trigger.CreateFallbackState(data, triggernum, states[""])
   -- The trigger's own state follows its unit (IsActive).
   states[""].show = IsActive(data, triggernum)
@@ -92,7 +92,7 @@ local unitFrame = CreateFrame("Frame")
 for event in pairs(unitChangeEvents) do unitFrame:RegisterEvent(event) end
 unitFrame:SetScript("OnEvent", function(_, event, unit)
   -- The editor keeps its sample states until it closes.
-  if ForeverAuras.IsOptionsOpen() then return end
+  if WeakAuras.IsOptionsOpen() then return end
   local affected = unitChangeEvents[event]
   if event == "UNIT_TARGET" then affected = unit and affected[unit] end
   if event == "UNIT_PET" then
@@ -104,7 +104,7 @@ unitFrame:SetScript("OnEvent", function(_, event, unit)
     local changed = false
     for index, entry in ipairs(data and data.triggers or {}) do
       if entry.trigger.type == "secretAura" and affected[entry.trigger.unit] then
-        local state = ForeverAuras.GetTriggerStateForTrigger(id, index)[""]
+        local state = WeakAuras.GetTriggerStateForTrigger(id, index)[""]
         local show = IsActive(data, index)
         if not state then
           -- The framework removes hidden states after each update
@@ -192,4 +192,4 @@ function Trigger.GetTriggerDescription(data, triggernum, lines)
   lines[#lines + 1] = {"Exact Spell IDs", SpellIDSummary(trigger.auraspellids, Display.UsesSpellIDs(trigger))}
 end
 
-ForeverAuras.RegisterTriggerSystem({"secretAura"}, Trigger)
+WeakAuras.RegisterTriggerSystem({"secretAura"}, Trigger)

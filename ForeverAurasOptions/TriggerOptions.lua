@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local removeFuncs = OptionsPrivate.commonOptions.removeFuncs
 local replaceNameDescFuncs = OptionsPrivate.commonOptions.replaceNameDescFuncs
@@ -39,7 +39,7 @@ local function GetGlobalOptions(data)
     disjunctive = {
       type = "select",
       name = L["Required for Activation"],
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = 2,
       values = function()
         if #data.triggers > 1 then
@@ -57,14 +57,14 @@ local function GetGlobalOptions(data)
       end,
       set = function(info, v)
         data.triggers.disjunctive = v;
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
       end
     },
     -- custom trigger combiner text editor added below
     activeTriggerMode = {
       type = "select",
       name = L["Dynamic Information"],
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = 2.3,
       values = function()
         local vals = {};
@@ -79,8 +79,8 @@ local function GetGlobalOptions(data)
       end,
       set = function(info, v)
         data.triggers.activeTriggerMode = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
       end,
       hidden = function() return #data.triggers <= 1 end
     },
@@ -95,7 +95,7 @@ local function GetGlobalOptions(data)
         end
         return text
       end,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       order = 2.35,
       values = function()
         local vals = {next = "Next Active Trigger", none = "None"}
@@ -111,7 +111,7 @@ local function GetGlobalOptions(data)
       end,
       set = function(info, v)
         data.triggers.secretFallback = v ~= "next" and v or nil
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
       end,
       hidden = function()
         if #data.triggers <= 1 then return true end
@@ -164,7 +164,7 @@ local function AddOptions(allOptions, data)
     __collapsed = false,
     addTrigger = {
       type = "execute",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Add Trigger"],
       order = 1,
       func = function()
@@ -181,7 +181,7 @@ local function AddOptions(allOptions, data)
         OptionsPrivate.SaveAuraTrigger(data, #data.triggers)
         OptionsPrivate.SetCollapsed(collapsedId, "trigger", #data.triggers, false)
         maxTriggerNumForExpand = max(maxTriggerNumForExpand, #data.triggers)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     }
   }
@@ -388,9 +388,9 @@ function OptionsPrivate.AddTriggerMetaFunctions(options, data, triggernum)
     end,
     func = function()
       if (moveTriggerDownImpl(data, triggernum - 1)) then
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.MoveCollapseDataUp(collapsedId, "trigger", {triggernum})
-        ForeverAuras.ClearAndUpdateOptions(data.id);
+        WeakAuras.ClearAndUpdateOptions(data.id);
       end
     end
   }
@@ -401,17 +401,17 @@ function OptionsPrivate.AddTriggerMetaFunctions(options, data, triggernum)
     end,
     func = function()
       if (moveTriggerDownImpl(data, triggernum)) then
-        ForeverAuras.Add(data);
+        WeakAuras.Add(data);
         OptionsPrivate.MoveCollapseDataDown(collapsedId, "trigger", {triggernum})
-        ForeverAuras.ClearAndUpdateOptions(data.id);
+        WeakAuras.ClearAndUpdateOptions(data.id);
       end
     end
   }
   options.__duplicate = function()
     local trigger = CopyTable(data.triggers[triggernum])
     tinsert(data.triggers, trigger)
-    ForeverAuras.Add(data)
-    ForeverAuras.ClearAndUpdateOptions(data.id)
+    WeakAuras.Add(data)
+    WeakAuras.ClearAndUpdateOptions(data.id)
   end
   options.__delete = {
     disabled = function()
@@ -434,7 +434,7 @@ function OptionsPrivate.AddTriggerMetaFunctions(options, data, triggernum)
       end
 
       if canDelete then
-        StaticPopupDialogs["ForeverAuras_CONFIRM_TRIGGER_DELETE"] = {
+        StaticPopupDialogs["WeakAuras_CONFIRM_TRIGGER_DELETE"] = {
           text = L["You are about to delete a trigger. |cFFFF0000This cannot be undone!|r Would you like to continue?"],
           button1 = L["Delete"],
           button2 = L["Cancel"],
@@ -444,13 +444,13 @@ function OptionsPrivate.AddTriggerMetaFunctions(options, data, triggernum)
                 tremove(child.triggers, triggernum)
                 DeleteConditionsForTrigger(child, triggernum)
                 FixUpProgressSourceAfterDelete(child, triggernum)
-                ForeverAuras.Add(child)
+                WeakAuras.Add(child)
                 OptionsPrivate.RemoveCollapsed(collapsedId, "trigger", {triggernum})
                 OptionsPrivate.ClearOptions(child.id)
               end
             end
 
-            ForeverAuras.FillOptions()
+            WeakAuras.FillOptions()
             triggerDeleteDialogOpen = false
           end,
           OnCancel = function()
@@ -461,7 +461,7 @@ function OptionsPrivate.AddTriggerMetaFunctions(options, data, triggernum)
           preferredindex = 4,
         }
         triggerDeleteDialogOpen = true
-        StaticPopup_Show("ForeverAuras_CONFIRM_TRIGGER_DELETE")
+        StaticPopup_Show("WeakAuras_CONFIRM_TRIGGER_DELETE")
       end
     end
   }

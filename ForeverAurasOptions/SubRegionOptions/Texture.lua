@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local function createOptions(parentData, data, index, subIndex)
   local pointAnchors = {}
@@ -20,13 +20,13 @@ local function createOptions(parentData, data, index, subIndex)
     __order = 1,
     textureVisible = {
       type = "toggle",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Show Texture"],
       order = 1,
     },
     textureTexture = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Texture"],
       order = 2,
     },
@@ -50,47 +50,47 @@ local function createOptions(parentData, data, index, subIndex)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     textureColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Color"],
       hasAlpha = true,
       order = 3
     },
     textureDesaturate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Desaturate"],
       order = 4,
     },
     textureBlendMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Blend Mode"],
       order = 11,
       values = OptionsPrivate.Private.blend_types
     },
     textureMirror = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Mirror"],
       order = 12
     },
 
     textureRotate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Allow Full Rotation"],
       order = 13,
       hidden = data and OptionsPrivate.Private.TextureBase.IsAtlas(data.texture)
     },
     textureRotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Rotation"],
       min = 0,
       max = 360,
@@ -106,4 +106,4 @@ local function createOptions(parentData, data, index, subIndex)
   return options
 end
 
-  ForeverAuras.RegisterSubRegionOptions("subtexture", createOptions, L["Shows a Texture"]);
+  WeakAuras.RegisterSubRegionOptions("subtexture", createOptions, L["Shows a Texture"]);

@@ -1,13 +1,13 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras;
-local L = ForeverAuras.L;
+---@class WeakAuras
+local WeakAuras = WeakAuras;
+local L = WeakAuras.L;
 
 local encounter_list = ""
 local zoneId_list = ""
@@ -162,7 +162,7 @@ function Private.GetTalentInfo(specId)
   return values
 end
 
-ForeverAuras.StopMotion = {
+WeakAuras.StopMotion = {
 	texture_data = {},
 	texture_types = {
 		Blizzard = {}
@@ -357,7 +357,7 @@ for k, v in pairs(texture_data) do
 			v.tileHeight = atlasInfo.rawSize.y / v.rows
 		end
 		v.isBlizzardFlipbook = true
-		ForeverAuras.StopMotion.texture_data[k] = v
-		ForeverAuras.StopMotion.texture_types.Blizzard[k] = k
+		WeakAuras.StopMotion.texture_data[k] = v
+		WeakAuras.StopMotion.texture_types.Blizzard[k] = k
 	end
 end

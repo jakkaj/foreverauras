@@ -3,7 +3,7 @@ if (GAME_LOCALE or GetLocale()) ~= "esMX" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- ForeverAuras
 L[ [=[ Filter formats: 'Name', 'Name-Realm', '-Realm'.
@@ -59,8 +59,8 @@ L["25 Player Raid (Normal)"] = "Banda de 25 jugadores (normal)"
 L["40 Man Raid"] = "Banda de 40 jugadores"
 L["40 Player Raid"] = "Banda de 40 jugadores"
 L["5 Man Dungeon"] = "Mazmorra de 5 jugadores"
-L[ [=[A detailed overview of your auras and ForeverAuras systems
-Copy the whole text to Weakaura's Discord if you need assistance.]=] ] = "Una descripción detallada de tus sistemas de auras y ForeverAuras. Copia todo el texto en el Discord de WeakAura si necesitas ayuda."
+L[ [=[A detailed overview of your auras and WeakAuras systems
+Copy the whole text to Weakaura's Discord if you need assistance.]=] ] = "Una descripción detallada de tus sistemas de auras y WeakAuras. Copia todo el texto en el Discord de WeakAura si necesitas ayuda."
 L["A trigger in this aura is set up to track a soft target unit, but you don't have the CVars set up for this to work correctly. Consider either changing the unit tracked, or configuring the Soft Target CVars."] = "Un activador de esta aura está configurado para rastrear una unidad de tipo soft target, pero no tienes configuradas las CVars para que esto funcione correctamente. Considera la posibilidad de cambiar la unidad rastreada o de configurar las CVars de soft target."
 L["Abbreviate"] = "Abreviar"
 L["AbbreviateLargeNumbers (Blizzard)"] = "AbreviarNúmerosGrandes (Blizzard)"
@@ -486,7 +486,7 @@ L[ [=[Error '%s' created a secure clone. We advise deleting the aura. For more i
 https://github.com/WeakAuras/WeakAuras2/wiki/Protected-Frames]=] ] = "El error '%s' ha creado un clon seguro. Aconsejamos eliminar el aura. Para más información: https://github.com/WeakAuras/WeakAuras2/wiki/Protected-Frames"
 L["Error decoding."] = "Error al descodificar."
 L["Error decompressing"] = "Error al descomprimir"
-L["Error decompressing. This doesn't look like a ForeverAuras import."] = "Error al descomprimir. Esto no parece una importación de ForeverAuras."
+L["Error decompressing. This doesn't look like a ForeverAuras import."] = "Error al descomprimir. Esto no parece una importación de WeakAuras."
 L["Error deserializing"] = "Error de deserialización"
 L["Error Frame"] = "Marco de error"
 L["ERROR in '%s' unknown or incompatible sub element type '%s'"] = "ERROR en '%s' tipo de subelemento '%s' desconocido o incompatible"
@@ -1398,10 +1398,10 @@ L["Trigger Update"] = "Actualización del activador"
 L["Trigger:"] = "Activador:"
 L["Trivial (Low Level)"] = "Trivial (nivel bajo)"
 L["True"] = "Verdadero"
-L["Trying to repair broken conditions in %s likely caused by a ForeverAuras bug."] = "Intentando reparar condiciones rotas en %s probablemente causadas por un error de ForeverAuras."
+L["Trying to repair broken conditions in %s likely caused by a ForeverAuras bug."] = "Intentando reparar condiciones rotas en %s probablemente causadas por un error de WeakAuras."
 L["Twin Emperors"] = "Emperadores gemelos"
 L["Type"] = "Tipo"
-L["Unable to modernize aura '%s'. This is probably due to corrupt data or a bad migration."] = "No se puede modernizar el aura '%s'. Probablemente se deba a datos corruptos o una migración incorrecta. Por favor, informe de esto al equipo de ForeverAuras."
+L["Unable to modernize aura '%s'. This is probably due to corrupt data or a bad migration."] = "No se puede modernizar el aura '%s'. Probablemente se deba a datos corruptos o una migración incorrecta. Por favor, informe de esto al equipo de WeakAuras."
 L["Unaffected"] = "Inafectado"
 L["Undefined"] = "No Definido"
 L["Unholy"] = "Profano"
@@ -1437,9 +1437,9 @@ L["Use Legacy floor rounding"] = "Utiliza el redondeo de suelo legado"
 L["Use Texture"] = "Utilizar textura"
 L["Use Watched Faction"] = "Utilizar facción vigilada"
 L["Uses UnitInRange() to check if in range. Matches default raid frames out of range behavior, which is between 25 to 40 yards depending on your class and spec."] = "Utiliza UnitInRange() para comprobar si está dentro del rango. Coincide con el comportamiento predeterminado de los marcos de banda fuera de alcance, que oscila entre 25 y 40 metros dependiendo de tu clase y especialización."
-L["Using ForeverAuras.clones is deprecated. Use ForeverAuras.GetRegion(id, cloneId) instead."] = [=[El uso de ForeverAuras.clones está en desuso. Utilice ForeverAuras.GetRegion(id, cloneId) en su lugar.
+L["Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."] = [=[El uso de WeakAuras.clones está en desuso. Utilice WeakAuras.GetRegion(id, cloneId) en su lugar.
 ]=]
-L["Using ForeverAuras.regions is deprecated. Use ForeverAuras.GetRegion(id) instead."] = "El uso de ForeverAuras.regions está en desuso. Utilice ForeverAuras.GetRegion(id) en su lugar."
+L["Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."] = "El uso de WeakAuras.regions está en desuso. Utilice WeakAuras.GetRegion(id) en su lugar."
 L["Vaelastrasz the Corrupt"] = "Vaelastrasz el Corrupto"
 L["Versatility (%)"] = "Versatilidad (%)"
 L["Versatility Rating"] = "Índice de versatilidad"
@@ -1462,7 +1462,7 @@ L["Warning: Name info is now available via %affected, %unaffected. Number of aff
 L["Warning: Tooltip values are now available via %tooltip1, %tooltip2, %tooltip3 instead of %s. This is not automatically adjusted."] = [=[Aviso: Los valores de tooltip ahora están disponibles a través de %tooltip1, %tooltip2, %tooltip3 en lugar de %s. Esto no se ajusta automáticamente.
 ​]=]
 L["ForeverAuras Built-In (63:42 | 3:07 | 10 | 2.4)"] = "ForeverAuras incorporado (63:42 | 3:07 | 10 | 2.4)"
-L[ [=[ForeverAuras has detected that it has been downgraded.
+L[ [=[WeakAuras has detected that it has been downgraded.
 Your saved auras may no longer work properly.
 Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
 Last upgrade: %s
@@ -1482,7 +1482,7 @@ L["World Boss"] = "Jefe del mundo"
 L["World Bosses"] = "Jefes del mundo"
 L["Wrap"] = "Envolver"
 L["Wrath of the Lich King"] = "Wrath of the Lich King"
-L["Writing to the ForeverAuras table is not allowed."] = "No se permite escribir en la tabla ForeverAuras."
+L["Writing to the ForeverAuras table is not allowed."] = "No se permite escribir en la tabla WeakAuras."
 L["X-Offset"] = "Desplazamiento X"
 L["Yell"] = "Grito"
 L["Y-Offset"] = "Desplazamiento Y"

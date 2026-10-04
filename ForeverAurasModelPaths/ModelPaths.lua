@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-ForeverAuras.ModelPaths = {
+WeakAuras.ModelPaths = {
  {
   children = {
    {

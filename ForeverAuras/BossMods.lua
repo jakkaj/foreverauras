@@ -1,12 +1,12 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
-local timer = ForeverAuras.timer;
-local L = ForeverAuras.L
+local timer = WeakAuras.timer;
+local L = WeakAuras.L
 
 
 local function TestForMultiSelect(trigger, name, checkValue)
@@ -726,7 +726,7 @@ Private.ExecEnv.BossMods.BigWigs = {
       return
     end
     if BigWigsLoader then
-      BigWigsLoader.RegisterMessage(ForeverAuras, event, function(...) self:EventCallback(...) end)
+      BigWigsLoader.RegisterMessage(WeakAuras, event, function(...) self:EventCallback(...) end)
       self.registeredEvents[event] = true
       if event == "BigWigs_SetStage" then
         -- on init of BigWigs_SetStage callback, we want to fetch currentStage in case we are already in an encounter when this is run
@@ -945,7 +945,7 @@ Private.event_prototypes["Boss Mod Announce"] = {
       display = L["Clone per Event"],
       type = "toggle",
       test = "true",
-      init = "use_cloneId and ForeverAuras.GetUniqueCloneId() or ''"
+      init = "use_cloneId and WeakAuras.GetUniqueCloneId() or ''"
     },
     {
       name = "note",
@@ -1214,26 +1214,26 @@ Private.event_prototypes["Boss Mod Timer"] = {
 }
 Private.category_event_prototype.addons["Boss Mod Timer"] = L["Boss Mod Timer"]
 
-function ForeverAuras.IsBossModEnabled(encounterIDs) end
+function WeakAuras.IsBossModEnabled(encounterIDs) end
 
 if (BigWigsLoader) then
-  BigWigsLoader.RegisterMessage(ForeverAuras, "BigWigs_OnBossEnable", function(_, module)
+  BigWigsLoader.RegisterMessage(WeakAuras, "BigWigs_OnBossEnable", function(_, module)
     if module.engageId then
       Private.callbacks:Fire("WA_BOSSMOD_ENABLED_STATE_CHANGED")
     end
   end)
-  BigWigsLoader.RegisterMessage(ForeverAuras, "BigWigs_OnBossDisable", function(_, module)
+  BigWigsLoader.RegisterMessage(WeakAuras, "BigWigs_OnBossDisable", function(_, module)
     if module.engageId then
       Private.callbacks:Fire("WA_BOSSMOD_ENABLED_STATE_CHANGED")
     end
   end)
-  BigWigsLoader.RegisterMessage(ForeverAuras, "BigWigs_CoreEnabled", function()
+  BigWigsLoader.RegisterMessage(WeakAuras, "BigWigs_CoreEnabled", function()
     Private.callbacks:Fire("WA_BOSSMOD_ENABLED_STATE_CHANGED")
   end)
-  BigWigsLoader.RegisterMessage(ForeverAuras, "BigWigs_CoreDisabled", function()
+  BigWigsLoader.RegisterMessage(WeakAuras, "BigWigs_CoreDisabled", function()
     Private.callbacks:Fire("WA_BOSSMOD_ENABLED_STATE_CHANGED")
   end)
-  function ForeverAuras.IsBossModEnabled(encounterIDs)
+  function WeakAuras.IsBossModEnabled(encounterIDs)
     if BigWigs and BigWigs:IsEnabled() then
       for modName, mod in BigWigs:IterateBossModules() do
         if mod:IsEnabled() and mod.engageId and encounterIDs[mod.engageId] then

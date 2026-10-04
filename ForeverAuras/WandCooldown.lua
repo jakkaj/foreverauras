@@ -1,5 +1,5 @@
 -- Preserve countdown and desaturation timers during Shoot's shared cooldown.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local expiryTimer, refreshQueued
 local snapshots, castAfterShot = {}, {}

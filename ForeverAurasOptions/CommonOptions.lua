@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-29.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local commonOptionsCache = {}
 OptionsPrivate.commonOptionsCache = commonOptionsCache
@@ -126,7 +126,7 @@ local function addCollapsibleHeader(options, key, input, order, isGroupTab)
     end
   end
 
-  local titleWidth = ForeverAuras.doubleWidth - (hasAdd and 0.15 or 0) - (hasDelete and 0.15 or 0)  - (hasUp and 0.15 or 0)
+  local titleWidth = WeakAuras.doubleWidth - (hasAdd and 0.15 or 0) - (hasDelete and 0.15 or 0)  - (hasUp and 0.15 or 0)
                      - (hasDown and 0.15 or 0) - (hasDuplicate and 0.15 or 0) - (hasApplyTemplate and 0.15 or 0) - (hasDynamicTextCodes and 0.15 or 0)
 
   options[key .. "collapseSpacer"] = {
@@ -153,7 +153,7 @@ local function addCollapsibleHeader(options, key, input, order, isGroupTab)
                                     18, 18
         end
       end,
-      control = "ForeverAurasExpand",
+      control = "WeakAurasExpand",
       hidden = hiddenFunc
     }
 
@@ -166,7 +166,7 @@ local function addCollapsibleHeader(options, key, input, order, isGroupTab)
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\add",
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         hidden = hiddenFunc
       }
       setFuncs(options[key .. "addButton"], input.__add)
@@ -181,7 +181,7 @@ local function addCollapsibleHeader(options, key, input, order, isGroupTab)
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\moveup",
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         hidden = hiddenFunc
       }
       setFuncs(options[key .. "upButton"], input.__up)
@@ -196,7 +196,7 @@ local function addCollapsibleHeader(options, key, input, order, isGroupTab)
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\movedown",
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         hidden = hiddenFunc
       }
       setFuncs(options[key .. "downButton"], input.__down)
@@ -211,7 +211,7 @@ local function addCollapsibleHeader(options, key, input, order, isGroupTab)
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\duplicate",
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         hidden = hiddenFunc
       }
       setFuncs(options[key .. "duplicateButton"], input.__duplicate)
@@ -226,7 +226,7 @@ local function addCollapsibleHeader(options, key, input, order, isGroupTab)
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\delete",
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         hidden = hiddenFunc
       }
       setFuncs(options[key .. "deleteButton"], input.__delete)
@@ -241,7 +241,7 @@ local function addCollapsibleHeader(options, key, input, order, isGroupTab)
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\template",
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         hidden = hiddenFunc
       }
       setFuncs(options[key .. "applyTemplate"], input.__applyTemplate)
@@ -257,7 +257,7 @@ local function addCollapsibleHeader(options, key, input, order, isGroupTab)
         hidden = hiddenFunc,
         imageWidth = 24,
         imageHeight = 24,
-        control = "ForeverAurasIcon",
+        control = "WeakAurasIcon",
         image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\sidebar",
       }
       setFuncs(options[key .. "dynamicTextCodesButton"], input.__dynamicTextCodes)
@@ -1065,7 +1065,7 @@ local function CreateExecuteAll(subOption)
         secondCall = true
       end
     end
-    ForeverAuras.ClearAndUpdateOptions(data.id)
+    WeakAuras.ClearAndUpdateOptions(data.id)
   end
 end
 
@@ -1079,10 +1079,10 @@ local function ProgressOptions(data)
 
   options.progressSource = {
     type = "select",
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     name = L["Progress Source"],
     order = order,
-    control = "ForeverAurasTwoColumnDropdown",
+    control = "WeakAurasTwoColumnDropdown",
     values = OptionsPrivate.Private.GetProgressSourcesForUi(data),
     get = function(info)
       return OptionsPrivate.Private.GetProgressValueConstant(data.progressSource)
@@ -1096,13 +1096,13 @@ local function ProgressOptions(data)
       else
         data.progressSource = nil
       end
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
     end
   }
 
   options.progressSourceWarning = {
     type = "description",
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     name = L["Note: This progress source does not provide a total value/duration. A total value/duration must be set via \"Set Maximum Progress\""],
     order = order + 0.5,
     hidden = function()
@@ -1124,8 +1124,8 @@ local function ProgressOptions(data)
 
   options.progressSourceManualValue = {
     type = "range",
-    control = "ForeverAurasSpinBox",
-    width = ForeverAuras.normalWidth,
+    control = "WeakAurasSpinBox",
+    width = WeakAuras.normalWidth,
     name = L["Value"],
     order = order + 0.7,
     min = 0,
@@ -1138,14 +1138,14 @@ local function ProgressOptions(data)
     set = function(info, value)
       data.progressSource = data.progressSource or {}
       data.progressSource[3] = value
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
     end
   }
 
   options.progressSourceManualTotal = {
     type = "range",
-    control = "ForeverAurasSpinBox",
-    width = ForeverAuras.normalWidth,
+    control = "WeakAurasSpinBox",
+    width = WeakAuras.normalWidth,
     name = L["Total"],
     order = order + 0.8,
     min = 0,
@@ -1158,13 +1158,13 @@ local function ProgressOptions(data)
     set = function(info, value)
       data.progressSource = data.progressSource or {}
       data.progressSource[4] = value
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
     end
   }
 
   options.useAdjustededMin = {
     type = "toggle",
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     name = L["Set Minimum Progress"],
     desc = L["Values/Remaining Time below this value are displayed as zero progress."],
     order = order + 1,
@@ -1173,14 +1173,14 @@ local function ProgressOptions(data)
       if not value then
         data.adjustedMin = ""
       end
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
     end
   };
 
   options.adjustedMin = {
     type = "input",
-    validate = ForeverAuras.ValidateNumericOrPercent,
-    width = ForeverAuras.normalWidth,
+    validate = WeakAuras.ValidateNumericOrPercent,
+    width = WeakAuras.normalWidth,
     order = order + 2,
     name = L["Minimum"],
     hidden = function() return not data.useAdjustededMin end,
@@ -1189,7 +1189,7 @@ local function ProgressOptions(data)
 
   options.useAdjustedMinSpacer = {
     type = "description",
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     name = "",
     order = order + 3,
     hidden = function() return not (not data.useAdjustededMin and data.useAdjustededMax) end,
@@ -1197,7 +1197,7 @@ local function ProgressOptions(data)
 
   options.useAdjustededMax = {
     type = "toggle",
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     name = L["Set Maximum Progress"],
     desc = L["Values/Remaining Time above this value are displayed as full progress."],
     order = order + 4,
@@ -1206,14 +1206,14 @@ local function ProgressOptions(data)
       if not value then
         data.adjustedMax = ""
       end
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
     end
   }
 
   options.adjustedMax = {
     type = "input",
-    width = ForeverAuras.normalWidth,
-    validate = ForeverAuras.ValidateNumericOrPercent,
+    width = WeakAuras.normalWidth,
+    validate = WeakAuras.ValidateNumericOrPercent,
     order = order + 5,
     name = L["Maximum"],
     hidden = function() return not data.useAdjustededMax end,
@@ -1222,7 +1222,7 @@ local function ProgressOptions(data)
 
   options.useAdjustedMaxSpacer = {
     type = "description",
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     name = "",
     order = order + 6,
     hidden = function() return not (data.useAdjustededMin and not data.useAdjustededMax) end,
@@ -1245,7 +1245,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
   local metaOrder = 99
   local function IsParentDynamicGroup()
     if data.parent then
-      local parentData = ForeverAuras.GetData(data.parent)
+      local parentData = WeakAuras.GetData(data.parent)
       return parentData and parentData.regionType == "dynamicgroup"
     end
   end
@@ -1264,8 +1264,8 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
     __collapsed = true,
     width = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Width"],
       order = 60,
       min = 1,
@@ -1276,8 +1276,8 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
     },
     height = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Height"],
       order = 61,
       min = 1,
@@ -1288,7 +1288,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
     },
     anchorFrameType = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Anchored To"],
       order = 70,
       hidden = function()
@@ -1304,7 +1304,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
     },
     anchorFrameParent = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Set Parent to Anchor"],
       desc = L["Sets the anchored frame as the aura's parent, causing the aura to inherit attributes such as visibility and scale."],
       order = 71,
@@ -1317,7 +1317,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
     },
     anchorFrameSpaceOne = {
       type = "execute",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = "",
       order = 72,
       image = function() return "", 0, 0 end,
@@ -1328,7 +1328,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
     -- Input field to select frame to anchor on
     anchorFrameFrame = {
       type = "input",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Frame"],
       order = 73,
       hidden = function()
@@ -1341,7 +1341,7 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
     -- Button to select frame to anchor on
     chooseAnchorFrameFrame = {
       type = "execute",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Choose"],
       order = 74,
       hidden = function()
@@ -1356,17 +1356,17 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
     },
     selfPoint = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Anchor"],
       order = 75,
       hidden = IsParentDynamicGroup,
       values = OptionsPrivate.Private.point_types,
       disabled = disableSelfPoint,
-      control = "ForeverAurasAnchorButtons",
+      control = "WeakAurasAnchorButtons",
     },
     anchorPoint = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = function()
         if IsGroupByFrame() then
           return L["To Frame's"]
@@ -1393,11 +1393,11 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
         end
       end,
       values = OptionsPrivate.Private.point_types,
-      control = "ForeverAurasAnchorButtons",
+      control = "WeakAurasAnchorButtons",
     },
     anchorPointGroup = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["To Group's"],
       order = 77,
       hidden = function()
@@ -1415,11 +1415,11 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
       disabled = true,
       values = {["CENTER"] = L["Anchor Point"]},
       get = function() return "CENTER"; end,
-      control = "ForeverAurasAnchorButtons",
+      control = "WeakAurasAnchorButtons",
     },
     anchorFramePoints = {
       type = "execute",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = "",
       order = 78,
       image = function() return "", 0, 0 end,
@@ -1429,10 +1429,10 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
     },
     xOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
+      control = "WeakAurasSpinBox",
       name = L["X Offset"],
       order = 79,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       softMin = (-1 * screenWidth),
       min = (-4 * screenWidth),
       softMax = screenWidth,
@@ -1441,18 +1441,18 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
       get = function() return data.xOffset end,
       set = function(info, v)
         data.xOffset = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.ResetMoverSizer();
         OptionsPrivate.Private.AddParents(data)
       end
     },
     yOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
+      control = "WeakAurasSpinBox",
       name = L["Y Offset"],
       order = 80,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       softMin = (-1 * screenHeight),
       min = (-4 * screenHeight),
       softMax = screenHeight,
@@ -1461,22 +1461,22 @@ local function PositionOptions(id, data, _, hideWidthHeight, disableSelfPoint, g
       get = function() return data.yOffset end,
       set = function(info, v)
         data.yOffset = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.ResetMoverSizer();
         OptionsPrivate.Private.AddParents(data)
       end
     },
     frameStrata = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Frame Strata"],
       order = 81,
       values = OptionsPrivate.Private.frame_strata_types
     },
     anchorFrameSpace = {
       type = "execute",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = "",
       order = 82,
       image = function() return "", 0, 0 end,
@@ -1498,7 +1498,7 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
   options.anchor_mode = {
     name = L["Anchor Mode"],
     type = "select",
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     order = startOrder,
     values = OptionsPrivate.Private.anchor_mode,
   }
@@ -1506,8 +1506,8 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
   options.anchor_area = {
     name = L["Area"],
     type = "select",
-    width = ForeverAuras.normalWidth,
-    control = "ForeverAurasTwoColumnDropdown",
+    width = WeakAuras.normalWidth,
+    control = "WeakAurasTwoColumnDropdown",
     order = startOrder + 0.1,
     values = areaAnchors,
     hidden = function()
@@ -1527,8 +1527,8 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
   options.self_point = {
     name = L["Anchor"],
     type = "select",
-    width = ForeverAuras.normalWidth,
-    control = "ForeverAurasTwoColumnDropdown",
+    width = WeakAuras.normalWidth,
+    control = "WeakAurasTwoColumnDropdown",
     order = startOrder + 0.3,
     values = OptionsPrivate.Private.point_types,
     hidden = function()
@@ -1539,8 +1539,8 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
   options.anchor_point = {
     name = L["To Region's"],
     type = "select",
-    width = ForeverAuras.normalWidth,
-    control = "ForeverAurasTwoColumnDropdown",
+    width = WeakAuras.normalWidth,
+    control = "WeakAurasTwoColumnDropdown",
     order = startOrder + 0.4,
     values = pointAnchors,
     hidden = function()
@@ -1551,8 +1551,8 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
   options.width = {
     name = L["Width"],
     type = "range",
-    control = "ForeverAurasSpinBox",
-    width = ForeverAuras.normalWidth,
+    control = "WeakAurasSpinBox",
+    width = WeakAuras.normalWidth,
     min = 0,
     softMax = 200,
     step = 1,
@@ -1565,8 +1565,8 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
   options.height = {
     name = L["Height"],
     type = "range",
-    control = "ForeverAurasSpinBox",
-    width = ForeverAuras.normalWidth,
+    control = "WeakAurasSpinBox",
+    width = WeakAuras.normalWidth,
     min = 0,
     softMax = 200,
     step = 1,
@@ -1578,7 +1578,7 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
 
   options.xOffset = {
     type = "range",
-    control = "ForeverAurasSpinBox",
+    control = "WeakAurasSpinBox",
     name = function()
       if data.anchor_mode == "area" then
         return L["Extra Width"]
@@ -1587,7 +1587,7 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
       end
     end,
     order = startOrder + 0.7,
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     softMin = -200,
     softMax = 200,
     step = 1,
@@ -1595,7 +1595,7 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
 
   options.yOffset = {
     type = "range",
-    control = "ForeverAurasSpinBox",
+    control = "WeakAurasSpinBox",
     name = function()
       if data.anchor_mode == "area" then
         return L["Extra Height"]
@@ -1604,7 +1604,7 @@ local function PositionOptionsForSubElement(data, options, startOrder, areaAncho
       end
     end,
     order = startOrder + 0.8,
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     softMin = -200,
     softMax = 200,
     step = 1,
@@ -1615,10 +1615,10 @@ end
 local function ProgressOptionsForSubElement(parentData, data, options, startOrder, progressSourceHidden)
   options.progress_source = {
     type = "select",
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     name = L["Progress Source"],
     order = startOrder,
-    control = "ForeverAurasTwoColumnDropdown",
+    control = "WeakAurasTwoColumnDropdown",
     values = OptionsPrivate.Private.GetProgressSourcesForUi(parentData, true),
     get = function(info)
       return OptionsPrivate.Private.GetProgressValueConstant(data.progressSource or {-2, ""})
@@ -1632,14 +1632,14 @@ local function ProgressOptionsForSubElement(parentData, data, options, startOrde
       else
         data.progressSource = nil
       end
-      ForeverAuras.Add(parentData)
+      WeakAuras.Add(parentData)
     end,
     hidden = progressSourceHidden
   }
 
   options.progressSourceWarning = {
     type = "description",
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     name = L["Note: This progress source does not provide a total value/duration. A total value/duration must be set via \"Set Maximum Progress\""],
     order = startOrder + 0.1,
     hidden = function()
@@ -1667,8 +1667,8 @@ local function ProgressOptionsForSubElement(parentData, data, options, startOrde
 
   options.progressSourceManualValue = {
     type = "range",
-    control = "ForeverAurasSpinBox",
-    width = ForeverAuras.normalWidth,
+    control = "WeakAurasSpinBox",
+    width = WeakAuras.normalWidth,
     name = L["Value"],
     order = startOrder + 0.2,
     min = 0,
@@ -1681,14 +1681,14 @@ local function ProgressOptionsForSubElement(parentData, data, options, startOrde
     set = function(info, value)
       data.progressSource = data.progressSource or {}
       data.progressSource[3] = value
-      ForeverAuras.Add(parentData)
+      WeakAuras.Add(parentData)
     end
   }
 
   options.progressSourceManualTotal = {
     type = "range",
-    control = "ForeverAurasSpinBox",
-    width = ForeverAuras.normalWidth,
+    control = "WeakAurasSpinBox",
+    width = WeakAuras.normalWidth,
     name = L["Total"],
     order = startOrder + 0.3,
     min = 0,
@@ -1701,13 +1701,13 @@ local function ProgressOptionsForSubElement(parentData, data, options, startOrde
     set = function(info, value)
       data.progressSource = data.progressSource or {}
       data.progressSource[4] = value
-      ForeverAuras.Add(parentData)
+      WeakAuras.Add(parentData)
     end
   }
 
   options.useAdjustededMin = {
     type = "toggle",
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     name = L["Set Minimum Progress"],
     desc = L["Values/Remaining Time below this value are displayed as zero progress."],
     order = startOrder + 0.4,
@@ -1716,15 +1716,15 @@ local function ProgressOptionsForSubElement(parentData, data, options, startOrde
       if not value then
         data.adjustedMin = ""
       end
-      ForeverAuras.Add(parentData)
+      WeakAuras.Add(parentData)
     end,
     hidden = progressSourceHidden
   };
 
   options.adjustedMin = {
     type = "input",
-    validate = ForeverAuras.ValidateNumericOrPercent,
-    width = ForeverAuras.normalWidth,
+    validate = WeakAuras.ValidateNumericOrPercent,
+    width = WeakAuras.normalWidth,
     order = startOrder + 0.5,
     name = L["Minimum"],
     hidden = function()
@@ -1738,7 +1738,7 @@ local function ProgressOptionsForSubElement(parentData, data, options, startOrde
 
   options.useAdjustedMinSpacer = {
     type = "description",
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     name = "",
     order = startOrder + 0.6,
     hidden = function()
@@ -1751,7 +1751,7 @@ local function ProgressOptionsForSubElement(parentData, data, options, startOrde
 
   options.useAdjustededMax = {
     type = "toggle",
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     name = L["Set Maximum Progress"],
     desc = L["Values/Remaining Time above this value are displayed as full progress."],
     order = startOrder + 0.7,
@@ -1760,15 +1760,15 @@ local function ProgressOptionsForSubElement(parentData, data, options, startOrde
       if not value then
         data.adjustedMax = ""
       end
-      ForeverAuras.Add(parentData)
+      WeakAuras.Add(parentData)
     end,
     hidden = progressSourceHidden
   }
 
   options.adjustedMax = {
     type = "input",
-    width = ForeverAuras.normalWidth,
-    validate = ForeverAuras.ValidateNumericOrPercent,
+    width = WeakAuras.normalWidth,
+    validate = WeakAuras.ValidateNumericOrPercent,
     order = startOrder + 0.8,
     name = L["Maximum"],
     hidden = function()
@@ -1782,7 +1782,7 @@ local function ProgressOptionsForSubElement(parentData, data, options, startOrde
 
   options.useAdjustedMaxSpacer = {
     type = "description",
-    width = ForeverAuras.normalWidth,
+    width = WeakAuras.normalWidth,
     name = "",
     order = startOrder + 0.9,
     hidden = function()
@@ -1805,14 +1805,14 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
     },
     border = {
       type = "toggle",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Show Border"],
       order = order + 0.1,
       hidden = hiddenFunc,
     },
     borderEdge = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       dialogControl = "LSM30_Border",
       name = L["Border Style"],
       order = order + 0.2,
@@ -1821,7 +1821,7 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
     },
     borderBackdrop = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       dialogControl = "LSM30_Background",
       name = L["Backdrop Style"],
       order = order + 0.3,
@@ -1830,8 +1830,8 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
     },
     borderOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Border Offset"],
       order = order + 0.3,
       softMin = 0,
@@ -1841,8 +1841,8 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
     },
     borderSize = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Border Size"],
       order = order + 0.4,
       min = 1,
@@ -1852,8 +1852,8 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
     },
     borderInset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Border Inset"],
       order = order + 0.5,
       softMin = 1,
@@ -1863,7 +1863,7 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
     },
     borderPixelPerfect = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Force pixel perfect scale"],
       desc = L["Keep border size, offset and inset in screen pixels, whatever the UI or group scale."],
       order = order + 0.6,
@@ -1871,7 +1871,7 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
     },
     borderColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Border Color"],
       hasAlpha = true,
       order = order + 0.7,
@@ -1879,14 +1879,14 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
     },
     borderInFront  = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Border in Front"],
       order = order + 0.8,
       hidden = function() return hiddenFunc and hiddenFunc() or not data.border or not showBackDropOptions end,
     },
     backdropColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Backdrop Color"],
       hasAlpha = true,
       order = order + 0.9,
@@ -1894,7 +1894,7 @@ local function BorderOptions(id, data, showBackDropOptions, hiddenFunc, order)
     },
     backdropInFront  = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Backdrop in Front"],
       order = order + 1,
       hidden = function() return hiddenFunc and hiddenFunc() or not data.border or not showBackDropOptions end,
@@ -1927,12 +1927,12 @@ local function AddCodeOption(args, data, name, prefix, url, order, hiddenFunc, p
 
   args[prefix .. "_custom"] = {
     type = "input",
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     name = name,
     order = order,
     multiline = true,
     hidden = hiddenFunc,
-    control = "ForeverAurasMultiLineEditBox",
+    control = "WeakAurasMultiLineEditBox",
     arg = {
       extraFunctions = options.extraFunctions,
     },
@@ -1945,7 +1945,7 @@ local function AddCodeOption(args, data, name, prefix, url, order, hiddenFunc, p
       end
 
       subdata[path[#path]] = v;
-      ForeverAuras.Add(data);
+      WeakAuras.Add(data);
       if (options.extraSetFunction) then
         options.extraSetFunction();
       end
@@ -1986,7 +1986,7 @@ local function AddCodeOption(args, data, name, prefix, url, order, hiddenFunc, p
       end
       return errorString and "|cFFFF0000"..errorString or "";
     end,
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     order = order + 0.002,
     hidden = function()
       if (hiddenFunc()) then
@@ -2030,7 +2030,7 @@ local function AddCommonTriggerOptions(options, data, triggernum, doubleWidth)
 
   options.type = {
     type = "select",
-    width = doubleWidth and ForeverAuras.doubleWidth or ForeverAuras.normalWidth,
+    width = doubleWidth and WeakAuras.doubleWidth or WeakAuras.normalWidth,
     name = L["Type"],
     desc = L["The type of trigger"],
     order = 1.1,
@@ -2056,11 +2056,11 @@ local function AddCommonTriggerOptions(options, data, triggernum, doubleWidth)
         end
       end
       OptionsPrivate.SaveAuraTrigger(data, triggernum);
-      ForeverAuras.UpdateThumbnail(data);
+      WeakAuras.UpdateThumbnail(data);
       if wasSecret or v == "secretAura" then
         OptionsPrivate.QueueOptionsRefresh(data.id)
       else
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     end,
   }
@@ -2106,13 +2106,13 @@ local function AddTriggerGetterSetter(options, data, triggernum)
           end
 
           OptionsPrivate.SaveAuraTrigger(data, triggernum)
-          ForeverAuras.ClearAndUpdateOptions(data.id)
+          WeakAuras.ClearAndUpdateOptions(data.id)
         end
       else
         option.set = function(info, v)
           trigger[key] = v
           OptionsPrivate.SaveAuraTrigger(data, triggernum)
-          ForeverAuras.ClearAndUpdateOptions(data.id)
+          WeakAuras.ClearAndUpdateOptions(data.id)
         end
       end
     end

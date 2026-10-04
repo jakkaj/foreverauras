@@ -39,10 +39,10 @@ local function OnRename(_, uid, oldId, newId)
   -- renamed aura is a targeted aura
   if targetToAttached[oldId] then
     for attached in pairs(targetToAttached[oldId]) do
-      local data = ForeverAuras.GetData(attached)
+      local data = WeakAuras.GetData(attached)
       if data then
         data.anchorFrameFrame = "WeakAuras:" .. newId
-        ForeverAuras.Add(data, true)
+        WeakAuras.Add(data, true)
       end
 
       attachedToTarget[attached] = newId

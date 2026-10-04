@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 local parsePrefix = OptionsPrivate.commonOptions.parsePrefix
 local flattenRegionOptions = OptionsPrivate.commonOptions.flattenRegionOptions
 
@@ -55,8 +55,8 @@ function OptionsPrivate.GetGroupOptions(data)
       else
         base[property] = (v ~= "" and v) or nil;
       end
-      ForeverAuras.Add(data);
-      ForeverAuras.UpdateThumbnail(data);
+      WeakAuras.Add(data);
+      WeakAuras.UpdateThumbnail(data);
       OptionsPrivate.ResetMoverSizer();
     end,
     hidden = function() return false end,

@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 if (GAME_LOCALE or GetLocale()) ~= "frFR" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- ForeverAuras/Options
 	L[" and |cFFFF0000mirrored|r"] = "et  |cFFFF0000mirrored|r"
@@ -116,7 +116,7 @@ local L = ForeverAuras.L
 	L["A 64x64 pixels icon"] = "Une icône de 64x64 pixels"
 	L["A group that dynamically controls the positioning of its children"] = "Un groupe qui contrôle dynamiquement le positionnement de ses enfants"
 	L[ [=[A timer will automatically be displayed according to default Interface Settings (overridden by some addons).
-Enable this setting if you want this timer to be hidden, or when using a ForeverAuras text to display the timer]=] ] = "Une minuterie sera automatiquement affichée selon les paramètres d'interface par défaut (remplacés par certains addons). Activez ce paramètre si vous souhaitez que le minuteur soit masqué, ou si vous utilisez plutôt un texte ForeverAuras pour afficher le minuteur."
+Enable this setting if you want this timer to be hidden, or when using a WeakAuras text to display the timer]=] ] = "Une minuterie sera automatiquement affichée selon les paramètres d'interface par défaut (remplacés par certains addons). Activez ce paramètre si vous souhaitez que le minuteur soit masqué, ou si vous utilisez plutôt un texte ForeverAuras pour afficher le minuteur."
 	L["A Unit ID (e.g., party1)."] = "Un ID d'unité (par exemple, groupe1)."
 	L["Ace: Funkeh, Nevcairiel"] = "Ace : Funkeh, Nevcairiel"
 	L["Active Aura Filters and Info"] = "Filtres et infos des auras actives"
@@ -310,7 +310,7 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED
 ]=]
 	L["Custom trigger status tooltip"] = [=[
 Choisissez quels évènements peuvent activer le déclencheur.
-Comme c'est un déclencheur de type statut, les évènements spécifiés peuvent être appelés par ForeverAuras sans les arguments attendus.
+Comme c'est un déclencheur de type statut, les évènements spécifiés peuvent être appelés par WeakAuras sans les arguments attendus.
 Plusieurs évènements peuvent être spécifiés avec des virgules ou des espaces.
 
 |cFF4444FFPar exemple:|r
@@ -1105,9 +1105,9 @@ Make sure you can trust the person who sent it!]=]
 It might not work correctly!]=] ] = [=[This aura was created with a different version (%s) of World of Warcraft.
 It might not work correctly!]=]
 	--[[Translation missing --]]
-	L[ [=[This aura was created with a newer version of ForeverAuras.
-Upgrade your version of ForeverAuras or wait for next release before installing this aura.]=] ] = [=[This aura was created with a newer version of ForeverAuras.
-Upgrade your version of ForeverAuras or wait for next release before installing this aura.]=]
+	L[ [=[This aura was created with a newer version of WeakAuras.
+Upgrade your version of WeakAuras or wait for next release before installing this aura.]=] ] = [=[This aura was created with a newer version of WeakAuras.
+Upgrade your version of WeakAuras or wait for next release before installing this aura.]=]
 	L["This display is currently loaded"] = "Cet affichage est actuellement chargé"
 	L["This display is not currently loaded"] = "Cet affichage n'est pas chargé"
 	--[[Translation missing --]]
@@ -1247,17 +1247,17 @@ Would you like to continue?]=] ] = [=[You are about to Import an Aura with custo
 
 Would you like to continue?]=]
 	--[[Translation missing --]]
-	L[ [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Anchor Code on.
+	L[ [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Anchor Code on.
 
-ForeverAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Anchor Code on.
+WeakAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Anchor Code on.
 
-ForeverAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=]
+WeakAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=]
 	--[[Translation missing --]]
-	L[ [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Grow Code on.
+	L[ [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Grow Code on.
 
-ForeverAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Grow Code on.
+WeakAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Grow Code on.
 
-ForeverAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=]
+WeakAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=]
 	--[[Translation missing --]]
 	L["You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the sort code on.ForeverAuras will always run custom sort code if you include 'changed' in this list, or when a region is added, removed."] = "You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the sort code on.ForeverAuras will always run custom sort code if you include 'changed' in this list, or when a region is added, removed."
 	--[[Translation missing --]]

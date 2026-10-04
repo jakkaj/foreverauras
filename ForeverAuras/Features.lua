@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 ---@type string
 local addon = ...
@@ -88,7 +88,7 @@ function Features:Hydrate()
       enable = self.db[id]
     else
       for _, buildType in ipairs(feature.autoEnable or {}) do
-        if ForeverAuras.buildType == buildType then
+        if WeakAuras.buildType == buildType then
           enable = true
           break
         end

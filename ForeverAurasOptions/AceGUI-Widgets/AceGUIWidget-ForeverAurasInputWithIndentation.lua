@@ -1,7 +1,7 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
-local Type, Version = "ForeverAurasInputWithIndentation", 2
+local Type, Version = "WeakAurasInputWithIndentation", 2
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -14,14 +14,14 @@ local GetCursorInfo, ClearCursor = GetCursorInfo, ClearCursor
 local CreateFrame, UIParent = CreateFrame, UIParent
 local _G = _G
 
-if not AceGUIForeverAurasInputWithIndentationInsertLink then
+if not AceGUIWeakAurasInputWithIndentationInsertLink then
   -- upgradeable hook
-  hooksecurefunc("ChatEdit_InsertLink", function(...) return _G.AceGUIForeverAurasInputWithIndentationInsertLink(...) end)
+  hooksecurefunc("ChatEdit_InsertLink", function(...) return _G.AceGUIWeakAurasInputWithIndentationInsertLink(...) end)
 end
 
-function _G.AceGUIForeverAurasInputWithIndentationInsertLink(text)
+function _G.AceGUIWeakAurasInputWithIndentationInsertLink(text)
   for i = 1, AceGUI:GetWidgetCount(Type) do
-    local editbox = _G[("ForeverAurasInputWithIndentation%uEdit"):format(i)]
+    local editbox = _G[("WeakAurasInputWithIndentation%uEdit"):format(i)]
     if editbox and editbox:IsVisible() and editbox:HasFocus() then
       text = text:gsub("|", "||")
       editbox:Insert(text)
@@ -227,7 +227,7 @@ local function Constructor()
   local frame = CreateFrame("Frame", nil, UIParent)
   frame:Hide()
 
-  local editbox = CreateFrame("EditBox", string.format("ForeverAurasInputWithIndentation%uEdit", format(num)), frame, "InputBoxTemplate")
+  local editbox = CreateFrame("EditBox", string.format("WeakAurasInputWithIndentation%uEdit", format(num)), frame, "InputBoxTemplate")
   editbox:SetAutoFocus(false)
   editbox:SetFontObject(ChatFontNormal)
   editbox:SetScript("OnEnter", Control_OnEnter)

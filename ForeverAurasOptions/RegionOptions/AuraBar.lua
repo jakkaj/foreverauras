@@ -1,12 +1,12 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
 local SharedMedia = LibStub("LibSharedMedia-3.0");
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 -- Create region options table
 local function createOptions(id, data)
@@ -22,7 +22,7 @@ local function createOptions(id, data)
     textureSource = {
       type = "select",
       order = 1,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Texture Selection Mode"],
       values = {
         LSM = L["LibSharedMedia"],
@@ -36,7 +36,7 @@ local function createOptions(id, data)
       type = "select",
       dialogControl = "WA_LSM30_StatusbarAtlas",
       order = 2,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Bar Texture"],
       values = statusbarList,
       hidden = function()
@@ -45,7 +45,7 @@ local function createOptions(id, data)
     },
     textureInput = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Texture"],
       order = 3,
       hidden = function()
@@ -70,7 +70,7 @@ local function createOptions(id, data)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
       hidden = function()
         return data.textureSource ~= "Picker"
@@ -78,7 +78,7 @@ local function createOptions(id, data)
     },
     orientation = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Orientation"],
       order = 25,
       values = OptionsPrivate.Private.orientation_types,
@@ -119,27 +119,27 @@ local function createOptions(id, data)
         end
 
         data.orientation = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.ResetMoverSizer();
       end
     },
     inverse = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Inverse"],
       order = 35
     },
     smoothProgress = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Smooth Progress"],
       desc = L["Animates progress changes"],
       order = 37
     },
     useTooltip = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Tooltip on Mouseover"],
       hidden = function() return not OptionsPrivate.Private.CanHaveTooltip(data) end,
       order = 38
@@ -147,7 +147,7 @@ local function createOptions(id, data)
     toolTipArea = {
       type = "select",
       values = OptionsPrivate.Private.aurabar_tooltip_areas,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Area"],
       hidden = function()
         return not (OptionsPrivate.Private.CanHaveTooltip(data) and data.useTooltip)
@@ -162,42 +162,42 @@ local function createOptions(id, data)
     },
     enableGradient = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Enable Gradient"],
       order = 39.1
     },
     gradientOrientation = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       values = OptionsPrivate.Private.gradient_orientations,
       name = L["Gradient Orientation"],
       order = 39.2
     },
     barColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Bar Color/Gradient Start"],
       hasAlpha = true,
       order = 39.3
     },
     barColor2 = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Gradient End"],
       hasAlpha = true,
       order = 39.4
     },
     backgroundColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Background Color"],
       hasAlpha = true,
       order = 39.5
     },
     alpha = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Bar Alpha"],
       order = 39.6,
       min = 0,
@@ -212,13 +212,13 @@ local function createOptions(id, data)
     },
     icon = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Show Icon"],
       order = 40.2,
     },
     icon_side = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Icon Position"],
       values = OptionsPrivate.Private.icon_side_types,
       hidden = function() return data.orientation:find("VERTICAL") or not data.icon end,
@@ -226,7 +226,7 @@ local function createOptions(id, data)
     },
     icon_side2 = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Icon Position"],
       values = OptionsPrivate.Private.rotated_icon_side_types,
       hidden = function() return data.orientation:find("HORIZONTAL") or not data.icon end,
@@ -236,13 +236,13 @@ local function createOptions(id, data)
       end,
       set = function(info, v)
         data.icon_side = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
       end
     },
     iconSource = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Source"],
       order = 40.4,
       values = OptionsPrivate.Private.IconSources(data),
@@ -250,7 +250,7 @@ local function createOptions(id, data)
     },
     displayIcon = {
       type = "input",
-      width = ForeverAuras.normalWidth - 0.15,
+      width = WeakAuras.normalWidth - 0.15,
       name = L["Manual"],
       disabled = function() return not data.icon end,
       order = 40.5,
@@ -259,8 +259,8 @@ local function createOptions(id, data)
       end,
       set = function(info, v)
         data.displayIcon = v;
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
       end,
       hidden = function() return not data.icon end,
     },
@@ -280,20 +280,20 @@ local function createOptions(id, data)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
       hidden = function() return not data.icon end,
     },
     desaturate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Desaturate"],
       order = 40.8,
       hidden = function() return not data.icon end,
     },
     icon_color = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Color"],
       hasAlpha = true,
       order = 40.9,
@@ -301,8 +301,8 @@ local function createOptions(id, data)
     },
     zoom = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Zoom"],
       order = 40.91,
       min = 0,
@@ -318,7 +318,7 @@ local function createOptions(id, data)
     },
     spark = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Show Spark"],
       order = 43
     },
@@ -326,7 +326,7 @@ local function createOptions(id, data)
       type = "input",
       name = L["Spark Texture"],
       order = 44,
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       disabled = function() return not data.spark end,
       hidden = function() return not data.spark end,
     },
@@ -353,12 +353,12 @@ local function createOptions(id, data)
       hidden = function() return not data.spark end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     sparkDesaturate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Desaturate"],
       order = 44.2,
       disabled = function() return not data.spark end,
@@ -367,7 +367,7 @@ local function createOptions(id, data)
     spaceSpark = {
       type = "execute",
       name = "",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = 44.3,
       image = function() return "", 0, 0 end,
       disabled = function() return not data.spark end,
@@ -375,7 +375,7 @@ local function createOptions(id, data)
     },
     sparkColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Color"],
       hasAlpha = true,
       order = 44.4,
@@ -384,7 +384,7 @@ local function createOptions(id, data)
     },
     sparkBlendMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Blend Mode"],
       order = 44.5,
       values = OptionsPrivate.Private.blend_types,
@@ -393,8 +393,8 @@ local function createOptions(id, data)
     },
     sparkWidth = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Width"],
       order = 44.6,
       min = 1,
@@ -405,8 +405,8 @@ local function createOptions(id, data)
     },
     sparkHeight = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Height"],
       order = 44.7,
       min = 1,
@@ -417,8 +417,8 @@ local function createOptions(id, data)
     },
     sparkOffsetX = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["X Offset"],
       order = 44.8,
       min = -screenWidth,
@@ -429,8 +429,8 @@ local function createOptions(id, data)
     },
     sparkOffsetY = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Y Offset"],
       order = 44.9,
       min = -screenHeight,
@@ -441,7 +441,7 @@ local function createOptions(id, data)
     },
     sparkRotationMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       values = OptionsPrivate.Private.spark_rotation_types,
       name = L["Rotation Mode"],
       order = 45,
@@ -450,8 +450,8 @@ local function createOptions(id, data)
     },
     sparkRotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Rotation"],
       min = 0,
       max = 360,
@@ -462,7 +462,7 @@ local function createOptions(id, data)
     },
     sparkMirror = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Mirror"],
       order = 45.2,
       disabled = function() return not data.spark end,
@@ -470,7 +470,7 @@ local function createOptions(id, data)
     },
     sparkHidden = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       values = OptionsPrivate.Private.spark_hide_types,
       name = L["Hide on"],
       order = 45.3,
@@ -496,7 +496,7 @@ local function createOptions(id, data)
       options["overlaytexture" .. id] = {
         type = "select",
         dialogControl = "WA_LSM30_StatusbarAtlas",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = string.format(L["%s Texture"], display),
         values = statusbarList,
         order = 58.1 + index,
@@ -505,7 +505,7 @@ local function createOptions(id, data)
             data.overlaysTexture = {};
           end
           data.overlaysTexture[id] = texture;
-          ForeverAuras.Add(data);
+          WeakAuras.Add(data);
         end,
         get = function()
           if data.overlaysTexture and data.overlaysTexture[id] then
@@ -515,7 +515,7 @@ local function createOptions(id, data)
       }
       options["overlaycolor" .. id] = {
         type = "color",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = string.format(L["%s Color"], display),
         hasAlpha = true,
         order = 58.2 + index,
@@ -530,7 +530,7 @@ local function createOptions(id, data)
             data.overlays = {};
           end
           data.overlays[id] = { r, g, b, a};
-          ForeverAuras.Add(data);
+          WeakAuras.Add(data);
         end
       }
       index = index + 0.01
@@ -712,7 +712,7 @@ local function modifyThumbnail(parent, borderframe, data, fullModify, width, hei
     end
 
     if data then
-      local _, icon = ForeverAuras.GetNameAndIcon(data)
+      local _, icon = WeakAuras.GetNameAndIcon(data)
       borderframe:SetIcon(icon)
     end
 

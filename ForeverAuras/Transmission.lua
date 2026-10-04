@@ -19,7 +19,7 @@ Imports an aura from a table, which may or may not be encoded as a B64 string.
 If target is installed data, or is a uid which points to installed data, then the import will be an update to that aura
 
 ]]--
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
@@ -32,11 +32,11 @@ local pairs, type, unpack = pairs, type, unpack
 local error = error
 local bit_band, bit_lshift, bit_rshift = bit.band, bit.lshift, bit.rshift
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras;
-local L = ForeverAuras.L;
+---@class WeakAuras
+local WeakAuras = WeakAuras;
+local L = WeakAuras.L;
 
-local versionString = ForeverAuras.versionString;
+local versionString = WeakAuras.versionString;
 
 -- Local functions
 local decodeB64, GenerateUniqueID
@@ -103,7 +103,7 @@ function GenerateUniqueID()
   end
   return table.concat(s)
 end
-ForeverAuras.GenerateUniqueID = GenerateUniqueID
+WeakAuras.GenerateUniqueID = GenerateUniqueID
 
 local function stripNonTransmissableFields(datum, fieldMap)
   for k, v in pairs(fieldMap) do
@@ -140,7 +140,7 @@ function CompressDisplay(data, version)
   local non_transmissable_fields = version >= 2000 and Private.non_transmissable_fields_v2000
                                                        or Private.non_transmissable_fields
   stripNonTransmissableFields(copiedData, non_transmissable_fields)
-  copiedData.tocversion = ForeverAuras.BuildInfo
+  copiedData.tocversion = WeakAuras.BuildInfo
   return copiedData;
 end
 
@@ -288,7 +288,7 @@ EventRegistry:RegisterCallback("SetItemRef", function(_, link, text)
         tooltipLoading = true;
         receivedData = false;
         RequestDisplay(characterName, displayName);
-        ForeverAuras.timer:ScheduleTimer(function()
+        WeakAuras.timer:ScheduleTimer(function()
           if (tooltipLoading and not receivedData and ItemRefTooltip:IsVisible()) then
             ShowTooltip({
               {2, "ForeverAuras", displayName, 0.5, 0, 1, 1, 1, 1},
@@ -394,7 +394,7 @@ end
 Private.StringToTable = StringToTable
 
 function Private.DisplayToString(id, forChat)
-  local data = ForeverAuras.GetData(id);
+  local data = WeakAuras.GetData(id);
   if(data) then
     data.uid = data.uid or GenerateUniqueID()
     -- Check which transmission version we want to use
@@ -519,7 +519,7 @@ local function recurseStringify(data, level, lines, sorted)
 end
 
 function Private.DataToString(id, sorted)
-  local data = ForeverAuras.GetData(id)
+  local data = WeakAuras.GetData(id)
   if data then
     return Private.SerializeTable(data, sorted):gsub("|", "||")
   end
@@ -553,7 +553,7 @@ local delayedImport = CreateFrame("Frame")
 
 local function ImportNow(data, children, target, linkedAuras, sender, callbackFunc)
   if InCombatLockdown() then
-    ForeverAuras.prettyPrint(L["Importing will start after combat ends."])
+    WeakAuras.prettyPrint(L["Importing will start after combat ends."])
 
     delayedImport:RegisterEvent("PLAYER_REGEN_ENABLED")
     delayedImport:SetScript("OnEvent", function()
@@ -564,14 +564,14 @@ local function ImportNow(data, children, target, linkedAuras, sender, callbackFu
   end
 
   if Private.LoadOptions() then
-    if not ForeverAuras.IsOptionsOpen() then
-      ForeverAuras.OpenOptions()
+    if not WeakAuras.IsOptionsOpen() then
+      WeakAuras.OpenOptions()
     end
     Private.OpenUpdate(data, children, target, linkedAuras, sender, callbackFunc)
   end
 end
 
-function ForeverAuras.Import(inData, target, callbackFunc, linkedAuras)
+function WeakAuras.Import(inData, target, callbackFunc, linkedAuras)
   local data, children, version
   if type(inData) == 'string' then
     -- encoded data
@@ -603,7 +603,7 @@ function ForeverAuras.Import(inData, target, callbackFunc, linkedAuras)
       highestVersion = max(highestVersion, child.internalVersion or 0)
     end
   end
-  if highestVersion > ForeverAuras.InternalVersion() then
+  if highestVersion > WeakAuras.InternalVersion() then
     -- Do not run PreAdd but still show Import Window
     tooltipLoading = nil;
     return ImportNow(data, children, target, linkedAuras, nil, callbackFunc)
@@ -631,10 +631,10 @@ function ForeverAuras.Import(inData, target, callbackFunc, linkedAuras)
       return false, "Invalid update target, uids don't match."
     end
   end
-  ForeverAuras.PreAdd(data)
+  WeakAuras.PreAdd(data)
   if children then
     for _, child in ipairs(children) do
-      ForeverAuras.PreAdd(child)
+      WeakAuras.PreAdd(child)
     end
   end
 
@@ -650,7 +650,7 @@ function RequestDisplay(characterName, displayName)
     local exported = Private.DisplayToString(displayName, true)
     if exported ~= "" then
       ItemRefTooltip:Hide()
-      ForeverAuras.Import(exported)
+      WeakAuras.Import(exported)
     else
       ShowTooltip({{1, "ForeverAuras", 0.5, 0, 1}, {1, L["Requested display does not exist"], 1, 0, 0}})
     end
@@ -767,10 +767,10 @@ local function HandleComm(prefix, message, distribution, sender)
     if(received.m == "d") then
       tooltipLoading = nil;
       local data, children, version = received.d, received.c, received.v
-      ForeverAuras.PreAdd(data)
+      WeakAuras.PreAdd(data)
       if children then
         for _, child in ipairs(children) do
-          ForeverAuras.PreAdd(child)
+          WeakAuras.PreAdd(child)
         end
       end
       if version < 2000 then
@@ -803,7 +803,7 @@ local function HandleComm(prefix, message, distribution, sender)
         });
       end
     end
-  elseif(ItemRefTooltip.ForeverAuras_Tooltip_Thumbnail and ItemRefTooltip.ForeverAuras_Tooltip_Thumbnail:IsVisible()) then
+  elseif(ItemRefTooltip.WeakAuras_Tooltip_Thumbnail and ItemRefTooltip.WeakAuras_Tooltip_Thumbnail:IsVisible()) then
     ShowTooltip({
       {1, "ForeverAuras", 0.5333, 0, 1},
       {1, L["Transmission error"], 1, 0, 0}

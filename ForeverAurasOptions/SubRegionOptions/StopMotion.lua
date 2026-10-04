@@ -1,15 +1,15 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
-local texture_types = ForeverAuras.StopMotion.texture_types
-local texture_data = ForeverAuras.StopMotion.texture_data
-local animation_types = ForeverAuras.StopMotion.animation_types
+local texture_types = WeakAuras.StopMotion.texture_types
+local texture_data = WeakAuras.StopMotion.texture_data
+local animation_types = WeakAuras.StopMotion.animation_types
 
 local function createOptions(parentData, data, index, subIndex)
 
@@ -27,13 +27,13 @@ local function createOptions(parentData, data, index, subIndex)
     __order = 1,
     stopmotionVisible = {
       type = "toggle",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Show Stop Motion"],
       order = 1,
     },
     stopmotionTexture = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Texture"],
       order = 2,
     },
@@ -56,33 +56,33 @@ local function createOptions(parentData, data, index, subIndex)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     stopmotionColor = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Color"],
       hasAlpha = true,
       order = 4
     },
     stopmotionDesaturate = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Desaturate"],
       order = 5,
     },
     customRows = {
         type = "input",
-        width = ForeverAuras.doubleWidth / 3,
+        width = WeakAuras.doubleWidth / 3,
         name = L["Rows"],
-        validate = ForeverAuras.ValidateNumeric,
+        validate = WeakAuras.ValidateNumeric,
         get = function()
           return data.customRows and tostring(data.customRows) or "";
         end,
         set = function(info, v)
           data.customRows = v and tonumber(v) or 0
-          ForeverAuras.Add(parentData)
+          WeakAuras.Add(parentData)
         end,
         order = 6,
         hidden = function()
@@ -91,15 +91,15 @@ local function createOptions(parentData, data, index, subIndex)
     },
     customColumns = {
         type = "input",
-        width = ForeverAuras.doubleWidth / 3,
+        width = WeakAuras.doubleWidth / 3,
         name = L["Columns"],
-        validate = ForeverAuras.ValidateNumeric,
+        validate = WeakAuras.ValidateNumeric,
         get = function()
           return data.customColumns and tostring(data.customColumns) or "";
         end,
         set = function(info, v)
           data.customColumns = v and tonumber(v) or 0
-          ForeverAuras.Add(parentData)
+          WeakAuras.Add(parentData)
         end,
         order = 7,
         hidden = function()
@@ -108,15 +108,15 @@ local function createOptions(parentData, data, index, subIndex)
     },
     customFrames = {
         type = "input",
-        width = ForeverAuras.doubleWidth / 3,
+        width = WeakAuras.doubleWidth / 3,
         name = L["Frame Count"],
-        validate = ForeverAuras.ValidateNumeric,
+        validate = WeakAuras.ValidateNumeric,
         get = function()
           return data.customFrames and tostring(data.customFrames) or "";
         end,
         set = function(info, v)
           data.customFrames = v and tonumber(v) or 0
-          ForeverAuras.Add(parentData)
+          WeakAuras.Add(parentData)
         end,
         order = 8,
         hidden = function()
@@ -125,7 +125,7 @@ local function createOptions(parentData, data, index, subIndex)
     },
     customFileWidth = {
       type = "input",
-      width = ForeverAuras.normalWidth / 2,
+      width = WeakAuras.normalWidth / 2,
       name = L["File Width"],
       desc = L["Must be a power of 2"],
       validate = function(info, val)
@@ -139,7 +139,7 @@ local function createOptions(parentData, data, index, subIndex)
       end,
       set = function(info, v)
         data.customFileWidth = v and tonumber(v) or 0
-        ForeverAuras.Add(parentData)
+        WeakAuras.Add(parentData)
       end,
       order = 9,
       hidden = function()
@@ -148,7 +148,7 @@ local function createOptions(parentData, data, index, subIndex)
     },
     customFileHeight = {
       type = "input",
-      width = ForeverAuras.normalWidth / 2,
+      width = WeakAuras.normalWidth / 2,
       name = L["File Height"],
       desc = L["Must be a power of 2"],
       validate = function(info, val)
@@ -162,7 +162,7 @@ local function createOptions(parentData, data, index, subIndex)
       end,
       set = function(info, v)
         data.customFileHeight = v and tonumber(v) or 0
-        ForeverAuras.Add(parentData)
+        WeakAuras.Add(parentData)
       end,
       order = 10,
       hidden = function()
@@ -171,16 +171,16 @@ local function createOptions(parentData, data, index, subIndex)
     },
     customFrameWidth = {
       type = "input",
-      width = ForeverAuras.normalWidth / 2,
+      width = WeakAuras.normalWidth / 2,
       name = L["Frame Width"],
-      validate = ForeverAuras.ValidateNumeric,
+      validate = WeakAuras.ValidateNumeric,
       desc = L["Can set to 0 if Columns * Width equal File Width"],
       get = function()
         return data.customFrameWidth and tostring(data.customFrameWidth) or "";
       end,
       set = function(info, v)
         data.customFrameWidth = v and tonumber(v) or 0
-        ForeverAuras.Add(parentData)
+        WeakAuras.Add(parentData)
       end,
       order = 11,
       hidden = function()
@@ -189,16 +189,16 @@ local function createOptions(parentData, data, index, subIndex)
     },
     customFrameHeight = {
       type = "input",
-      width = ForeverAuras.normalWidth / 2,
+      width = WeakAuras.normalWidth / 2,
       name = L["Frame Height"],
-      validate = ForeverAuras.ValidateNumeric,
+      validate = WeakAuras.ValidateNumeric,
       desc = L["Can set to 0 if Rows * Height equal File Height"],
       get = function()
         return data.customFrameHeight and tostring(data.customFrameHeight) or "";
       end,
       set = function(info, v)
         data.customFrameHeight = v and tonumber(v) or 0
-        ForeverAuras.Add(parentData)
+        WeakAuras.Add(parentData)
       end,
       order = 12,
       hidden = function()
@@ -207,14 +207,14 @@ local function createOptions(parentData, data, index, subIndex)
     },
     stopmotionBlendMode = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Blend Mode"],
       order = 13,
       values = OptionsPrivate.Private.blend_types
     },
     animationType = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Animation Mode"],
       order = 14,
       values = animation_types
@@ -224,8 +224,8 @@ local function createOptions(parentData, data, index, subIndex)
 
     startPercent = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Animation Start"],
       min = 0,
       max = 1,
@@ -235,8 +235,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     endPercent = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Animation End"],
       min = 0,
       max = 1,
@@ -247,15 +247,15 @@ local function createOptions(parentData, data, index, subIndex)
 
     inverse = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Inverse"],
       order = 19
     },
 
     frameRate = {
      type = "range",
-     control = "ForeverAurasSpinBox",
-     width = ForeverAuras.normalWidth,
+     control = "WeakAurasSpinBox",
+     width = WeakAuras.normalWidth,
      name = L["Frame Rate"],
      min = 3,
      max = 120,
@@ -269,7 +269,7 @@ local function createOptions(parentData, data, index, subIndex)
 
     barModelClip = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Clipped by Foreground"],
       order = 27,
       hidden = function()
@@ -281,8 +281,8 @@ local function createOptions(parentData, data, index, subIndex)
 
     scale = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Scale Factor"],
       order = 28,
       softMin = 0.5,
@@ -312,4 +312,4 @@ local function createOptions(parentData, data, index, subIndex)
   return options
 end
 
-  ForeverAuras.RegisterSubRegionOptions("substopmotion", createOptions, L["Shows a Stop Motion"]);
+  WeakAuras.RegisterSubRegionOptions("substopmotion", createOptions, L["Shows a Stop Motion"]);

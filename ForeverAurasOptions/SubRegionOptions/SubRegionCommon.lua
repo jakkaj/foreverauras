@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -76,7 +76,7 @@ function OptionsPrivate.DeleteSubRegion(data, index, regionType)
     AdjustConditions(data, replacements);
     AdjustAnchors(data, replacements)
 
-    ForeverAuras.Add(data)
+    WeakAuras.Add(data)
     OptionsPrivate.ClearOptions(data.id)
   end
 end
@@ -96,7 +96,7 @@ function OptionsPrivate.MoveSubRegionUp(data, index, regionType)
     AdjustConditions(data, replacements);
     AdjustAnchors(data, replacements)
 
-    ForeverAuras.Add(data)
+    WeakAuras.Add(data)
     OptionsPrivate.ClearOptions(data.id)
   end
 end
@@ -116,7 +116,7 @@ function OptionsPrivate.MoveSubRegionDown(data, index, regionType)
     AdjustConditions(data, replacements);
     AdjustAnchors(data, replacements)
 
-    ForeverAuras.Add(data)
+    WeakAuras.Add(data)
     OptionsPrivate.ClearOptions(data.id)
   end
 end
@@ -136,7 +136,7 @@ function OptionsPrivate.DuplicateSubRegion(data, index, regionType)
     AdjustConditions(data, replacements)
     AdjustAnchors(data, replacements)
 
-    ForeverAuras.Add(data)
+    WeakAuras.Add(data)
     OptionsPrivate.ClearOptions(data.id)
   end
 end
@@ -149,7 +149,7 @@ function OptionsPrivate.AddUpDownDeleteDuplicate(options, parentData, index, sub
     if OptionsPrivate.Private.BlizzardAuraDisplay.HasTrigger(parentData) then
       OptionsPrivate.QueueOptionsRefresh(parentData.id)
     else
-      ForeverAuras.ClearAndUpdateOptions(parentData.id)
+      WeakAuras.ClearAndUpdateOptions(parentData.id)
     end
   end
   options.__down = function()
@@ -159,7 +159,7 @@ function OptionsPrivate.AddUpDownDeleteDuplicate(options, parentData, index, sub
     if OptionsPrivate.Private.BlizzardAuraDisplay.HasTrigger(parentData) then
       OptionsPrivate.QueueOptionsRefresh(parentData.id)
     else
-      ForeverAuras.ClearAndUpdateOptions(parentData.id)
+      WeakAuras.ClearAndUpdateOptions(parentData.id)
     end
   end
   options.__duplicate = function()
@@ -169,7 +169,7 @@ function OptionsPrivate.AddUpDownDeleteDuplicate(options, parentData, index, sub
     if OptionsPrivate.Private.BlizzardAuraDisplay.HasTrigger(parentData) then
       OptionsPrivate.QueueOptionsRefresh(parentData.id)
     else
-      ForeverAuras.ClearAndUpdateOptions(parentData.id)
+      WeakAuras.ClearAndUpdateOptions(parentData.id)
     end
   end
   options.__delete = function()
@@ -179,7 +179,7 @@ function OptionsPrivate.AddUpDownDeleteDuplicate(options, parentData, index, sub
     if OptionsPrivate.Private.BlizzardAuraDisplay.HasTrigger(parentData) then
       OptionsPrivate.QueueOptionsRefresh(parentData.id)
     else
-      ForeverAuras.ClearAndUpdateOptions(parentData.id)
+      WeakAuras.ClearAndUpdateOptions(parentData.id)
     end
   end
 end

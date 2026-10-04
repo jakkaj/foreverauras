@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local default = function(parentType)
   local defaults = {
@@ -340,5 +340,5 @@ local function supports(regionType)
          or regionType == "empty"
 end
 
-ForeverAuras.RegisterSubRegionType("subcirculartexture", L["Circular Texture"], supports, create, modify, onAcquire, onRelease,
+WeakAuras.RegisterSubRegionType("subcirculartexture", L["Circular Texture"], supports, create, modify, onAcquire, onRelease,
                                 default, nil, properties)

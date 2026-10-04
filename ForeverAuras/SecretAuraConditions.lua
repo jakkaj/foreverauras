@@ -1,5 +1,5 @@
 -- Public trigger conditions can style native widgets without observing secret aura state.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local Display = Private.BlizzardAuraDisplay
 local conditionActions = {chat = "chat", sound = "sound", customcode = "customcode", glowexternal = "glowexternal"}

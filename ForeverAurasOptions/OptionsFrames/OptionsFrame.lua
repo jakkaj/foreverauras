@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-29.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -20,9 +20,9 @@ local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local displayButtons = OptionsPrivate.displayButtons
 local tempGroup = OptionsPrivate.tempGroup
@@ -94,7 +94,7 @@ local minWidth = 750
 local minHeight = 240
 
 function OptionsPrivate.CreateFrame()
-  LibDD:Create_UIDropDownMenu("ForeverAuras_DropDownMenu", nil)
+  LibDD:Create_UIDropDownMenu("WeakAuras_DropDownMenu", nil)
   local frame
   local db = OptionsPrivate.savedVars.db
   local odb = OptionsPrivate.savedVars.odb
@@ -147,7 +147,7 @@ function OptionsPrivate.CreateFrame()
 
   function OptionsPrivate.SetTitle(title)
     -- The semantic version already includes the BETA prerelease label.
-    local text = "ForeverAuras " .. ForeverAuras.versionString
+    local text = WeakAuras.displayName .. " " .. WeakAuras.versionString
     if title and title ~= "" then
       text = ("%s - %s"):format(text, title)
     end
@@ -161,7 +161,7 @@ function OptionsPrivate.CreateFrame()
   frame:SetResizeBounds(minWidth, minHeight)
   frame:SetFrameStrata("DIALOG")
   -- Workaround classic issue
-  ForeverAurasOptionsPortrait:SetTexture([[Interface\AddOns\ForeverAuras\Media\Textures\foreverauras_logo.tga]])
+  ForeverAurasOptionsPortrait:SetTexture([[Interface\AddOns\ForeverAuras\Media\Textures\foreverauras_logo_128.tga]])
 
   frame.window = "default"
 
@@ -444,7 +444,7 @@ function OptionsPrivate.CreateFrame()
   tipFrame:Hide()
   frame.tipFrame = tipFrame
 
-  local tipPopup = CreateFrame("Frame", nil, frame, "BackdropTemplateForeverAuras")
+  local tipPopup = CreateFrame("Frame", nil, frame, "BackdropTemplateWeakAuras")
   tipPopup:SetFrameStrata("FULLSCREEN")
   tipPopup:SetBackdrop({
     bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -541,7 +541,7 @@ function OptionsPrivate.CreateFrame()
 
   --- @type fun(title: string, texture: string, url: string, description: string, descriptionCJ: string?, descriptionK: string?, rightAligned: boolean?, width: number?)
   local addFooter = function(title, texture, url, description, descriptionCJ, descriptionK, rightAligned, width)
-    local button = AceGUI:Create("ForeverAurasToolbarButton")
+    local button = AceGUI:Create("WeakAurasToolbarButton")
     button:SetSmallFont(true)
     button:SetText(title)
     button:SetTexture(texture)
@@ -594,7 +594,7 @@ function OptionsPrivate.CreateFrame()
   local container = AceGUI:Create("InlineGroup")
   container.frame:SetParent(frame)
   container.frame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -17, 10)
-  container.frame:SetPoint("TOPLEFT", frame, "TOPRIGHT", -63 - ForeverAuras.normalWidth * 340, -frame.faTopGap)
+  container.frame:SetPoint("TOPLEFT", frame, "TOPRIGHT", -63 - WeakAuras.normalWidth * 340, -frame.faTopGap)
   container.frame:Show()
   container.frame:SetClipsChildren(true)
   container.titletext:Hide()
@@ -606,7 +606,7 @@ function OptionsPrivate.CreateFrame()
   frame.moversizer, frame.mover = OptionsPrivate.MoverSizer(frame)
 
   -- filter line
-  local filterInput = CreateFrame("EditBox", "ForeverAurasFilterInput", frame, "SearchBoxTemplate")
+  local filterInput = CreateFrame("EditBox", "WeakAurasFilterInput", frame, "SearchBoxTemplate")
   filterInput:SetScript("OnTextChanged", function(self)
     SearchBoxTemplate_OnTextChanged(self)
     OptionsPrivate.SortDisplayButtons(filterInput:GetText())
@@ -640,7 +640,7 @@ function OptionsPrivate.CreateFrame()
   toolbarContainer:SetPoint("TOPLEFT", buttonsContainer.frame, "TOPLEFT", 30, 30)
   toolbarContainer:SetPoint("BOTTOMRIGHT", buttonsContainer.frame, "TOPRIGHT", 0, 0)
 
-  local undo = AceGUI:Create("ForeverAurasToolbarButton")
+  local undo = AceGUI:Create("WeakAurasToolbarButton")
   undo:SetText(L["Undo"])
   undo:SetTexture("Interface\\AddOns\\ForeverAuras\\Media\\Textures\\upleft")
   undo:SetCallback("OnClick", function()
@@ -652,7 +652,7 @@ function OptionsPrivate.CreateFrame()
   undo:SetPoint("LEFT")
   undo.frame:SetCollapsesLayout(true)
 
-  local redo = AceGUI:Create("ForeverAurasToolbarButton")
+  local redo = AceGUI:Create("WeakAurasToolbarButton")
   redo:SetText(L["Redo"])
   redo:SetTexture("Interface\\AddOns\\ForeverAuras\\Media\\Textures\\upright")
   redo:SetCallback("OnClick", function()
@@ -693,7 +693,7 @@ function OptionsPrivate.CreateFrame()
   tmControls:Step()
   OptionsPrivate.Private.TimeMachine.sub:AddSubscriber("Step", tmControls)
 
-  local newButton = AceGUI:Create("ForeverAurasToolbarButton")
+  local newButton = AceGUI:Create("WeakAurasToolbarButton")
   newButton:SetText(L["New Aura"])
   newButton:SetTexture("Interface\\AddOns\\ForeverAuras\\Media\\Textures\\newaura")
   newButton.frame:SetParent(toolbarContainer)
@@ -705,7 +705,7 @@ function OptionsPrivate.CreateFrame()
     frame:NewAura()
   end)
 
-  local importButton = AceGUI:Create("ForeverAurasToolbarButton")
+  local importButton = AceGUI:Create("WeakAurasToolbarButton")
   importButton:SetText(L["Import"])
   importButton:SetTexture("Interface\\AddOns\\ForeverAuras\\Media\\Textures\\importsmall")
   importButton:SetCallback("OnClick", OptionsPrivate.ImportFromString)
@@ -713,7 +713,7 @@ function OptionsPrivate.CreateFrame()
   importButton.frame:Show()
   importButton:SetPoint("LEFT", newButton.frame, "RIGHT", 10, 0)
 
-  local lockButton = AceGUI:Create("ForeverAurasToolbarButton")
+  local lockButton = AceGUI:Create("WeakAurasToolbarButton")
   lockButton:SetText(L["Lock Positions"])
   lockButton:SetTexture("Interface\\AddOns\\ForeverAuras\\Media\\Textures\\lockPosition")
   lockButton:SetCallback("OnClick", function(self)
@@ -734,7 +734,7 @@ function OptionsPrivate.CreateFrame()
   lockButton.frame:Show()
   lockButton:SetPoint("LEFT", importButton.frame, "RIGHT", 10, 0)
 
-  local magnetButton = AceGUI:Create("ForeverAurasToolbarButton")
+  local magnetButton = AceGUI:Create("WeakAurasToolbarButton")
   magnetButton:SetText(L["Magnetically Align"])
   magnetButton:SetTexture("Interface\\AddOns\\ForeverAuras\\Media\\Textures\\magnetic")
   magnetButton:SetCallback("OnClick", function(self)
@@ -844,7 +844,7 @@ function OptionsPrivate.CreateFrame()
   end
 
   -- Ready to Install section
-  local pendingInstallButton = AceGUI:Create("ForeverAurasLoadedHeaderButton")
+  local pendingInstallButton = AceGUI:Create("WeakAurasLoadedHeaderButton")
   pendingInstallButton:SetText(L["Ready for Install"])
   pendingInstallButton:Disable()
   pendingInstallButton:EnableExpand()
@@ -867,7 +867,7 @@ function OptionsPrivate.CreateFrame()
   frame.pendingInstallButton = pendingInstallButton
 
   -- Ready for update section
-  local pendingUpdateButton = AceGUI:Create("ForeverAurasLoadedHeaderButton")
+  local pendingUpdateButton = AceGUI:Create("WeakAurasLoadedHeaderButton")
   pendingUpdateButton:SetText(L["Ready for Update"])
   pendingUpdateButton:Disable()
   pendingUpdateButton:EnableExpand()
@@ -890,7 +890,7 @@ function OptionsPrivate.CreateFrame()
   frame.pendingUpdateButton = pendingUpdateButton
 
   -- Loaded section
-  local loadedButton = AceGUI:Create("ForeverAurasLoadedHeaderButton")
+  local loadedButton = AceGUI:Create("WeakAurasLoadedHeaderButton")
   loadedButton:SetText(L["Loaded/Standby"])
   loadedButton:Disable()
   loadedButton:EnableExpand()
@@ -957,7 +957,7 @@ function OptionsPrivate.CreateFrame()
   frame.loadedButton = loadedButton
 
   -- Not Loaded section
-  local unloadedButton = AceGUI:Create("ForeverAurasLoadedHeaderButton")
+  local unloadedButton = AceGUI:Create("WeakAurasLoadedHeaderButton")
   unloadedButton:SetText(L["Not Loaded"])
   unloadedButton:Disable()
   unloadedButton:EnableExpand()
@@ -1019,14 +1019,14 @@ function OptionsPrivate.CreateFrame()
   frame.unloadedButton = unloadedButton
 
   -- Sidebar used for Dynamic Text Replacements
-  local sidegroup = AceGUI:Create("ForeverAurasInlineGroup")
+  local sidegroup = AceGUI:Create("WeakAurasInlineGroup")
   sidegroup.frame:SetParent(frame)
   sidegroup.frame:SetPoint("TOPLEFT", frame, "TOPLEFT", 17, -63);
   sidegroup.frame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -17, 46);
   sidegroup.frame:Show()
   sidegroup:SetLayout("flow")
 
-  local dynamicTextCodesFrame = CreateFrame("Frame", "ForeverAurasTextReplacements", sidegroup.frame, "PortraitFrameTemplate")
+  local dynamicTextCodesFrame = CreateFrame("Frame", "WeakAurasTextReplacements", sidegroup.frame, "PortraitFrameTemplate")
   dynamicTextCodesFrame.Bg:SetColorTexture(unpack(frame.Bg.colorTexture))
   ButtonFrameTemplate_HidePortrait(dynamicTextCodesFrame)
   dynamicTextCodesFrame:SetPoint("TOPLEFT", sidegroup.frame, "TOPRIGHT", 20, 0)
@@ -1131,7 +1131,7 @@ function OptionsPrivate.CreateFrame()
     aceOptions[id] = nil
     OptionsPrivate.commonOptionsCache:Clear()
     if type(id) == "string" then
-      local data = ForeverAuras.GetData(id)
+      local data = WeakAuras.GetData(id)
       if data and data.parent then
         frame:ClearOptions(data.parent)
       end
@@ -1156,7 +1156,7 @@ function OptionsPrivate.CreateFrame()
     if clearChildren then
       local data
       if type(id) == "string" then
-        data = ForeverAuras.GetData(id)
+        data = WeakAuras.GetData(id)
       elseif self.pickedDisplay then
         data = tempGroup
       end
@@ -1180,7 +1180,7 @@ function OptionsPrivate.CreateFrame()
     self.selectedTab = self.selectedTab or "region"
     local data
     if type(self.pickedDisplay) == "string" then
-      data = ForeverAuras.GetData(frame.pickedDisplay)
+      data = WeakAuras.GetData(frame.pickedDisplay)
     elseif self.pickedDisplay then
       data = tempGroup
     end
@@ -1241,17 +1241,17 @@ function OptionsPrivate.CreateFrame()
 
     local data
     if type(self.pickedDisplay) == "string" then
-      data = ForeverAuras.GetData(frame.pickedDisplay)
+      data = WeakAuras.GetData(frame.pickedDisplay)
     elseif self.pickedDisplay then
       data = tempGroup
     end
 
     local tabsWidget
 
-    container.frame:SetPoint("TOPLEFT", frame, "TOPRIGHT", -63 - ForeverAuras.normalWidth * 340, -10 - frame.faTopGap)
+    container.frame:SetPoint("TOPLEFT", frame, "TOPRIGHT", -63 - WeakAuras.normalWidth * 340, -10 - frame.faTopGap)
     container:ReleaseChildren()
     container:SetLayout("Fill")
-    tabsWidget = AceGUI:Create(Theme.IsModern() and "ForeverAurasTabGroup" or "TabGroup")
+    tabsWidget = AceGUI:Create(Theme.IsModern() and "WeakAurasTabGroup" or "TabGroup")
 
     local tabs = {
       { value = "region", text = L["Display"]},
@@ -1273,7 +1273,7 @@ function OptionsPrivate.CreateFrame()
     tabsWidget:SetLayout("Fill")
     container:AddChild(tabsWidget)
 
-    local group = AceGUI:Create("ForeverAurasInlineGroup")
+    local group = AceGUI:Create("WeakAurasInlineGroup")
     tabsWidget:AddChild(group)
 
     tabsWidget:SetCallback("OnGroupSelected", function(self, event, tab)
@@ -1372,7 +1372,7 @@ function OptionsPrivate.CreateFrame()
     if self.pickedDisplay then
       if type(self.pickedDisplay) == "table" and tempGroup.controlledChildren and tempGroup.controlledChildren[1] then
         targetId = tempGroup.controlledChildren[1]
-        ForeverAuras.PickDisplay(targetId)
+        WeakAuras.PickDisplay(targetId)
       elseif type(self.pickedDisplay) == "string" then
         targetId = self.pickedDisplay
       else
@@ -1386,7 +1386,7 @@ function OptionsPrivate.CreateFrame()
         targetIsDynamicGroup = pickedButton.data.regionType == "dynamicgroup"
       else
         local parent = pickedButton.data.parent
-        local parentData = parent and ForeverAuras.GetData(parent)
+        local parentData = parent and WeakAuras.GetData(parent)
         targetIsDynamicGroup = parentData and parentData.regionType == "dynamicgroup"
       end
     end
@@ -1395,7 +1395,7 @@ function OptionsPrivate.CreateFrame()
     self.pickedOption = "New"
 
     container:ReleaseChildren()
-    container.frame:SetPoint("TOPLEFT", frame, "TOPRIGHT", -63 - ForeverAuras.normalWidth * 340, -frame.faTopGap)
+    container.frame:SetPoint("TOPLEFT", frame, "TOPRIGHT", -63 - WeakAuras.normalWidth * 340, -frame.faTopGap)
     container:SetLayout("fill")
     local border = AceGUI:Create("InlineGroup")
     border:SetLayout("Fill")
@@ -1413,7 +1413,7 @@ function OptionsPrivate.CreateFrame()
       simpleLabel:SetFullWidth(true)
       containerScroll:AddChild(simpleLabel)
 
-      local button = AceGUI:Create("ForeverAurasNewButton")
+      local button = AceGUI:Create("WeakAurasNewButton")
       button:SetTitle(L["Premade Auras"])
       button:SetDescription(L["Offer a guided way to create auras for your character"])
       button:SetIcon("Interface\\Icons\\Inv_misc_book_09")
@@ -1462,14 +1462,14 @@ function OptionsPrivate.CreateFrame()
     -- Modern Aura Group: a Group whose Aura (Modern) displays grow together
     -- (SecretAuraFlow.lua), listed first.
     if not targetIsDynamicGroup then
-      local flowButton = AceGUI:Create("ForeverAurasNewButton")
+      local flowButton = AceGUI:Create("WeakAurasNewButton")
       flowButton:SetTitle("Modern Aura Group")
       -- Its own icon frame: a frame shown on one button cannot be shared.
       frame.modernGroupIcon = frame.modernGroupIcon or OptionsPrivate.CreateModernGroupIcon()
       flowButton:SetIcon(frame.modernGroupIcon)
       flowButton:SetDescription("A group whose Aura (Modern) displays grow together, also in combat")
       flowButton:SetClick(function()
-        ForeverAuras.NewAura({blizzardFlow = true, blizzardFlowGrowth = "RIGHT", blizzardFlowSpacing = 2}, "group", self:GetTargetAura())
+        WeakAuras.NewAura({blizzardFlow = true, blizzardFlowGrowth = "RIGHT", blizzardFlowSpacing = 2}, "group", self:GetTargetAura())
       end)
       containerScroll:AddChild(flowButton)
     end
@@ -1479,14 +1479,14 @@ function OptionsPrivate.CreateFrame()
         -- Dynamic groups can't contain group/dynamic groups
       else
         local regionData = OptionsPrivate.Private.regionOptions[regionType]
-        local button = AceGUI:Create("ForeverAurasNewButton")
+        local button = AceGUI:Create("WeakAurasNewButton")
         button:SetTitle(regionData.displayName)
         if(type(regionData.icon) == "string" or type(regionData.icon) == "table") then
           button:SetIcon(regionData.icon)
         end
         button:SetDescription(regionData.description)
         button:SetClick(function()
-          ForeverAuras.NewAura(nil, regionType, self:GetTargetAura())
+          WeakAuras.NewAura(nil, regionType, self:GetTargetAura())
         end)
         containerScroll:AddChild(button)
       end
@@ -1508,7 +1508,7 @@ function OptionsPrivate.CreateFrame()
     containerScroll:AddChild(spacer3Label)
 
     -- Import
-    local importButton = AceGUI:Create("ForeverAurasNewButton")
+    local importButton = AceGUI:Create("WeakAurasNewButton")
     importButton:SetTitle(L["Import"])
 
     local data = {
@@ -1550,13 +1550,13 @@ function OptionsPrivate.CreateFrame()
       if not displayButtons[data.parent]:GetExpanded() then
         displayButtons[data.parent]:Expand()
       end
-      local parentData = ForeverAuras.GetData(data.parent)
+      local parentData = WeakAuras.GetData(data.parent)
       ExpandParents(parentData)
     end
   end
 
   frame.PickDisplay = function(self, id, tab, noHide)
-    local data = ForeverAuras.GetData(id)
+    local data = WeakAuras.GetData(id)
 
     -- Always expand even if already picked
     ExpandParents(data)
@@ -1588,7 +1588,7 @@ function OptionsPrivate.CreateFrame()
       self.selectedTab = tab
     end
     self:FillOptions()
-    ForeverAuras.SetMoverSizer(id)
+    WeakAuras.SetMoverSizer(id)
 
     local _, _, _, _, yOffset = displayButtons[id].frame:GetPoint(1)
     if not yOffset then
@@ -1628,7 +1628,7 @@ function OptionsPrivate.CreateFrame()
     else
       local wasGroup = false
       if type(self.pickedDisplay) == "string" then
-        if ForeverAuras.GetData(self.pickedDisplay).controlledChildren or ForeverAuras.GetData(id).controlledChildren then
+        if WeakAuras.GetData(self.pickedDisplay).controlledChildren or WeakAuras.GetData(id).controlledChildren then
           wasGroup = true
         elseif not OptionsPrivate.IsDisplayPicked(id) then
           tinsert(tempGroup.controlledChildren, self.pickedDisplay)
@@ -1665,7 +1665,7 @@ function OptionsPrivate.CreateFrame()
 
   frame.GetPickedDisplay = function(self)
     if type(self.pickedDisplay) == "string" then
-      return ForeverAuras.GetData(self.pickedDisplay)
+      return WeakAuras.GetData(self.pickedDisplay)
     end
     return self.pickedDisplay
   end
@@ -1677,7 +1677,7 @@ function OptionsPrivate.CreateFrame()
 
   frame:HookScript("OnShow", function() Theme.ApplyFont(frame) end)
   frame:HookScript("OnHide", function()
-    if _G.L_UIDROPDOWNMENU_OPEN_MENU == ForeverAuras_DropDownMenu then LibDD:CloseDropDownMenus() end
+    if _G.L_UIDROPDOWNMENU_OPEN_MENU == WeakAuras_DropDownMenu then LibDD:CloseDropDownMenus() end
   end)
   hooksecurefunc(OptionsPrivate, "SortDisplayButtons", function()
     if not frame:IsShown() then return end

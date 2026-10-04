@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 local removeFuncs = OptionsPrivate.commonOptions.removeFuncs
 local replaceNameDescFuncs = OptionsPrivate.commonOptions.replaceNameDescFuncs
@@ -23,7 +23,7 @@ local function filterAnimPresetTypes(intable, id)
   OptionsPrivate.Private.EnsureRegion(id)
   local region = OptionsPrivate.Private.regions[id] and OptionsPrivate.Private.regions[id].region
   local regionType = OptionsPrivate.Private.regions[id] and OptionsPrivate.Private.regions[id].regionType
-  local data = ForeverAuras.GetData(id);
+  local data = WeakAuras.GetData(id);
 
   if data.controlledChildren then
     return ret
@@ -93,7 +93,7 @@ function OptionsPrivate.GetAnimationOptions(data)
           end
         end
       end
-      ForeverAuras.Add(data);
+      WeakAuras.Add(data);
     end,
     disabled = function(info, v)
       local split = info[#info]:find("_");
@@ -134,7 +134,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_type = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 32,
         values = anim_types,
@@ -142,7 +142,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_preset = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Preset"],
         order = 33,
         values = function() return filterAnimPresetTypes(anim_start_preset_types, id) end,
@@ -150,7 +150,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_duration_type = {
         type = "select",
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         name = L["Time in"],
         order = 33,
         values = duration_types,
@@ -160,7 +160,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_duration = {
         type = "input",
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         name = function()
           if(data.animation.start.duration_type == "relative") then
             return L["% of Progress"];
@@ -180,7 +180,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_easeType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Ease type"],
         values = anim_ease_types,
         order = 33.7,
@@ -188,8 +188,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_easeStrength = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Ease Strength"],
         order = 33.8,
         min = 1,
@@ -200,14 +200,14 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_use_alpha = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Fade In"],
         order = 34,
         hidden = function() return data.animation.start.type ~= "custom" end
       },
       start_alphaType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 35,
         values = anim_alpha_types,
@@ -216,8 +216,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- text editor added below
       start_alpha = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.doubleWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.doubleWidth,
         name = L["Alpha"],
         order = 36,
         min = 0,
@@ -228,14 +228,14 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_use_translate = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Slide In"],
         order = 38,
         hidden = function() return data.animation.start.type ~= "custom" end
       },
       start_translateType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 39,
         values = anim_translate_types,
@@ -244,8 +244,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       start_x = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["X Offset"],
         order = 40,
         softMin = -200,
@@ -256,8 +256,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_y = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Y Offset"],
         order = 41,
         softMin = -200,
@@ -268,7 +268,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_use_scale = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Zoom In"],
         order = 42,
         hidden = function()
@@ -279,7 +279,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_scaleType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 43,
         values = anim_scale_types,
@@ -290,8 +290,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       start_scalex = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["X Scale"],
         order = 44,
         softMin = 0,
@@ -304,8 +304,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_scaley = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Y Scale"],
         order = 45,
         softMin = 0,
@@ -318,7 +318,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_use_rotate = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Rotate In"],
         order = 46,
         hidden = function()
@@ -327,7 +327,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_rotateType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 47,
         values = anim_rotate_types,
@@ -338,8 +338,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       start_rotate = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.doubleWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.doubleWidth,
         name = L["Angle"],
         order = 48,
         softMin = 0,
@@ -351,7 +351,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_use_color = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Color"],
         order = 48.2,
         hidden = function()
@@ -360,7 +360,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       start_colorType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 48.5,
         values = anim_color_types,
@@ -371,7 +371,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       start_color = {
         type = "color",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Color"],
         order = 49.5,
         hidden = function()
@@ -397,7 +397,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_type = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 52,
         values = anim_types,
@@ -405,7 +405,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_preset = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Preset"],
         order = 53,
         values = function() return filterAnimPresetTypes(anim_main_preset_types, id) end,
@@ -413,7 +413,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_duration_type = {
         type = "select",
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         name = L["Time in"],
         order = 53,
         values = duration_types,
@@ -423,7 +423,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_duration = {
         type = "input",
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         name = function()
           if(data.animation.main.duration_type == "relative") then
             return L["% of Progress"];
@@ -446,7 +446,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_easeType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Ease type"],
         values = anim_ease_types,
         order = 53.7,
@@ -454,8 +454,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_easeStrength = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Ease Strength"],
         order = 53.8,
         min = 1,
@@ -466,14 +466,14 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_use_alpha = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Fade"],
         order = 54,
         hidden = function() return data.animation.main.type ~= "custom" end
       },
       main_alphaType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 55,
         values = anim_alpha_types,
@@ -482,8 +482,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       main_alpha = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.doubleWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.doubleWidth,
         name = L["Alpha"],
         order = 56,
         min = 0,
@@ -494,14 +494,14 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_use_translate = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Slide"],
         order = 58,
         hidden = function() return data.animation.main.type ~= "custom" end
       },
       main_translateType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 59,
         values = anim_translate_types,
@@ -510,8 +510,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       main_x = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["X Offset"],
         order = 60,
         softMin = -200,
@@ -522,8 +522,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_y = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Y Offset"],
         order = 61,
         softMin = -200,
@@ -534,7 +534,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_use_scale = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Zoom"],
         order = 62,
         hidden = function()
@@ -543,7 +543,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_scaleType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 63,
         values = anim_scale_types,
@@ -554,8 +554,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       main_scalex = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["X Scale"],
         order = 64,
         softMin = 0,
@@ -568,8 +568,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_scaley = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Y Scale"],
         order = 65,
         softMin = 0,
@@ -582,7 +582,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_use_rotate = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Rotate"],
         order = 66,
         hidden = function()
@@ -591,7 +591,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_rotateType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 67,
         values = anim_rotate_types,
@@ -602,8 +602,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- text editor added below
       main_rotate = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.doubleWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.doubleWidth,
         name = L["Angle"],
         order = 68,
         softMin = 0,
@@ -615,7 +615,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_use_color = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Color"],
         order = 68.2,
         hidden = function()
@@ -624,7 +624,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       main_colorType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 68.5,
         values = anim_color_types,
@@ -635,7 +635,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       main_color = {
         type = "color",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Color"],
         order = 69.5,
         hidden = function()
@@ -661,7 +661,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_type = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 72,
         values = anim_types,
@@ -669,7 +669,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_preset = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Preset"],
         order = 73,
         values = function() return filterAnimPresetTypes(anim_finish_preset_types, id) end,
@@ -677,7 +677,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_duration_type_no_choice = {
         type = "select",
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         name = L["Time in"],
         order = 73,
         values = duration_types_no_choice,
@@ -687,7 +687,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_duration = {
         type = "input",
-        width = ForeverAuras.halfWidth,
+        width = WeakAuras.halfWidth,
         name = L["Duration (s)"],
         desc = L["The duration of the animation in seconds. The finish animation does not start playing until after the display would normally be hidden."],
         order = 73.5,
@@ -695,7 +695,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_easeType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Ease type"],
         values = anim_ease_types,
         order = 73.7,
@@ -703,8 +703,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_easeStrength = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Ease Strength"],
         order = 73.8,
         min = 1,
@@ -715,14 +715,14 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_use_alpha = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Fade Out"],
         order = 74,
         hidden = function() return data.animation.finish.type ~= "custom" end
       },
       finish_alphaType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 75,
         values = anim_alpha_types,
@@ -731,8 +731,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       finish_alpha = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.doubleWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.doubleWidth,
         name = L["Alpha"],
         order = 76,
         min = 0,
@@ -743,14 +743,14 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_use_translate = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Slide Out"],
         order = 78,
         hidden = function() return data.animation.finish.type ~= "custom" end
       },
       finish_translateType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 79,
         values = anim_translate_types,
@@ -759,8 +759,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       finish_x = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["X Offset"],
         order = 80,
         softMin = -200,
@@ -771,8 +771,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_y = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Y Offset"],
         order = 81,
         softMin = -200,
@@ -783,7 +783,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_use_scale = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Zoom Out"],
         order = 82,
         hidden = function()
@@ -792,7 +792,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_scaleType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 83,
         values = anim_scale_types,
@@ -803,8 +803,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       finish_scalex = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["X Scale"],
         order = 84,
         softMin = 0,
@@ -817,8 +817,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_scaley = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Y Scale"],
         order = 85,
         softMin = 0,
@@ -831,7 +831,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_use_rotate = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Rotate Out"],
         order = 86,
         hidden = function()
@@ -840,7 +840,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_rotateType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 87,
         values = anim_rotate_types,
@@ -851,8 +851,8 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       finish_rotate = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.doubleWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.doubleWidth,
         name = L["Angle"],
         order = 88,
         softMin = 0,
@@ -864,7 +864,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_use_color = {
         type = "toggle",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Color"],
         order = 88.2,
         hidden = function()
@@ -873,7 +873,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       },
       finish_colorType = {
         type = "select",
-        width = ForeverAuras.normalWidth,
+        width = WeakAuras.normalWidth,
         name = L["Type"],
         order = 88.5,
         values = anim_color_types,
@@ -884,7 +884,7 @@ function OptionsPrivate.GetAnimationOptions(data)
       -- texteditor added below
       finish_color = {
         type = "color",
-        width = ForeverAuras.doubleWidth,
+        width = WeakAuras.doubleWidth,
         name = L["Color"],
         order = 89.5,
         hidden = function()
@@ -1066,8 +1066,8 @@ function OptionsPrivate.GetAnimationOptions(data)
     animation.set = function(info, ...)
       setAll(data, info, ...);
       if(type(data.id) == "string") then
-        ForeverAuras.Add(data);
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.ResetMoverSizer();
       end
     end

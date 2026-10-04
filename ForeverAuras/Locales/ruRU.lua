@@ -3,7 +3,7 @@ if (GAME_LOCALE or GetLocale()) ~= "ruRU" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- function ForeverAuras.LoadLocale_ruRU()
 
@@ -1418,7 +1418,7 @@ L["Twilight Lord Kelris"] = "Повелитель сумрака Келрис"
 L["Twin Emperors"] = "Императоры-близнецы"
 L["Type"] = "Тип"
 L["Ulduar"] = "Ульдуар"
-L["Unable to modernize aura '%s'. This is probably due to corrupt data or a bad migration."] = "Невозможно модернизировать ауру '%s'. Вероятно, это связано с повреждением данных или неудачным перемещением. Сообщите об этом команде ForeverAuras."
+L["Unable to modernize aura '%s'. This is probably due to corrupt data or a bad migration."] = "Невозможно модернизировать ауру '%s'. Вероятно, это связано с повреждением данных или неудачным перемещением. Сообщите об этом команде WeakAuras."
 L["Unaffected"] = "Незадействованные"
 L["Undefined"] = "Не определено"
 L["Unholy"] = "Нечестивость"
@@ -1454,8 +1454,8 @@ L["Use Legacy floor rounding"] = "Использовать метод округ
 L["Use Texture"] = "Использовать текстуру"
 L["Use Watched Faction"] = "Использовать фракцию, репутацию с которой вы сейчас отслеживаете"
 L["Uses UnitInRange() to check if in range. Matches default raid frames out of range behavior, which is between 25 to 40 yards depending on your class and spec."] = "Использует функцию UnitInRange для проверки, находится ли указанная единица рядом с игроком. В этом смысле соответствует поведению стандартных рамок рейда (raid frames). Расстояние составляет от 25 до 40 метров в зависимости от вашего класса и специализации."
-L["Using ForeverAuras.clones is deprecated. Use ForeverAuras.GetRegion(id, cloneId) instead."] = "ForeverAuras.clones объявлено устаревшим. Используйте функцию ForeverAuras.GetRegion(id, cloneId)."
-L["Using ForeverAuras.regions is deprecated. Use ForeverAuras.GetRegion(id) instead."] = "ForeverAuras.regions объявлено устаревшим. Используйте функцию ForeverAuras.GetRegion(id)."
+L["Using WeakAuras.clones is deprecated. Use WeakAuras.GetRegion(id, cloneId) instead."] = "WeakAuras.clones объявлено устаревшим. Используйте функцию WeakAuras.GetRegion(id, cloneId)."
+L["Using WeakAuras.regions is deprecated. Use WeakAuras.GetRegion(id) instead."] = "WeakAuras.regions объявлено устаревшим. Используйте функцию WeakAuras.GetRegion(id)."
 L["Vaelastrasz the Corrupt"] = "Валестраз Порочный"
 L["Valithria Dreamwalker"] = "Валитрия Сноходица"
 L["Val'kyr Twins"] = "Валь'киры-близнецы"
@@ -1479,12 +1479,12 @@ L["Warning: Full Scan auras checking for both name and spell id can't be convert
 L["Warning: Name info is now available via %affected, %unaffected. Number of affected group members via %unitCount. Some options behave differently now. This is not automatically adjusted."] = "|cFFFFCC00Примечение.|r Теперь имена задействованных и незадействованных игроков доступны посредством %affected и %unaffected; количество задействованных участников группы - %unitCount. Некоторые параметры работают иначе. Эти изменения автоматически не применяются."
 L["Warning: Tooltip values are now available via %tooltip1, %tooltip2, %tooltip3 instead of %s. This is not automatically adjusted."] = "|cFFFFCC00Примечение.|r Теперь значения из текста подсказки доступны посредством %tooltip1, %tooltip2 и %tooltip3. Это изменение автоматически не применяется."
 L["ForeverAuras Built-In (63:42 | 3:07 | 10 | 2.4)"] = "ForeverAuras (встроенный):  63:42 | 3:07 | 10 | 2.4"
-L[ [=[ForeverAuras has detected that it has been downgraded.
+L[ [=[WeakAuras has detected that it has been downgraded.
 Your saved auras may no longer work properly.
 Would you like to run the |cffff0000EXPERIMENTAL|r repair tool? This will overwrite any changes you have made since the last database upgrade.
 Last upgrade: %s
 
-|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[ForeverAuras обнаружил, что версия аддона была понижена (осуществлен downgrade). Ваши индикации могут перестать работать должным образом.
+|cffff0000You should BACKUP your WTF folder BEFORE pressing this button.|r]=] ] = [=[WeakAuras обнаружил, что версия аддона была понижена (осуществлен downgrade). Ваши индикации могут перестать работать должным образом.
 
 Запустить |cFFFF0000ЭКСПЕРИМЕНТАЛЬНОЕ|r средство восстановления данных? Все изменения, выполненные вами с момента последнего обновления базы данных, будут утеряны.
 

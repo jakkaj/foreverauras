@@ -1,6 +1,6 @@
 -- Keep hiding limited to opacity. Calling Edit Mode setting updaters from addon
 -- code taints Blizzard's aura refresh path; visibility/tooltips must be set in its UI.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, Private = ...
 local names = {"EssentialCooldownViewer", "UtilityCooldownViewer", "BuffIconCooldownViewer", "BuffBarCooldownViewer"}
 local viewers = setmetatable({}, {__mode = "k"})

@@ -1,4 +1,4 @@
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, OptionsPrivate = ...
 local Warnings = {}
 OptionsPrivate.TriggerSecretWarnings = Warnings
@@ -137,7 +137,7 @@ function Warnings.GetScope(data, triggernum)
   end
   -- Check selected fields on existing states when no metadata query applies.
   if next(fields) then
-    local ok, states = pcall(ForeverAuras.GetTriggerStateForTrigger, data.id, triggernum)
+    local ok, states = pcall(WeakAuras.GetTriggerStateForTrigger, data.id, triggernum)
     if ok and type(states) == "table" then
       for _, state in pairs(states) do
         if not issecretvalue(state) and type(state) == "table" then

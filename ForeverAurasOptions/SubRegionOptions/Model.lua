@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local function createOptions(parentData, data, index, subIndex)
   local options = {
@@ -13,13 +13,13 @@ local function createOptions(parentData, data, index, subIndex)
     __order = 1,
     model_visible = {
       type = "toggle",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Show Model"],
       order = 9,
     },
     model_fileId = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Model"],
       order =  10.5,
     },
@@ -33,19 +33,19 @@ local function createOptions(parentData, data, index, subIndex)
       end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     bar_model_attach = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Attach to Foreground"],
       order = 12,
       hidden = function() return parentData.regionType ~= "aurabar" end
     },
     bar_model_stretch = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Stretched by Foreground"],
       order = 12.1,
       hidden = function()
@@ -54,7 +54,7 @@ local function createOptions(parentData, data, index, subIndex)
     },
     bar_model_spacer ={
       type = "description",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = "",
       order = 12.15,
       hidden = function()
@@ -63,8 +63,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     extra_width = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Extra Width"],
       order = 12.2,
       softMin = -100,
@@ -74,8 +74,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     extra_height = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Extra Height"],
       order = 12.3,
       softMin = -100,
@@ -85,8 +85,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     model_alpha = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Alpha"],
       order = 13,
       min = 0,
@@ -97,12 +97,12 @@ local function createOptions(parentData, data, index, subIndex)
       type = "toggle",
       name = L["Use SetTransform"],
       order = 14,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
     },
     model_z = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Z Offset"],
       softMin = -20,
       softMax = 20,
@@ -113,8 +113,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     model_x = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["X Offset"],
       softMin = -20,
       softMax = 20,
@@ -125,8 +125,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     model_y = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Y Offset"],
       softMin = -20,
       softMax = 20,
@@ -137,8 +137,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     rotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Rotation"],
       min = 0,
       max = 360,
@@ -150,8 +150,8 @@ local function createOptions(parentData, data, index, subIndex)
     -- New Settings
     model_st_tx = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["X Offset"],
       softMin = -1000,
       softMax = 1000,
@@ -162,8 +162,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     model_st_ty = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Y Offset"],
       softMin = -1000,
       softMax = 1000,
@@ -174,8 +174,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     model_st_tz = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Z Offset"],
       softMin = -1000,
       softMax = 1000,
@@ -186,8 +186,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     model_st_rx = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["X Rotation"],
       min = 0,
       max = 360,
@@ -198,8 +198,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     model_st_ry = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Y Rotation"],
       min = 0,
       max = 360,
@@ -210,8 +210,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     model_st_rz = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Z Rotation"],
       min = 0,
       max = 360,
@@ -222,8 +222,8 @@ local function createOptions(parentData, data, index, subIndex)
     },
     model_st_us = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Scale"],
       min = 5,
       max = 1000,
@@ -239,4 +239,4 @@ local function createOptions(parentData, data, index, subIndex)
   return options
 end
 
-ForeverAuras.RegisterSubRegionOptions("submodel", createOptions, L["Shows a model"]);
+WeakAuras.RegisterSubRegionOptions("submodel", createOptions, L["Shows a model"]);

@@ -99,8 +99,8 @@ TimeMachine:RegisterEffect("add", function(uid, data)
 end, true)
 
 TimeMachine:RegisterEffect("options_cu", function(uid, data)
-  if ForeverAuras.IsOptionsOpen() then
-    ForeverAuras.ClearAndUpdateOptions(data.id, true)
+  if WeakAuras.IsOptionsOpen() then
+    WeakAuras.ClearAndUpdateOptions(data.id, true)
   end
 end, true)
 
@@ -227,7 +227,7 @@ end
 
 function TimeMachine:StartTransaction()
   if self.transaction then
-    ForeverAuras.prettyPrint("If you're reading this, a time machine transaction was started, but there was already one in  progress. That's not supposed to happen. Please report this to the ForeverAuras developers, thanks!")
+    WeakAuras.prettyPrint("If you're reading this, a time machine transaction was started, but there was already one in  progress. That's not supposed to happen. Please report this to the ForeverAuras developers, thanks!")
     self:Reject()
   end
   self.transaction = true
@@ -288,7 +288,7 @@ end
 ---@param instant? boolean
 function TimeMachine:Commit(instant)
   if not self.transaction and not instant then
-    ForeverAuras.prettyPrint("If you're reading this, a time machine transaction was committed, but there was no transaction in progress. That's not supposed to happen. Please report this to the ForeverAuras developers, thanks!")
+    WeakAuras.prettyPrint("If you're reading this, a time machine transaction was committed, but there was no transaction in progress. That's not supposed to happen. Please report this to the ForeverAuras developers, thanks!")
     return
   end
   while self.index < #self.changes do
@@ -372,7 +372,7 @@ end
 ---@param id string
 function TimeMachine:DestroyTheUniverse(id)
   if self.transaction then
-    ForeverAuras.prettyPrint("If you're reading this, a time machine transaction was destroyed, but there was one in progress. That's not supposed to happen. Please report this to the ForeverAuras developers, thanks!")
+    WeakAuras.prettyPrint("If you're reading this, a time machine transaction was destroyed, but there was one in progress. That's not supposed to happen. Please report this to the ForeverAuras developers, thanks!")
     self:Reject()
   end
   if #self.changes > 0 then

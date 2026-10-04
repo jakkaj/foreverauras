@@ -1,5 +1,5 @@
 -- Native aura layout and events; appearance is configured by the shared Display editor.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 local _, OptionsPrivate = ...
 
 local pendingRefresh
@@ -12,11 +12,11 @@ function OptionsPrivate.QueueOptionsRefresh(id)
       local requests = pendingRefresh
       pendingRefresh = nil
       for auraId in pairs(requests) do
-        ForeverAuras.ClearAndUpdateOptions(auraId)
+        WeakAuras.ClearAndUpdateOptions(auraId)
       end
       -- Registering new options does not redraw the panel after AceConfig's
       -- click handler has finished. Refill once, keeping the selected tab.
-      ForeverAuras.FillOptions()
+      WeakAuras.FillOptions()
     end)
   end
   pendingRefresh[id] = true
@@ -30,7 +30,7 @@ function OptionsPrivate.GetSecretAuraSettings(data)
   local function Save(key, value, quiet)
     data.blizzardAuraDisplay = data.blizzardAuraDisplay or {}
     data.blizzardAuraDisplay[key] = value
-    ForeverAuras.Add(data)
+    WeakAuras.Add(data)
     if not quiet then OptionsPrivate.QueueOptionsRefresh(data.id) end
   end
   local function Disabled() return not Display.Enabled(data) end
@@ -49,7 +49,7 @@ function OptionsPrivate.GetSecretAuraSettings(data)
         trigger.processedAuraType = "Debuff"
       end
       trigger.sortMethod = value
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
       OptionsPrivate.QueueOptionsRefresh(data.id)
     end,
   }
@@ -61,7 +61,7 @@ function OptionsPrivate.GetSecretAuraSettings(data)
       local trigger = Display.GetSavedTrigger(data)
       if not trigger then return end
       trigger.sortReverse = value
-      ForeverAuras.Add(data)
+      WeakAuras.Add(data)
       OptionsPrivate.QueueOptionsRefresh(data.id)
     end,
   }
@@ -76,6 +76,27 @@ function OptionsPrivate.GetSecretAuraSettings(data)
     get = function() return Settings().spacing or 6 end,
     set = function(_, value) Save("spacing", value, true) end,
   }
+  args.perRow = {
+    type = "range", name = "Icons per row", min = 0, softMax = 20, step = 1, disabled = Disabled,
+    desc = "Start a new row after this many auras. 0 keeps one row. Not used for several units on the screen.",
+    get = function() return Settings().perRow or 0 end,
+    set = function(_, value) Save("perRow", value > 0 and value or nil) end,
+  }
+  args.rowGrowth = {
+    type = "select", name = "New rows", disabled = Disabled,
+    values = function()
+      local growth = Settings().growth or "RIGHT"
+      if growth == "UP" or growth == "DOWN" or growth == "CENTER_VERTICAL" then return {LEFT = "Left", RIGHT = "Right"} end
+      return {UP = "Up", DOWN = "Down"}
+    end,
+    hidden = function() return not Settings().perRow end,
+    get = function()
+      local growth, rows = Settings().growth or "RIGHT", Settings().rowGrowth
+      if growth == "UP" or growth == "DOWN" or growth == "CENTER_VERTICAL" then return rows == "LEFT" and "LEFT" or "RIGHT" end
+      return rows == "UP" and "UP" or "DOWN"
+    end,
+    set = function(_, value) Save("rowGrowth", value) end,
+  }
   args.maxIcons = {
     type = "range", name = "Maximum icons", order = 3.3, min = 1, softMax = 40, step = 1, disabled = Disabled,
     desc = "Maximum auras per unit. Drag up to 40, or type a larger number.",
@@ -86,7 +107,7 @@ function OptionsPrivate.GetSecretAuraSettings(data)
   -- Show On Missing/Always and Remaining Time draw one aura: the list
   -- settings stay visible but greyed out.
   local function Single() return Display.DrawsOne(data) end
-  for _, key in ipairs({"growth", "spacing", "maxIcons"}) do
+  for _, key in ipairs({"growth", "spacing", "maxIcons", "perRow", "rowGrowth"}) do
     local disabled = args[key].disabled
     args[key].disabled = function()
       if Single() then return true end
@@ -110,10 +131,10 @@ function OptionsPrivate.GetSecretAuraSettings(data)
     set = function(_, value) Save("textHeight", value, true) end}
   args.status = {type = "description", width = "full", name = function() return Display.Validate(data) or "" end,
     hidden = function() return Display.Validate(data) == nil end}
-  local order = {"status", "singleNotice", "growth", "spacing", "maxIcons", "sortMethod", "sortReverse", "textHeight"}
+  local order = {"status", "singleNotice", "growth", "spacing", "perRow", "rowGrowth", "maxIcons", "sortMethod", "sortReverse", "textHeight"}
   for index, key in ipairs(order) do
     args[key].order = index
-    args[key].width = args[key].width or ForeverAuras.normalWidth
+    args[key].width = args[key].width or WeakAuras.normalWidth
   end
   return args
 end
@@ -126,13 +147,13 @@ function OptionsPrivate.PrepareSecretDisplayOptions(data, groups)
   groups.secretAura = not Display.FlowGroup(data) and OptionsPrivate.GetSecretAuraSettings(data) or nil
   -- The native swipe's colour, last among the swipe settings.
   if groups.icon and data.regionType == "icon" then
-    groups.icon.secretSwipeColor = {type = "color", name = "Swipe Color", hasAlpha = true, order = 11.9, width = ForeverAuras.normalWidth,
+    groups.icon.secretSwipeColor = {type = "color", name = "Swipe Color", hasAlpha = true, order = 11.9, width = WeakAuras.normalWidth,
       hidden = function() return not data.cooldown end,
       get = function() return unpack((data.blizzardAuraDisplay or {}).swipeColor or {0, 0, 0, 0.8}) end,
       set = function(_, red, green, blue, alpha)
         data.blizzardAuraDisplay = data.blizzardAuraDisplay or {}
         data.blizzardAuraDisplay.swipeColor = {red, green, blue, alpha}
-        ForeverAuras.Add(data)
+        WeakAuras.Add(data)
       end}
   end
   groups.progressOptions = nil
@@ -208,8 +229,8 @@ function OptionsPrivate.PrepareSecretActionOptions(data, action)
       if Display.Enabled(child) then
         action.args.start_glow_type.values = {Proc = "Proc Glow", buttonOverlay = "Pulse Glow"}
         action.args.start_glow_padding = action.args.start_glow_padding or {
-          type = "range", control = "ForeverAurasSpinBox", name = "Padding", order = 10.865,
-          min = 0, max = 40, step = 1, width = ForeverAuras.normalWidth,
+          type = "range", control = "WeakAurasSpinBox", name = "Padding", order = 10.865,
+          min = 0, max = 40, step = 1, width = WeakAuras.normalWidth,
         }
         break
       end
@@ -249,7 +270,7 @@ function OptionsPrivate.PrepareSecretActionOptions(data, action)
   local settings = data.blizzardAuraDisplay
   local function SaveGlow(key, value)
     settings[key] = value
-    ForeverAuras.Add(data)
+    WeakAuras.Add(data)
     OptionsPrivate.QueueOptionsRefresh(data.id)
   end
   for key, option in pairs(action.args) do
@@ -293,8 +314,8 @@ function OptionsPrivate.PrepareSecretActionOptions(data, action)
   action.args.start_glow_type.values = {Proc = "Proc Glow", buttonOverlay = "Pulse Glow"}
   action.args.start_glow_duration.name = "Animation Duration"
   action.args.start_glow_padding = {
-    type = "range", control = "ForeverAurasSpinBox", name = "Padding", order = 10.865,
-    min = 0, max = 40, step = 1, width = ForeverAuras.normalWidth,
+    type = "range", control = "WeakAurasSpinBox", name = "Padding", order = 10.865,
+    min = 0, max = 40, step = 1, width = WeakAuras.normalWidth,
     desc = "Extra space around the unit frame. Zero follows its edges.",
     hidden = function() return data.anchorFrameType ~= "UNITFRAME" or not settings.unitGlow end,
     disabled = function() return not settings.unitGlow end,

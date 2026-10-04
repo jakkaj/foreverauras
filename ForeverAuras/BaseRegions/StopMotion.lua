@@ -1,13 +1,13 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 ---@type string
 local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
-local L = ForeverAuras.L
-local texture_data = ForeverAuras.StopMotion.texture_data
+local L = WeakAuras.L
+local texture_data = WeakAuras.StopMotion.texture_data
 
 --- @class StopMotionBase
 Private.StopMotionBase = {}
@@ -85,7 +85,7 @@ local function setTile(texture, frame, rows, columns, frameScaleW, frameScaleH)
   pcall(function() texture:SetTexCoord(left, right, top, bottom) end)
 end
 
-ForeverAuras.setTile = setTile
+WeakAuras.setTile = setTile
 
 -- Helper method for Options
 --- @type fun(textureWidget: table, texturePath: string, textureName: string)

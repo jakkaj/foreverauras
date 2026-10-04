@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 
 if (GAME_LOCALE or GetLocale()) ~= "itIT" then
   return
 end
 
-local L = ForeverAuras.L
+local L = WeakAuras.L
 
 -- ForeverAuras/Options
 	L[" and |cFFFF0000mirrored|r"] = "e |cFFFF0000mirrored|r"
@@ -122,7 +122,7 @@ local L = ForeverAuras.L
 	L["A 64x64 pixels icon"] = "Un'icona 64x64 pixel"
 	L["A group that dynamically controls the positioning of its children"] = "Un gruppo che controlla dinamicamente la posizione dei propri figli"
 	L[ [=[A timer will automatically be displayed according to default Interface Settings (overridden by some addons).
-Enable this setting if you want this timer to be hidden, or when using a ForeverAuras text to display the timer]=] ] = "Un timer verrà automaticamente visualizzato in base alle impostazioni dell'interfaccia predefinite (sostituite da alcuni componenti aggiuntivi). Abilita questa impostazione se vuoi che questo timer sia nascosto o quando usi un testo ForeverAuras per visualizzare il timer"
+Enable this setting if you want this timer to be hidden, or when using a WeakAuras text to display the timer]=] ] = "Un timer verrà automaticamente visualizzato in base alle impostazioni dell'interfaccia predefinite (sostituite da alcuni componenti aggiuntivi). Abilita questa impostazione se vuoi che questo timer sia nascosto o quando usi un testo ForeverAuras per visualizzare il timer"
 	L["A Unit ID (e.g., party1)."] = "Un Unit ID (p.es., party1)"
 	--[[Translation missing --]]
 	L["Ace: Funkeh, Nevcairiel"] = "Ace: Funkeh, Nevcairiel"
@@ -313,7 +313,7 @@ UNIT_POWER_UPDATE:player, UNIT_AURA:nameplate:group PLAYER_TARGET_CHANGED CLEU:S
 • "CLEU" can be used instead of COMBAT_LOG_EVENT_UNFILTERED and colons can be used to separate specific "subEvents" you want to receive.
 • The keyword "TRIGGER" can be used, with colons separating trigger numbers, to have the custom trigger get updated when the specified trigger(s) update.
 
-Since this is a status-type trigger, the specified events may be called by ForeverAuras without the expected arguments.
+Since this is a status-type trigger, the specified events may be called by WeakAuras without the expected arguments.
 
 |cFF4444FFFor example:|r
 UNIT_POWER_UPDATE:player, UNIT_AURA:nameplate:group PLAYER_TARGET_CHANGED CLEU:SPELL_CAST_SUCCESS TRIGGER:3:1
@@ -1376,9 +1376,9 @@ Make sure you can trust the person who sent it!]=]
 It might not work correctly!]=] ] = [=[This aura was created with a different version (%s) of World of Warcraft.
 It might not work correctly!]=]
 	--[[Translation missing --]]
-	L[ [=[This aura was created with a newer version of ForeverAuras.
-Upgrade your version of ForeverAuras or wait for next release before installing this aura.]=] ] = [=[This aura was created with a newer version of ForeverAuras.
-Upgrade your version of ForeverAuras or wait for next release before installing this aura.]=]
+	L[ [=[This aura was created with a newer version of WeakAuras.
+Upgrade your version of WeakAuras or wait for next release before installing this aura.]=] ] = [=[This aura was created with a newer version of WeakAuras.
+Upgrade your version of WeakAuras or wait for next release before installing this aura.]=]
 	--[[Translation missing --]]
 	L["This display is currently loaded"] = "This display is currently loaded"
 	--[[Translation missing --]]
@@ -1567,17 +1567,17 @@ Would you like to continue?]=] ] = [=[You are about to Import an Aura with custo
 
 Would you like to continue?]=]
 	--[[Translation missing --]]
-	L[ [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Anchor Code on.
+	L[ [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Anchor Code on.
 
-ForeverAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Anchor Code on.
+WeakAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Anchor Code on.
 
-ForeverAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=]
+WeakAuras will always run custom anchor code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=]
 	--[[Translation missing --]]
-	L[ [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Grow Code on.
+	L[ [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Grow Code on.
 
-ForeverAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the Grow Code on.
+WeakAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=] ] = [=[You can add a comma-separated list of state values here that (when changed) WeakAuras should also run the Grow Code on.
 
-ForeverAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=]
+WeakAuras will always run custom grow code if you include 'changed' in this list, or when a region is added, removed, or re-ordered.]=]
 	--[[Translation missing --]]
 	L["You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the sort code on.ForeverAuras will always run custom sort code if you include 'changed' in this list, or when a region is added, removed."] = "You can add a comma-separated list of state values here that (when changed) ForeverAuras should also run the sort code on.ForeverAuras will always run custom sort code if you include 'changed' in this list, or when a region is added, removed."
 	--[[Translation missing --]]

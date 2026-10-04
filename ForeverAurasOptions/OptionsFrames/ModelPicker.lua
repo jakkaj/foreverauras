@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
@@ -13,9 +13,9 @@ local CreateFrame = CreateFrame
 
 local AceGUI = LibStub("AceGUI-3.0")
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local modelPicker
 
@@ -61,7 +61,7 @@ local function ConstructModelPicker(frame)
   group.frame:Hide();
   group:SetLayout("flow");
 
-  local filterInput = CreateFrame("EditBox", "ForeverAurasFilterInput", group.frame, "SearchBoxTemplate")
+  local filterInput = CreateFrame("EditBox", "WeakAurasFilterInput", group.frame, "SearchBoxTemplate")
   filterInput:SetScript("OnTextChanged", function(self)
     SearchBoxTemplate_OnTextChanged(self)
     local filterText = filterInput:GetText()
@@ -165,7 +165,7 @@ local function ConstructModelPicker(frame)
     group:PickSt(nil, nil, nil, nil, nil, nil, nil, modelPickerUS:GetValue());
   end);
 
-  local modelTree = AceGUI:Create("ForeverAurasTreeGroup");
+  local modelTree = AceGUI:Create("WeakAurasTreeGroup");
   group.modelTree = modelTree;
   group.frame:SetScript("OnSizeChanged", function()
     local frameWidth = frame:GetWidth();
@@ -210,7 +210,7 @@ local function ConstructModelPicker(frame)
 
   end);
   group:SetLayout("fill");
-  modelTree:SetTree(ForeverAuras.ModelPaths);
+  modelTree:SetTree(WeakAuras.ModelPaths);
   modelTree:SetCallback("OnGroupSelected", function(self, event, value, fileId)
     local path = string.gsub(value, "\001", "/");
     if(string.lower(string.sub(path, -3, -1)) == ".m2") then
@@ -292,7 +292,7 @@ local function ConstructModelPicker(frame)
 
     self.selectedValues.model_st_us = model_us or self.selectedValues.model_st_us;
 
-    ForeverAuras.SetModel(self.model, nil, self.selectedValues.model_fileId)
+    WeakAuras.SetModel(self.model, nil, self.selectedValues.model_fileId)
     self.model:SetTransformFixed(self.selectedValues.model_st_tx / 1000, self.selectedValues.model_st_ty / 1000, self.selectedValues.model_st_tz / 1000,
       rad(self.selectedValues.model_st_rx), rad(self.selectedValues.model_st_ry), rad(self.selectedValues.model_st_rz),
       self.selectedValues.model_st_us / 1000);
@@ -301,8 +301,8 @@ local function ConstructModelPicker(frame)
       local object = valueFromPath(child, self.path)
       if(object) then
         SetStOnObject(object, model_fileId, model_tx, model_ty, model_tz, model_rx, model_ry, model_rz, model_us)
-        ForeverAuras.Add(child);
-        ForeverAuras.UpdateThumbnail(child);
+        WeakAuras.Add(child);
+        WeakAuras.UpdateThumbnail(child);
       end
     end
   end
@@ -334,7 +334,7 @@ local function ConstructModelPicker(frame)
     self.selectedValues.model_z = model_z or self.selectedValues.model_z
     self.selectedValues.rotation = rotation or self.selectedValues.rotation
 
-    ForeverAuras.SetModel(self.model, nil, self.selectedValues.model_fileId)
+    WeakAuras.SetModel(self.model, nil, self.selectedValues.model_fileId)
 
     self.model:ClearTransform();
     self.model:SetPosition(self.selectedValues.model_z, self.selectedValues.model_x, self.selectedValues.model_y);
@@ -344,8 +344,8 @@ local function ConstructModelPicker(frame)
       local object = valueFromPath(child, self.path)
       if(object) then
         SetOnObject(object, model_fileId, model_z, model_x, model_y, rotation)
-        ForeverAuras.Add(child)
-        ForeverAuras.UpdateThumbnail(child)
+        WeakAuras.Add(child)
+        WeakAuras.UpdateThumbnail(child)
       end
     end
   end
@@ -359,7 +359,7 @@ local function ConstructModelPicker(frame)
 
     self.selectedValues.model_fileId = GetAll(baseObject, path, "model_fileId", "122968")
 
-    ForeverAuras.SetModel(self.model, nil, self.selectedValues.model_fileId)
+    WeakAuras.SetModel(self.model, nil, self.selectedValues.model_fileId)
 
     self.selectedValues.api = GetAll(baseObject, path, "api", false)
     self.selectedValues.model_st_tx = GetAll(baseObject, path, "model_st_tx", 0)
@@ -504,7 +504,7 @@ local function ConstructModelPicker(frame)
   function group.Close()
     frame.window = "default"
     frame:UpdateFrameVisible()
-    ForeverAuras.FillOptions()
+    WeakAuras.FillOptions()
   end
 
   function group.CancelClose()
@@ -530,8 +530,8 @@ local function ConstructModelPicker(frame)
             object.model_y = group.givenY[childId];
             object.rotation = group.givenRotation[childId];
           end
-          ForeverAuras.Add(child);
-          ForeverAuras.UpdateThumbnail(child);
+          WeakAuras.Add(child);
+          WeakAuras.UpdateThumbnail(child);
         end
       end
     else
@@ -554,8 +554,8 @@ local function ConstructModelPicker(frame)
           object.model_y = group.givenY
           object.rotation = group.givenRotation
         end
-        ForeverAuras.Add(group.baseObject);
-        ForeverAuras.UpdateThumbnail(group.baseObject);
+        WeakAuras.Add(group.baseObject);
+        WeakAuras.UpdateThumbnail(group.baseObject);
       end
     end
     group.Close();

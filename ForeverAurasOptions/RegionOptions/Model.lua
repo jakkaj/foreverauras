@@ -1,11 +1,11 @@
 -- Modified for ForeverAuras, 2026-09-19.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local function createOptions(id, data)
   local options = {
@@ -13,21 +13,21 @@ local function createOptions(id, data)
     __order = 1,
     modelIsUnit = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Show model of unit "],
       order = 0.5,
-      hidden = function() return data.modelDisplayInfo and ForeverAuras.BuildInfo > 80100 end
+      hidden = function() return data.modelDisplayInfo and WeakAuras.BuildInfo > 80100 end
     },
     modelDisplayInfo = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Use Display Info Id"],
       order = 0.6,
       hidden = function() return data.modelIsUnit end
     },
     model_fileId = {
       type = "input",
-      width = ForeverAuras.doubleWidth - 0.15,
+      width = WeakAuras.doubleWidth - 0.15,
       name = L["Model"],
       order = 1
     },
@@ -39,22 +39,22 @@ local function createOptions(id, data)
       func = function()
         OptionsPrivate.OpenModelPicker(data, {});
       end,
-      disabled = function() return data.modelIsUnit or (ForeverAuras.BuildInfo > 80100 and data.modelDisplayInfo) end,
+      disabled = function() return data.modelIsUnit or (WeakAuras.BuildInfo > 80100 and data.modelDisplayInfo) end,
       imageWidth = 24,
       imageHeight = 24,
-      control = "ForeverAurasIcon",
+      control = "WeakAurasIcon",
       image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
     },
     advance = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Animate"],
       order = 5,
     },
     sequence = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Animation Sequence"],
       min = 0,
       softMax = 1499,
@@ -67,19 +67,19 @@ local function createOptions(id, data)
       type = "toggle",
       name = L["Use SetTransform"],
       order = 7,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
     },
     portraitZoom = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Portrait Zoom"],
       order = 8,
     },
     -- old settings
     model_z = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Z Offset"],
       softMin = -20,
       softMax = 20,
@@ -90,8 +90,8 @@ local function createOptions(id, data)
     },
     model_x = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["X Offset"],
       softMin = -20,
       softMax = 20,
@@ -102,8 +102,8 @@ local function createOptions(id, data)
     },
     model_y = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Y Offset"],
       softMin = -20,
       softMax = 20,
@@ -114,8 +114,8 @@ local function createOptions(id, data)
     },
     rotation = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Rotation"],
       min = 0,
       max = 360,
@@ -127,8 +127,8 @@ local function createOptions(id, data)
     -- New Settings
     model_st_tx = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["X Offset"],
       softMin = -1000,
       softMax = 1000,
@@ -139,8 +139,8 @@ local function createOptions(id, data)
     },
     model_st_ty = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Y Offset"],
       softMin = -1000,
       softMax = 1000,
@@ -151,8 +151,8 @@ local function createOptions(id, data)
     },
     model_st_tz = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Z Offset"],
       softMin = -1000,
       softMax = 1000,
@@ -163,8 +163,8 @@ local function createOptions(id, data)
     },
     model_st_rx = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["X Rotation"],
       min = 0,
       max = 360,
@@ -175,8 +175,8 @@ local function createOptions(id, data)
     },
     model_st_ry = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Y Rotation"],
       min = 0,
       max = 360,
@@ -187,8 +187,8 @@ local function createOptions(id, data)
     },
     model_st_rz = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Z Rotation"],
       min = 0,
       max = 360,
@@ -199,8 +199,8 @@ local function createOptions(id, data)
     },
     model_st_us = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Scale"],
       min = 5,
       max = 1000,
@@ -211,8 +211,8 @@ local function createOptions(id, data)
     },
     alpha = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Alpha"],
       order = 50,
       min = 0,
@@ -273,9 +273,9 @@ local function modifyThumbnail(parent, region, data)
   model:SetWidth(region:GetWidth() - 2);
   model:SetHeight(region:GetHeight() - 2);
   model:SetPoint("center", region, "center");
-  ForeverAuras.SetModel(model, nil, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
+  WeakAuras.SetModel(model, nil, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
   model:SetScript("OnShow", function()
-    ForeverAuras.SetModel(model, nil, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
+    WeakAuras.SetModel(model, nil, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
     model:SetPortraitZoom(data.portraitZoom and 1 or 0)
     if data.api then
       model:SetTransformFixed(data.model_st_tx / 1000, data.model_st_ty / 1000, data.model_st_tz / 1000,

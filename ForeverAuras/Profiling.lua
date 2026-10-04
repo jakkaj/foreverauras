@@ -1,5 +1,5 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then
+if not WeakAuras.IsLibsOK() then
   return
 end
 ---@type string
@@ -7,10 +7,10 @@ local AddonName = ...
 ---@class Private
 local Private = select(2, ...)
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
-local prettyPrint = ForeverAuras.prettyPrint
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
+local prettyPrint = WeakAuras.prettyPrint
 local LGF = LibStub("LibGetFrame-1.0")
 
 local profileData = {}
@@ -45,8 +45,8 @@ table_to_string = function(tbl, depth)
   return (str or "{ ") .. " }"
 end
 
-ForeverAurasProfilingReportMixin = {}
-function ForeverAurasProfilingReportMixin:OnShow()
+WeakAurasProfilingReportMixin = {}
+function WeakAurasProfilingReportMixin:OnShow()
   if self.initialised then
     return
   end
@@ -57,11 +57,11 @@ function ForeverAurasProfilingReportMixin:OnShow()
   self:SetSize(500, 300)
 end
 
-function ForeverAurasProfilingReportMixin:ClearText()
+function WeakAurasProfilingReportMixin:ClearText()
   self.ScrollBox.messageFrame:SetText("")
 end
 
-function ForeverAurasProfilingReportMixin:AddText(v)
+function WeakAurasProfilingReportMixin:AddText(v)
   if not v then
     return
   end
@@ -143,39 +143,39 @@ local RegisterProfile = function(startType)
   end
   local delayedStart
   if startType == "encounter" then
-    ForeverAurasProfilingFrame:UnregisterAllEvents()
+    WeakAurasProfilingFrame:UnregisterAllEvents()
     prettyPrint(L["Your next encounter will automatically be profiled."])
-    ForeverAurasProfilingFrame:RegisterEvent("ENCOUNTER_START")
-    ForeverAurasProfilingFrame:RegisterEvent("ENCOUNTER_END")
+    WeakAurasProfilingFrame:RegisterEvent("ENCOUNTER_START")
+    WeakAurasProfilingFrame:RegisterEvent("ENCOUNTER_END")
     currentProfileState = startType
     delayedStart = true
   elseif startType == "combat" then
-    ForeverAurasProfilingFrame:UnregisterAllEvents()
+    WeakAurasProfilingFrame:UnregisterAllEvents()
     prettyPrint(L["Your next instance of combat will automatically be profiled."])
-    ForeverAurasProfilingFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-    ForeverAurasProfilingFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+    WeakAurasProfilingFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+    WeakAurasProfilingFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
     currentProfileState = startType
     delayedStart = true
   elseif startType == "autostart" then
     prettyPrint(L["Profiling automatically started."])
     currentProfileState = "profiling"
   elseif startType and startType:match("%d") then
-    ForeverAurasProfilingFrame:UnregisterAllEvents()
+    WeakAurasProfilingFrame:UnregisterAllEvents()
     local time = startType + 0
     prettyPrint(L["Profiling started. It will end automatically in %d seconds"]:format(time))
-    ProfilingTimer = ForeverAuras.timer:ScheduleTimer(ForeverAuras.StopProfile, time)
+    ProfilingTimer = WeakAuras.timer:ScheduleTimer(WeakAuras.StopProfile, time)
     currentProfileState = "profiling"
   else
-    ForeverAurasProfilingFrame:UnregisterAllEvents()
+    WeakAurasProfilingFrame:UnregisterAllEvents()
     prettyPrint(L["Profiling started."])
     currentProfileState = "profiling"
   end
-  ForeverAurasProfilingFrame:UpdateButtons()
+  WeakAurasProfilingFrame:UpdateButtons()
   return delayedStart
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
-function ForeverAuras.StartProfile(startType)
+function WeakAuras.StartProfile(startType)
   if currentProfileState == "profiling" then
     prettyPrint(L["Profiling already started."])
     return
@@ -205,7 +205,7 @@ end
 local function doNothing() end
 
 ---@diagnostic disable-next-line: duplicate-set-field
-function ForeverAuras.StopProfile()
+function WeakAuras.StopProfile()
   if currentProfileState ~= "profiling" then
     prettyPrint(L["Profiling not running."])
     return
@@ -225,50 +225,50 @@ function ForeverAuras.StopProfile()
   LGF.StopProfile()
 
   currentProfileState = nil
-  if ForeverAurasProfilingFrame then
-    ForeverAurasProfilingFrame:UnregisterAllEvents()
-    ForeverAurasProfilingFrame:UpdateButtons()
+  if WeakAurasProfilingFrame then
+    WeakAurasProfilingFrame:UnregisterAllEvents()
+    WeakAurasProfilingFrame:UpdateButtons()
   end
 
   if ProfilingTimer then
-    ForeverAuras.timer:CancelTimer(ProfilingTimer)
+    WeakAuras.timer:CancelTimer(ProfilingTimer)
     ProfilingTimer = nil
   end
 end
 
-function ForeverAuras.ToggleProfile()
+function WeakAuras.ToggleProfile()
   if not profileData.systems.time or profileData.systems.time.count ~= 1 then
-    ForeverAuras.StartProfile()
+    WeakAuras.StartProfile()
   else
-    ForeverAuras.StopProfile()
+    WeakAuras.StopProfile()
   end
 end
 
 local function CancelScheduledProfile()
   prettyPrint(L["Your scheduled automatic profile has been cancelled."])
   currentProfileState = nil
-  ForeverAurasProfilingFrame:UnregisterAllEvents()
-  ForeverAurasProfilingFrame:UpdateButtons()
+  WeakAurasProfilingFrame:UnregisterAllEvents()
+  WeakAurasProfilingFrame:UpdateButtons()
 end
 
-ForeverAuras.CancelScheduledProfile = CancelScheduledProfile
+WeakAuras.CancelScheduledProfile = CancelScheduledProfile
 
 local function AutoStartStopProfiling(frame, event)
   if event == "ENCOUNTER_START" or event == "PLAYER_REGEN_DISABLED" then
-    ForeverAuras.StartProfile("autostart")
+    WeakAuras.StartProfile("autostart")
   elseif event == "ENCOUNTER_END" or event == "PLAYER_REGEN_ENABLED" then
-    ForeverAuras.StopProfile()
+    WeakAuras.StopProfile()
   end
 end
 
 local function ColoredSpike(spike)
   local r, g, b
   if spike < 2 then
-    r, g, b = ForeverAuras.GetHSVTransition(spike / 2, 0, 1, 0, 1, 1, 1, 0, 1)
+    r, g, b = WeakAuras.GetHSVTransition(spike / 2, 0, 1, 0, 1, 1, 1, 0, 1)
   elseif spike < 2.5 then
-    r, g, b = ForeverAuras.GetHSVTransition((spike - 2) * 2, 1, 1, 0, 1, 1, 0.65, 0, 1)
+    r, g, b = WeakAuras.GetHSVTransition((spike - 2) * 2, 1, 1, 0, 1, 1, 0.65, 0, 1)
   elseif spike < 3 then
-    r, g, b = ForeverAuras.GetHSVTransition((spike - 2.5) * 2, 1, 0.65, 0, 1, 1, 0, 0, 1)
+    r, g, b = WeakAuras.GetHSVTransition((spike - 2.5) * 2, 1, 0.65, 0, 1, 1, 0, 0, 1)
   else
     r, g, b = 1, 0, 0
   end
@@ -354,8 +354,8 @@ local function unitEventToMultiUnit(event)
 end
 
 ---@diagnostic disable-next-line: duplicate-set-field
-function ForeverAuras.PrintProfile()
-  local popup = ForeverAurasProfilingReport
+function WeakAuras.PrintProfile()
+  local popup = WeakAurasProfilingReport
   if not profileData.systems.time then
     prettyPrint(L["No Profiling information saved."])
     return
@@ -367,9 +367,9 @@ function ForeverAuras.PrintProfile()
   end
 
   popup:ClearAllPoints()
-  if ForeverAurasProfilingFrame and ForeverAurasProfilingFrame:IsShown() then
-    popup:SetParent(ForeverAurasProfilingFrame)
-    popup:SetPoint("TOPLEFT", ForeverAurasProfilingFrame, "TOPRIGHT", 5, 0)
+  if WeakAurasProfilingFrame and WeakAurasProfilingFrame:IsShown() then
+    popup:SetParent(WeakAurasProfilingFrame)
+    popup:SetPoint("TOPLEFT", WeakAurasProfilingFrame, "TOPRIGHT", 5, 0)
   else
     popup:SetParent(UIParent)
     if ForeverAurasSaved.ProfilingWindow then
@@ -430,12 +430,12 @@ function ForeverAuras.PrintProfile()
   popup:Show()
 end
 
-ForeverAurasProfilingLineMixin = {
+WeakAurasProfilingLineMixin = {
   spikeTooltip = L["Maximum time used on a single frame"],
   timeTooltip = L["Cumulated time used during profiling"],
 }
 
-function ForeverAurasProfilingLineMixin:Init(e)
+function WeakAurasProfilingLineMixin:Init(e)
   -- button.pct:SetText(pct)
   self.progressBar.name:SetText(e.name)
   self.time:SetText(("%.2fms"):format(e.time))
@@ -473,11 +473,11 @@ local modes = {
   L["Auras"],
   L["Systems"],
 }
-ForeverAurasProfilingMixin = {}
+WeakAurasProfilingMixin = {}
 
 local MinPanelWidth, MinPanelHeight = 500, 300
 local MinPanelMinimizedWidth, MinPanelMinimizedHeight = 250, 80
-function ForeverAurasProfilingMixin:OnShow()
+function WeakAurasProfilingMixin:OnShow()
   if self.initialised then
     return
   end
@@ -552,7 +552,7 @@ function ForeverAurasProfilingMixin:OnShow()
   end
 
   local view = CreateScrollBoxListLinearView()
-  view:SetElementInitializer("ForeverAurasProfilingLineTemplate", function(frame, elementData)
+  view:SetElementInitializer("WeakAurasProfilingLineTemplate", function(frame, elementData)
     frame:Init(elementData)
   end)
   ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view)
@@ -575,13 +575,13 @@ function ForeverAurasProfilingMixin:OnShow()
   self:UpdateButtons()
 end
 
-function ForeverAurasProfilingResultButton_OnClick(self)
-  ForeverAuras.PrintProfile()
+function WeakAurasProfilingResultButton_OnClick(self)
+  WeakAuras.PrintProfile()
 end
 
 local function nextEncounterButton_OnClick(self)
   if currentProfileState ~= "encounter" then
-    ForeverAuras.StartProfile("encounter")
+    WeakAuras.StartProfile("encounter")
   end
   local parent = self:GetParent()
   local profilingFrame = parent.dropdown.Button:GetParent():GetParent():GetParent()
@@ -591,7 +591,7 @@ end
 
 local function nextCombatButton_OnClick(self)
   if currentProfileState ~= "combat" then
-    ForeverAuras.StartProfile("combat")
+    WeakAuras.StartProfile("combat")
   end
   local parent = self:GetParent()
   local profilingFrame = parent.dropdown.Button:GetParent():GetParent():GetParent()
@@ -600,23 +600,23 @@ local function nextCombatButton_OnClick(self)
 end
 
 local function startNowButton_OnClick(self)
-  ForeverAuras.StartProfile()
+  WeakAuras.StartProfile()
   local parent = self:GetParent()
   local profilingFrame = parent.dropdown.Button:GetParent():GetParent():GetParent()
   profilingFrame:ResetBars()
   profilingFrame:UpdateButtons()
 end
 
-function ForeverAurasProfilingStopButton_OnClick(self)
+function WeakAurasProfilingStopButton_OnClick(self)
   if currentProfileState == "profiling" then
-    ForeverAuras.StopProfile()
+    WeakAuras.StopProfile()
   else
     CancelScheduledProfile()
   end
   self:GetParent():GetParent():UpdateButtons()
 end
 
-function ForeverAurasProfilingMixin:InitDropDown()
+function WeakAurasProfilingMixin:InitDropDown()
   local function Initializer(dropDown, level)
     local entries = {
       {
@@ -662,7 +662,7 @@ local function selectMode(self, mode)
   profilingFrame:RefreshBars(nil, true)
 end
 
-function ForeverAurasProfilingMixin:InitModeDropDown()
+function WeakAurasProfilingMixin:InitModeDropDown()
   local function Initializer(dropDown, level)
     for i = 1, 2 do
       local info = UIDropDownMenu_CreateInfo()
@@ -682,7 +682,7 @@ end
 
 
 local lastRefresh
-function ForeverAurasProfilingMixin:RefreshBars(_, force)
+function WeakAurasProfilingMixin:RefreshBars(_, force)
   if force or (not lastRefresh or lastRefresh < GetTime() - 1) then
     lastRefresh = GetTime()
   else
@@ -734,11 +734,11 @@ function ForeverAurasProfilingMixin:RefreshBars(_, force)
   end
 end
 
-function ForeverAurasProfilingMixin:ResetBars()
+function WeakAurasProfilingMixin:ResetBars()
   self.bars:Flush()
 end
 
-function ForeverAurasProfilingMixin:UpdateBar(name, time, pct, spike)
+function WeakAurasProfilingMixin:UpdateBar(name, time, pct, spike)
   local elementData = self.bars:FindElementDataByPredicate(function(elementData)
     return elementData.name == name
   end)
@@ -746,7 +746,7 @@ function ForeverAurasProfilingMixin:UpdateBar(name, time, pct, spike)
     elementData.time = time
     elementData.pct = pct
     elementData.spike = spike
-    local button = ForeverAurasProfilingFrame.ScrollBox:FindFrame(elementData)
+    local button = WeakAurasProfilingFrame.ScrollBox:FindFrame(elementData)
     if button then
       button.time:SetText(("%.2fms"):format(time))
       button.spike:SetText(ColoredSpike(spike))
@@ -757,7 +757,7 @@ function ForeverAurasProfilingMixin:UpdateBar(name, time, pct, spike)
   end
 end
 
-function ForeverAurasProfilingMixin:SortByColumnIndex(index)
+function WeakAurasProfilingMixin:SortByColumnIndex(index)
   local previousField = self.sortField
   self.sortField = COLUMN_INFO[index].attribute
   if previousField == self.sortField then
@@ -785,7 +785,7 @@ function ForeverAurasProfilingMixin:SortByColumnIndex(index)
   end)
 end
 
-function ForeverAurasProfilingMixin:UpdateButtons()
+function WeakAurasProfilingMixin:UpdateButtons()
   local b = self.buttons
   if currentProfileState == "combat" or currentProfileState == "encounter" then
     b.stop:SetText(L["Cancel"])
@@ -804,17 +804,17 @@ function ForeverAurasProfilingMixin:UpdateButtons()
   end
 end
 
-function ForeverAurasProfilingMixin:Start()
+function WeakAurasProfilingMixin:Start()
   self:Show()
 end
 
-function ForeverAurasProfilingMixin:Stop()
-  ForeverAuras.StopProfile()
+function WeakAurasProfilingMixin:Stop()
+  WeakAuras.StopProfile()
   self:UpdateButtons()
   self:ResetBars()
 end
 
-function ForeverAurasProfilingMixin:Toggle()
+function WeakAurasProfilingMixin:Toggle()
   if self:IsShown() then
     if currentProfileState == "profiling" then
       self:Stop()
@@ -825,6 +825,6 @@ function ForeverAurasProfilingMixin:Toggle()
   end
 end
 
-function ForeverAurasProfilingColumnDisplay_OnClick(self, columnIndex)
+function WeakAurasProfilingColumnDisplay_OnClick(self, columnIndex)
   self:GetParent():SortByColumnIndex(columnIndex)
 end

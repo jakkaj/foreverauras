@@ -1,12 +1,12 @@
 -- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
 local SharedMedia = LibStub("LibSharedMedia-3.0");
-local L = ForeverAuras.L;
+local L = WeakAuras.L;
 
 local screenWidth = math.ceil(GetScreenWidth() / 20) * 20;
 
@@ -51,7 +51,7 @@ local function createOptions(id, data)
     end,
     displayText = {
       type = "input",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       multiline = true,
       name = L["Display Text"],
       order = 10,
@@ -64,12 +64,12 @@ local function createOptions(id, data)
         local metaData = OptionsPrivate.Private.GetAdditionalProperties(data)
         OptionsPrivate.Private.SetDefaultFormatters(data, data.displayText, "displayText_format_", metaData)
 
-        ForeverAuras.Add(data);
-        ForeverAuras.ClearAndUpdateOptions(data.id)
-        ForeverAuras.UpdateThumbnail(data);
+        WeakAuras.Add(data);
+        WeakAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.UpdateThumbnail(data);
         OptionsPrivate.ResetMoverSizer();
       end,
-      control = "ForeverAurasMultiLineEditBox",
+      control = "WeakAurasMultiLineEditBox",
       callbacks = {
         OnEditFocusGained = function(self)
           local widget = dynamicTextInputs["displayText"]
@@ -85,7 +85,7 @@ local function createOptions(id, data)
     },
     customTextUpdate = {
       type = "select",
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       hidden = hideCustomTextOption,
       name = L["Update Custom Text On..."],
       values = OptionsPrivate.Private.text_check_types,
@@ -93,12 +93,12 @@ local function createOptions(id, data)
     },
     text_customTextUpdateThrottle = {
       type = "range",
-      control = "ForeverAurasSpinBox",
+      control = "WeakAurasSpinBox",
       softMin = 0,
       softMax = 5,
       bigStep = 0.1,
       min = 0,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       name = L["Custom Text Update Throttle"],
       order = 36.1,
       get = function() return data.customTextUpdateThrottle or 0 end,
@@ -108,8 +108,8 @@ local function createOptions(id, data)
           v = 0
         end
         data.customTextUpdateThrottle = v
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end,
       hidden = function()
         return hideCustomTextOption() or (data.customTextUpdate ~= "update")
@@ -119,7 +119,7 @@ local function createOptions(id, data)
 
     font = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       dialogControl = "LSM30_Font",
       name = L["Font"],
       order = 45,
@@ -127,8 +127,8 @@ local function createOptions(id, data)
     },
     fontSize = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Size"],
       order = 46,
       min = 6,
@@ -137,23 +137,23 @@ local function createOptions(id, data)
     },
     color = {
       type = "color",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Text Color"],
       hasAlpha = true,
       order = 47
     },
     outline = {
       type = "select",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Outline"],
       order = 47.5,
       values = OptionsPrivate.Private.font_flags,
     },
     fontFlagsDescription = {
       order = 48,
-      width = ForeverAuras.doubleWidth,
+      width = WeakAuras.doubleWidth,
       type = "execute",
-      control = "ForeverAurasExpandSmall",
+      control = "WeakAurasExpandSmall",
       name = function()
         local hideShadow = data.outline == "OUTLINE|SLUG" or data.outline == "THICKOUTLINE|SLUG"
         local color = format("%02x%02x%02x%02x",
@@ -231,8 +231,8 @@ local function createOptions(id, data)
     },
     smoothScaling = {
       type = "toggle",
-      width = ForeverAuras.normalWidth - indentWidth,
-      name = ForeverAuras.newFeatureString .. L["Smooth Font"],
+      width = WeakAuras.normalWidth - indentWidth,
+      name = WeakAuras.newFeatureString .. L["Smooth Font"],
       desc = L["Smooths text height, preventing it from snapping to the nearest whole number when scaled."],
       order = 48.2,
       hidden = hiddenFontExtra
@@ -240,7 +240,7 @@ local function createOptions(id, data)
     shadowColor = {
       type = "color",
       hasAlpha = true,
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Shadow Color"],
       order = 48.3,
       hidden = function()
@@ -250,7 +250,7 @@ local function createOptions(id, data)
     shadowColorSpace = {
       type = "description",
       name = "",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = 48.3,
       hidden = function()
         return hiddenFontExtra()
@@ -269,8 +269,8 @@ local function createOptions(id, data)
     },
     shadowXOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth - indentWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth - indentWidth,
       name = L["Shadow X Offset"],
       softMin = -15,
       softMax = 15,
@@ -282,8 +282,8 @@ local function createOptions(id, data)
     },
     shadowYOffset = {
       type = "range",
-      control = "ForeverAurasSpinBox",
-      width = ForeverAuras.normalWidth,
+      control = "WeakAurasSpinBox",
+      width = WeakAuras.normalWidth,
       name = L["Shadow Y Offset"],
       softMin = -15,
       softMax = 15,
@@ -303,7 +303,7 @@ local function createOptions(id, data)
     },
     justify = {
       type = "select",
-      width = ForeverAuras.normalWidth - indentWidth,
+      width = WeakAuras.normalWidth - indentWidth,
       name = L["Justify"],
       order = 48.8,
       values = OptionsPrivate.Private.justify_types,
@@ -314,7 +314,7 @@ local function createOptions(id, data)
       name = "",
       order = 48.85,
       hidden = hiddenFontExtra,
-      width = ForeverAuras.normalWidth
+      width = WeakAuras.normalWidth
     },
 
     text_font_space5 = {
@@ -326,7 +326,7 @@ local function createOptions(id, data)
     },
     automaticWidth = {
       type = "select",
-      width = ForeverAuras.normalWidth - indentWidth,
+      width = WeakAuras.normalWidth - indentWidth,
       name = L["Width"],
       order = 49,
       values = OptionsPrivate.Private.text_automatic_width,
@@ -334,10 +334,10 @@ local function createOptions(id, data)
     },
     fixedWidth = {
       name = L["Width"],
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       order = 49.1,
       type = "range",
-      control = "ForeverAurasSpinBox",
+      control = "WeakAurasSpinBox",
       min = 1,
       softMax = screenWidth,
       bigStep = 1,
@@ -352,7 +352,7 @@ local function createOptions(id, data)
     },
     wordWrap = {
       type = "select",
-      width = ForeverAuras.normalWidth - indentWidth,
+      width = WeakAuras.normalWidth - indentWidth,
       name = L["Overflow"],
       order = 49.4,
       values = OptionsPrivate.Private.text_word_wrap,
@@ -364,7 +364,7 @@ local function createOptions(id, data)
       name = "",
       order = 50,
       hidden = hiddenFontExtra,
-      control = "ForeverAurasExpandAnchor",
+      control = "WeakAurasExpandAnchor",
       arg = {
         expanderName = "text"
       }
@@ -372,7 +372,7 @@ local function createOptions(id, data)
 
     useTooltip = {
       type = "toggle",
-      width = ForeverAuras.normalWidth,
+      width = WeakAuras.normalWidth,
       name = L["Tooltip on Mouseover"],
       hidden = function() return not OptionsPrivate.Private.CanHaveTooltip(data) end,
       order = 51
@@ -405,8 +405,8 @@ local function createOptions(id, data)
       option.reloadOptions = nil
       option.set = function(info, v)
         data["displayText_format_" .. key] = v
-        ForeverAuras.Add(data)
-        ForeverAuras.ClearAndUpdateOptions(data.id)
+        WeakAuras.Add(data)
+        WeakAuras.ClearAndUpdateOptions(data.id)
       end
     end
     options["displayText_format_" .. key] = option
@@ -447,7 +447,7 @@ local function createOptions(id, data)
   addOption("footer", {
     type = "description",
     name = "",
-    width = ForeverAuras.doubleWidth,
+    width = WeakAuras.doubleWidth,
     hidden = hidden
   })
 

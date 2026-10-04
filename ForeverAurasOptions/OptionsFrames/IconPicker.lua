@@ -1,25 +1,25 @@
--- Modified for ForeverAuras, 2026-09-18.
-if not ForeverAuras.IsLibsOK() then return end
+-- Modified for ForeverAuras, 2026-10-03.
+if not WeakAuras.IsLibsOK() then return end
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
 -- Lua APIs
-local pairs  = pairs
+local pairs, ipairs, tinsert  = pairs, ipairs, tinsert
 
 -- WoW APIs
 local CreateFrame = CreateFrame
 
 local AceGUI = LibStub("AceGUI-3.0")
 
----@class ForeverAuras
-local ForeverAuras = ForeverAuras
-local L = ForeverAuras.L
+---@class WeakAuras
+local WeakAuras = WeakAuras
+local L = WeakAuras.L
 
 local iconPicker
 
-local spellCache = ForeverAuras.spellCache
+local spellCache = WeakAuras.spellCache
 
 local function ConstructIconPicker(frame)
   local group = AceGUI:Create("InlineGroup");
@@ -34,12 +34,19 @@ local function ConstructIconPicker(frame)
   scroll.frame:SetClipsChildren(true);
   group:AddChild(scroll);
 
+  local source = "spells"
+  local MAX_RESULTS = 500
+  local MAX_FOLDER_RESULTS = 1000
+
   local function iconPickerFill(subname, doSort)
     scroll:ReleaseChildren();
 
     local usedIcons = {};
+    local num = 0;
+    local limit = MAX_RESULTS
     local AddButton = function(name, icon)
-      local button = AceGUI:Create("ForeverAurasIconButton");
+      if usedIcons[icon] or num >= limit then return end
+      local button = AceGUI:Create("WeakAurasIconButton");
       button:SetName(name);
       button:SetTexture(icon);
       button:SetClick(function()
@@ -48,65 +55,100 @@ local function ConstructIconPicker(frame)
       scroll:AddChild(button);
 
       usedIcons[icon] = true;
+      num = num + 1
     end
 
-    -- Work around special numbers such as inf and nan
-    if (tonumber(subname)) then
-      local spellId = tonumber(subname);
-      if (abs(spellId) < math.huge and tostring(spellId) ~= "nan") then
-        local name, _, icon = OptionsPrivate.Private.ExecEnv.GetSpellInfo(spellId)
-        if name and icon then
-          AddButton(name, icon)
-        end
-        return;
-      end
-    end
-
-    if subname and subname ~= "" then
-      local name, _, icon = OptionsPrivate.Private.ExecEnv.GetSpellInfo(subname)
-      if name and icon then AddButton(name, icon) end
-      subname = subname:lower();
-    end
-
-
-
-    local num = 0;
-    if(subname and subname ~= "") then
-      for name, icons in pairs(spellCache.Get()) do
-        if(name:lower():find(subname, 1, true)) then
-          if icons.spells then
-            for spell, icon in icons.spells:gmatch("(%d+)=(%d+)") do
-              local iconId = tonumber(icon)
-              if (not usedIcons[iconId]) then
-                AddButton(name, iconId)
-                num = num + 1;
-                if(num >= 500) then
-                  break;
-                end
-              end
+    local library = OptionsPrivate.IconLibrary
+    local function AddLibrary(filter, onlyFolder)
+      if not library then return end
+      for index, folder in ipairs(library.folders) do
+        if not onlyFolder or onlyFolder == index then
+          for _, file in ipairs(folder.files) do
+            local name = file:gsub("%.%a+$", "")
+            if not filter or name:lower():find(filter, 1, true) or folder.name:lower():find(filter, 1, true) then
+              AddButton(name, library.root .. folder.path .. file)
+              if num >= limit then return end
             end
-          elseif icons.achievements then
-            for _, icon in icons.achievements:gmatch("(%d+)=(%d+)") do
-              local iconId = tonumber(icon)
-              if (not usedIcons[iconId]) then
-                AddButton(name, iconId)
-                num = num + 1;
-                if(num >= 500) then
-                  break;
-                end
+          end
+          if folder.game then
+            for _, entry in ipairs(folder.game) do
+              if not filter or entry[1]:lower():find(filter, 1, true) or folder.name:lower():find(filter, 1, true) then
+                AddButton(entry[1], entry[2])
+                if num >= limit then return end
               end
             end
           end
         end
+      end
+    end
 
-        if(num >= 500) then
-          break;
+    local function AddGameIcons(filter)
+      local names = OptionsPrivate.GameIconNames
+      if not names then return end
+      local altFilter = filter and filter:gsub(" ", "_")
+      for name, fileID in names:gmatch("([^\n]+)=(%d+)") do
+        if not filter or name:find(filter, 1, true) or name:find(altFilter, 1, true) then
+          AddButton(name, tonumber(fileID))
+          if num >= limit then return end
         end
+      end
+    end
+
+    local function AddSpells(filter)
+      for name, icons in pairs(spellCache.Get()) do
+        if name:lower():find(filter, 1, true) then
+          local list = icons.spells or icons.achievements
+          if list then
+            for _, icon in list:gmatch("(%d+)=(%d+)") do
+              AddButton(name, tonumber(icon))
+              if num >= limit then return end
+            end
+          end
+        end
+      end
+    end
+
+    if source == "all" or source == "spells" then
+      -- Work around special numbers such as inf and nan
+      if (tonumber(subname)) then
+        local spellId = tonumber(subname);
+        if (abs(spellId) < math.huge and tostring(spellId) ~= "nan") then
+          local name, _, icon = OptionsPrivate.Private.ExecEnv.GetSpellInfo(spellId)
+          if name and icon then
+            AddButton(name, icon)
+          end
+          if spellId > 0 and spellId == math.floor(spellId) then
+            AddButton(tostring(spellId), spellId)
+          end
+          return;
+        end
+      end
+
+      if subname and subname ~= "" then
+        local name, _, icon = OptionsPrivate.Private.ExecEnv.GetSpellInfo(subname)
+        if name and icon then AddButton(name, icon) end
+      end
+    end
+
+    local filter = subname and subname ~= "" and subname:lower() or nil
+
+    if type(source) == "number" then
+      limit = MAX_FOLDER_RESULTS
+      AddLibrary(filter, source)
+    elseif source == "game" then
+      AddGameIcons(filter)
+    elseif source == "spells" then
+      if filter then AddSpells(filter) end
+    else
+      AddLibrary(filter)
+      if filter then
+        AddSpells(filter)
+        AddGameIcons(filter)
       end
     end
   end
 
-  local input = CreateFrame("EditBox", "ForeverAurasFilterInput", group.frame, "SearchBoxTemplate")
+  local input = CreateFrame("EditBox", "WeakAurasFilterInput", group.frame, "SearchBoxTemplate")
   input:SetScript("OnTextChanged", function(self)
     SearchBoxTemplate_OnTextChanged(self)
     iconPickerFill(input:GetText(), false)
@@ -122,7 +164,32 @@ local function ConstructIconPicker(frame)
     if group.frame:IsShown() then iconPickerFill(input:GetText(), false) end
   end
 
-  local icon = AceGUI:Create("ForeverAurasIconButton");
+  local sourceList = {
+    spells = L["Spells & Achievements"],
+    all = L["All Icons"],
+    game = L["Game Icons"],
+  }
+  local sourceOrder = { "spells", "all", "game" }
+  if OptionsPrivate.IconLibrary then
+    for index, folder in ipairs(OptionsPrivate.IconLibrary.folders) do
+      sourceList[index] = folder.name
+      tinsert(sourceOrder, index)
+    end
+  end
+  local sourceDropdown = AceGUI:Create("Dropdown")
+  sourceDropdown.frame:SetParent(group.frame)
+  sourceDropdown:SetLabel(nil)
+  sourceDropdown:SetWidth(200)
+  sourceDropdown:SetList(sourceList, sourceOrder)
+  sourceDropdown:SetValue(source)
+  sourceDropdown:SetCallback("OnValueChanged", function(_, _, value)
+    source = value
+    iconPickerFill(input:GetText(), false)
+  end)
+  sourceDropdown.frame:SetPoint("RIGHT", input, "LEFT", -12, 0)
+  sourceDropdown.frame:Show()
+
+  local icon = AceGUI:Create("WeakAurasIconButton");
   icon.frame:Disable();
   icon.frame:SetParent(group.frame);
   icon.frame:SetPoint("BOTTOMLEFT", group.frame, "TOPLEFT", 44, -15);
@@ -133,21 +200,21 @@ local function ConstructIconPicker(frame)
   iconLabel:SetNonSpaceWrap("true");
   iconLabel:SetJustifyH("LEFT");
   iconLabel:SetPoint("LEFT", icon.frame, "RIGHT", 5, 0);
-  iconLabel:SetPoint("RIGHT", input, "LEFT", -50, 0);
+  iconLabel:SetPoint("RIGHT", sourceDropdown.frame, "LEFT", -10, 0);
 
   function group.Pick(self, texturePath)
     local valueToPath = OptionsPrivate.Private.ValueToPath
     if self.groupIcon then
       valueToPath(self.baseObject, self.paths[self.baseObject.id], texturePath)
-      ForeverAuras.Add(self.baseObject)
-      ForeverAuras.ClearAndUpdateOptions(self.baseObject.id)
-      ForeverAuras.UpdateThumbnail(self.baseObject)
+      WeakAuras.Add(self.baseObject)
+      WeakAuras.ClearAndUpdateOptions(self.baseObject.id)
+      WeakAuras.UpdateThumbnail(self.baseObject)
     else
       for child in OptionsPrivate.Private.TraverseLeafsOrAura(self.baseObject) do
         valueToPath(child, self.paths[child.id], texturePath)
-        ForeverAuras.Add(child)
-        ForeverAuras.ClearAndUpdateOptions(child.id)
-        ForeverAuras.UpdateThumbnail(child);
+        WeakAuras.Add(child)
+        WeakAuras.ClearAndUpdateOptions(child.id)
+        WeakAuras.UpdateThumbnail(child);
       end
     end
     local success = icon:SetTexture(texturePath) and texturePath;
@@ -171,7 +238,8 @@ local function ConstructIconPicker(frame)
       for child in OptionsPrivate.Private.TraverseLeafsOrAura(baseObject) do
         if child and paths[child.id] then
           local value = valueFromPath(child, paths[child.id])
-          self.givenPath[child.id] = value or "";
+          if value == nil then value = false end
+          self.givenPath[child.id] = value;
         end
       end
     end
@@ -184,23 +252,23 @@ local function ConstructIconPicker(frame)
   function group.Close()
     frame.window = "default";
     frame:UpdateFrameVisible()
-    ForeverAuras.FillOptions()
+    WeakAuras.FillOptions()
   end
 
   function group.CancelClose()
     local valueToPath = OptionsPrivate.Private.ValueToPath
     if group.groupIcon then
       valueToPath(group.baseObject, group.paths[group.baseObject.id], group.givenPath)
-      ForeverAuras.Add(group.baseObject)
-      ForeverAuras.ClearAndUpdateOptions(group.baseObject.id)
-      ForeverAuras.UpdateThumbnail(group.baseObject)
+      WeakAuras.Add(group.baseObject)
+      WeakAuras.ClearAndUpdateOptions(group.baseObject.id)
+      WeakAuras.UpdateThumbnail(group.baseObject)
     else
       for child in OptionsPrivate.Private.TraverseLeafsOrAura(group.baseObject) do
-        if (group.givenPath[child.id]) then
-          valueToPath(child, group.paths[child.id], group.givenPath[child.id])
-          ForeverAuras.Add(child);
-          ForeverAuras.ClearAndUpdateOptions(child.id)
-          ForeverAuras.UpdateThumbnail(child);
+        if (group.givenPath[child.id] ~= nil) then
+          valueToPath(child, group.paths[child.id], group.givenPath[child.id] or nil)
+          WeakAuras.Add(child);
+          WeakAuras.ClearAndUpdateOptions(child.id)
+          WeakAuras.UpdateThumbnail(child);
         end
       end
     end

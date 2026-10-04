@@ -1,13 +1,13 @@
 -- Modified for ForeverAuras, 2026-09-18.
-local L = ForeverAuras.L
+local L = WeakAuras.L
 ---@type string
 local AddonName = ...
 ---@class OptionsPrivate
 local OptionsPrivate = select(2, ...)
 
-local texture_types = ForeverAuras.StopMotion.texture_types;
-local texture_data = ForeverAuras.StopMotion.texture_data;
-local animation_types = ForeverAuras.StopMotion.animation_types;
+local texture_types = WeakAuras.StopMotion.texture_types;
+local texture_data = WeakAuras.StopMotion.texture_data;
+local animation_types = WeakAuras.StopMotion.animation_types;
 
 -- Returns value only for Blizzard flipbooks
 function OptionsPrivate.GetFlipbookTileSize(name)
@@ -28,7 +28,7 @@ local function createOptions(id, data)
         __order = 1,
         foregroundTexture = {
             type = "input",
-            width = ForeverAuras.doubleWidth - 0.15,
+            width = WeakAuras.doubleWidth - 0.15,
             name = L["Texture"],
             order = 1,
         },
@@ -52,34 +52,34 @@ local function createOptions(id, data)
             end,
             imageWidth = 24,
             imageHeight = 24,
-            control = "ForeverAurasIcon",
+            control = "WeakAurasIcon",
             image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
         },
         foregroundColor = {
           type = "color",
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
           name = L["Color"],
           hasAlpha = true,
           order = 3
         },
         desaturateForeground = {
           type = "toggle",
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
           name = L["Desaturate"],
           order = 3.5,
         },
         customForegroundRows = {
             type = "input",
-            width = ForeverAuras.doubleWidth / 3,
+            width = WeakAuras.doubleWidth / 3,
             name = L["Rows"],
-            validate = ForeverAuras.ValidateNumeric,
+            validate = WeakAuras.ValidateNumeric,
             get = function()
               return data.customForegroundRows and tostring(data.customForegroundRows) or "";
             end,
             set = function(info, v)
               data.customForegroundRows = v and tonumber(v) or 0
-              ForeverAuras.Add(data);
-              ForeverAuras.UpdateThumbnail(data);
+              WeakAuras.Add(data);
+              WeakAuras.UpdateThumbnail(data);
             end,
             order = 4,
             hidden = function()
@@ -88,16 +88,16 @@ local function createOptions(id, data)
         },
         customForegroundColumns = {
             type = "input",
-            width = ForeverAuras.doubleWidth / 3,
+            width = WeakAuras.doubleWidth / 3,
             name = L["Columns"],
-            validate = ForeverAuras.ValidateNumeric,
+            validate = WeakAuras.ValidateNumeric,
             get = function()
               return data.customForegroundColumns and tostring(data.customForegroundColumns) or "";
             end,
             set = function(info, v)
               data.customForegroundColumns = v and tonumber(v) or 0
-              ForeverAuras.Add(data);
-              ForeverAuras.UpdateThumbnail(data);
+              WeakAuras.Add(data);
+              WeakAuras.UpdateThumbnail(data);
             end,
             order = 5,
             hidden = function()
@@ -106,16 +106,16 @@ local function createOptions(id, data)
         },
         customForegroundFrames = {
             type = "input",
-            width = ForeverAuras.doubleWidth / 3,
+            width = WeakAuras.doubleWidth / 3,
             name = L["Frame Count"],
-            validate = ForeverAuras.ValidateNumeric,
+            validate = WeakAuras.ValidateNumeric,
             get = function()
               return data.customForegroundFrames and tostring(data.customForegroundFrames) or "";
             end,
             set = function(info, v)
               data.customForegroundFrames = v and tonumber(v) or 0
-              ForeverAuras.Add(data);
-              ForeverAuras.UpdateThumbnail(data);
+              WeakAuras.Add(data);
+              WeakAuras.UpdateThumbnail(data);
             end,
             order = 6,
             hidden = function()
@@ -124,7 +124,7 @@ local function createOptions(id, data)
         },
         customForegroundFileWidth = {
           type = "input",
-          width = ForeverAuras.normalWidth / 2,
+          width = WeakAuras.normalWidth / 2,
           name = L["File Width"],
           desc = L["Must be a power of 2"],
           validate = function(info, val)
@@ -138,8 +138,8 @@ local function createOptions(id, data)
           end,
           set = function(info, v)
             data.customForegroundFileWidth = v and tonumber(v) or 0
-            ForeverAuras.Add(data);
-            ForeverAuras.UpdateThumbnail(data);
+            WeakAuras.Add(data);
+            WeakAuras.UpdateThumbnail(data);
           end,
           order = 7,
           hidden = function()
@@ -148,7 +148,7 @@ local function createOptions(id, data)
         },
         customForegroundFileHeight = {
           type = "input",
-          width = ForeverAuras.normalWidth / 2,
+          width = WeakAuras.normalWidth / 2,
           name = L["File Height"],
           desc = L["Must be a power of 2"],
           validate = function(info, val)
@@ -162,8 +162,8 @@ local function createOptions(id, data)
           end,
           set = function(info, v)
             data.customForegroundFileHeight = v and tonumber(v) or 0
-            ForeverAuras.Add(data);
-            ForeverAuras.UpdateThumbnail(data);
+            WeakAuras.Add(data);
+            WeakAuras.UpdateThumbnail(data);
           end,
           order = 8,
           hidden = function()
@@ -172,17 +172,17 @@ local function createOptions(id, data)
         },
         customForegroundFrameWidth = {
           type = "input",
-          width = ForeverAuras.normalWidth / 2,
+          width = WeakAuras.normalWidth / 2,
           name = L["Frame Width"],
-          validate = ForeverAuras.ValidateNumeric,
+          validate = WeakAuras.ValidateNumeric,
           desc = L["Can set to 0 if Columns * Width equal File Width"],
           get = function()
             return data.customForegroundFrameWidth and tostring(data.customForegroundFrameWidth) or "";
           end,
           set = function(info, v)
             data.customForegroundFrameWidth = v and tonumber(v) or 0
-            ForeverAuras.Add(data);
-            ForeverAuras.UpdateThumbnail(data);
+            WeakAuras.Add(data);
+            WeakAuras.UpdateThumbnail(data);
           end,
           order = 9,
           hidden = function()
@@ -191,17 +191,17 @@ local function createOptions(id, data)
         },
         customForegroundFrameHeight = {
           type = "input",
-          width = ForeverAuras.normalWidth / 2,
+          width = WeakAuras.normalWidth / 2,
           name = L["Frame Height"],
-          validate = ForeverAuras.ValidateNumeric,
+          validate = WeakAuras.ValidateNumeric,
           desc = L["Can set to 0 if Rows * Height equal File Height"],
           get = function()
             return data.customForegroundFrameHeight and tostring(data.customForegroundFrameHeight) or "";
           end,
           set = function(info, v)
             data.customForegroundFrameHeight = v and tonumber(v) or 0
-            ForeverAuras.Add(data);
-            ForeverAuras.UpdateThumbnail(data);
+            WeakAuras.Add(data);
+            WeakAuras.UpdateThumbnail(data);
           end,
           order = 10,
           hidden = function()
@@ -210,22 +210,22 @@ local function createOptions(id, data)
         },
         blendMode = {
             type = "select",
-            width = ForeverAuras.normalWidth,
+            width = WeakAuras.normalWidth,
             name = L["Blend Mode"],
             order = 11,
             values = OptionsPrivate.Private.blend_types
         },
         animationType = {
             type = "select",
-            width = ForeverAuras.normalWidth,
+            width = WeakAuras.normalWidth,
             name = L["Animation Mode"],
             order = 12,
             values = animation_types
         },
         startPercent = {
             type = "range",
-            control = "ForeverAurasSpinBox",
-            width = ForeverAuras.normalWidth,
+            control = "WeakAurasSpinBox",
+            width = WeakAuras.normalWidth,
             name = L["Animation Start"],
             min = 0,
             max = 1,
@@ -235,8 +235,8 @@ local function createOptions(id, data)
         },
         endPercent = {
             type = "range",
-            control = "ForeverAurasSpinBox",
-            width = ForeverAuras.normalWidth,
+            control = "WeakAurasSpinBox",
+            width = WeakAuras.normalWidth,
             name = L["Animation End"],
             min = 0,
             max = 1,
@@ -246,8 +246,8 @@ local function createOptions(id, data)
         },
         frameRate = {
            type = "range",
-           control = "ForeverAurasSpinBox",
-           width = ForeverAuras.normalWidth,
+           control = "WeakAurasSpinBox",
+           width = WeakAuras.normalWidth,
            name = L["Frame Rate"],
            min = 3,
            max = 120,
@@ -258,7 +258,7 @@ local function createOptions(id, data)
         },
         inverse = {
           type = "toggle",
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
           name = L["Inverse"],
           order = 15.5
         },
@@ -271,11 +271,11 @@ local function createOptions(id, data)
           type = "toggle",
           name = L["Hide Background"],
           order = 17,
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
         },
         sameTexture = {
           type = "toggle",
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
           name = L["Same texture as Foreground"],
           order = 18,
           disabled = function() return data.hideBackground; end,
@@ -283,7 +283,7 @@ local function createOptions(id, data)
         },
         backgroundTexture = {
             type = "input",
-            width = ForeverAuras.doubleWidth - 0.15,
+            width = WeakAuras.doubleWidth - 0.15,
             name = L["Background Texture"],
             order = 19,
             disabled = function() return data.sameTexture or data.hideBackground end,
@@ -312,12 +312,12 @@ local function createOptions(id, data)
             hidden = function() return data.hideBackground end,
             imageWidth = 24,
             imageHeight = 24,
-            control = "ForeverAurasIcon",
+            control = "WeakAurasIcon",
             image = "Interface\\AddOns\\ForeverAuras\\Media\\Textures\\browse",
         },
         backgroundColor = {
             type = "color",
-            width = ForeverAuras.normalWidth,
+            width = WeakAuras.normalWidth,
             name = L["Color"],
             hasAlpha = true,
             order = 21,
@@ -328,13 +328,13 @@ local function createOptions(id, data)
           type = "toggle",
           name = L["Desaturate"],
           order = 22,
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
           disabled = function() return data.hideBackground; end,
           hidden = function() return data.hideBackground; end
       },
         backgroundColorHiddenSpacer = {
           type = "execute",
-          width = ForeverAuras.normalWidth,
+          width = WeakAuras.normalWidth,
           name = "",
           order = 23,
           image = function() return "", 0, 0 end,
@@ -342,16 +342,16 @@ local function createOptions(id, data)
         },
         customBackgroundRows = {
           type = "input",
-          width = ForeverAuras.doubleWidth / 3,
+          width = WeakAuras.doubleWidth / 3,
           name = L["Rows"],
-          validate = ForeverAuras.ValidateNumeric,
+          validate = WeakAuras.ValidateNumeric,
           get = function()
             return data.customBackgroundRows and tostring(data.customBackgroundRows) or "";
           end,
           set = function(info, v)
             data.customBackgroundRows = v and tonumber(v) or 0
-            ForeverAuras.Add(data);
-            ForeverAuras.UpdateThumbnail(data);
+            WeakAuras.Add(data);
+            WeakAuras.UpdateThumbnail(data);
           end,
           order = 24,
           hidden = function()
@@ -362,16 +362,16 @@ local function createOptions(id, data)
       },
       customBackgroundColumns = {
           type = "input",
-          width = ForeverAuras.doubleWidth / 3,
+          width = WeakAuras.doubleWidth / 3,
           name = L["Columns"],
-          validate = ForeverAuras.ValidateNumeric,
+          validate = WeakAuras.ValidateNumeric,
           get = function()
             return data.customBackgroundColumns and tostring(data.customBackgroundColumns) or "";
           end,
           set = function(info, v)
             data.customBackgroundColumns = v and tonumber(v) or 0
-            ForeverAuras.Add(data);
-            ForeverAuras.UpdateThumbnail(data);
+            WeakAuras.Add(data);
+            WeakAuras.UpdateThumbnail(data);
           end,
           order = 25,
           hidden = function()
@@ -382,16 +382,16 @@ local function createOptions(id, data)
       },
       customBackgroundFrames = {
           type = "input",
-          width = ForeverAuras.doubleWidth / 3,
+          width = WeakAuras.doubleWidth / 3,
           name = L["Frame Count"],
-          validate = ForeverAuras.ValidateNumeric,
+          validate = WeakAuras.ValidateNumeric,
           get = function()
             return data.customBackgroundFrames and tostring(data.customBackgroundFrames) or "";
           end,
           set = function(info, v)
             data.customBackgroundFrames = v and tonumber(v) or 0
-            ForeverAuras.Add(data);
-            ForeverAuras.UpdateThumbnail(data);
+            WeakAuras.Add(data);
+            WeakAuras.UpdateThumbnail(data);
           end,
           order = 26,
           hidden = function()
@@ -402,7 +402,7 @@ local function createOptions(id, data)
       },
       customBackgroundFileWidth = {
         type = "input",
-        width = ForeverAuras.normalWidth / 2,
+        width = WeakAuras.normalWidth / 2,
         name = L["File Width"],
         desc = L["Must be a power of 2"],
         validate = function(info, val)
@@ -416,8 +416,8 @@ local function createOptions(id, data)
         end,
         set = function(info, v)
           data.customBackgroundFileWidth = v and tonumber(v) or 0
-          ForeverAuras.Add(data);
-          ForeverAuras.UpdateThumbnail(data);
+          WeakAuras.Add(data);
+          WeakAuras.UpdateThumbnail(data);
         end,
         order = 27,
         hidden = function()
@@ -426,7 +426,7 @@ local function createOptions(id, data)
       },
       customBackgroundFileHeight = {
         type = "input",
-        width = ForeverAuras.normalWidth / 2,
+        width = WeakAuras.normalWidth / 2,
         name = L["File Height"],
         desc = L["Must be a power of 2"],
         validate = function(info, val)
@@ -440,8 +440,8 @@ local function createOptions(id, data)
         end,
         set = function(info, v)
           data.customBackgroundFileHeight = v and tonumber(v) or 0
-          ForeverAuras.Add(data);
-          ForeverAuras.UpdateThumbnail(data);
+          WeakAuras.Add(data);
+          WeakAuras.UpdateThumbnail(data);
         end,
         order = 28,
         hidden = function()
@@ -450,17 +450,17 @@ local function createOptions(id, data)
       },
       customBackgroundFrameWidth = {
         type = "input",
-        width = ForeverAuras.normalWidth / 2,
+        width = WeakAuras.normalWidth / 2,
         name = L["Frame Width"],
-        validate = ForeverAuras.ValidateNumeric,
+        validate = WeakAuras.ValidateNumeric,
         desc = L["Can set to 0 if Columns * Width equal File Width"],
         get = function()
           return data.customBackgroundFrameWidth and tostring(data.customBackgroundFrameWidth) or "";
         end,
         set = function(info, v)
           data.customBackgroundFrameWidth = v and tonumber(v) or 0
-          ForeverAuras.Add(data);
-          ForeverAuras.UpdateThumbnail(data);
+          WeakAuras.Add(data);
+          WeakAuras.UpdateThumbnail(data);
         end,
         order = 29,
         hidden = function()
@@ -469,17 +469,17 @@ local function createOptions(id, data)
       },
       customBackgroundFrameHeight = {
         type = "input",
-        width = ForeverAuras.normalWidth / 2,
+        width = WeakAuras.normalWidth / 2,
         name = L["Frame Height"],
-        validate = ForeverAuras.ValidateNumeric,
+        validate = WeakAuras.ValidateNumeric,
         desc = L["Can set to 0 if Rows * Height equal File Height"],
         get = function()
           return data.customBackgroundFrameHeight and tostring(data.customBackgroundFrameHeight) or "";
         end,
         set = function(info, v)
           data.customBackgroundFrameHeight = v and tonumber(v) or 0
-          ForeverAuras.Add(data);
-          ForeverAuras.UpdateThumbnail(data);
+          WeakAuras.Add(data);
+          WeakAuras.UpdateThumbnail(data);
         end,
         order = 30,
         hidden = function()
@@ -488,8 +488,8 @@ local function createOptions(id, data)
       },
       backgroundPercent = {
         type = "range",
-        control = "ForeverAurasSpinBox",
-        width = ForeverAuras.normalWidth,
+        control = "WeakAurasSpinBox",
+        width = WeakAuras.normalWidth,
         name = L["Selected Frame"],
         min = 0,
         max = 1,
@@ -613,11 +613,11 @@ local function modifyThumbnail(parent, region, data, fullModify, size)
         frameScaleH = (region.foreground.frameHeight * region.foreground.rows) / region.foreground.fileHeight
       end
 
-      ForeverAuras.setTile(region.texture, frame, region.foreground.rows, region.foreground.columns, frameScaleW, frameScaleH);
+      WeakAuras.setTile(region.texture, frame, region.foreground.rows, region.foreground.columns, frameScaleW, frameScaleH);
 
       region.SetValue = function(self, percent)
         local frame = floor(percent * (region.endFrame - region.startFrame) + region.startFrame);
-        ForeverAuras.setTile(self.texture, frame, region.foreground.rows, region.foreground.columns, frameScaleW, frameScaleH);
+        WeakAuras.setTile(self.texture, frame, region.foreground.rows, region.foreground.columns, frameScaleW, frameScaleH);
       end
     else
       region.texture:SetTexture(texture .. format("%03d", frame));
