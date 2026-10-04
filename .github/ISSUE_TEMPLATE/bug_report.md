@@ -7,21 +7,29 @@ assignees: ''
 
 ---
 
-**Describe the bug**
+## Describe the bug
 A clear and concise description of what the bug is.
 
-**To Reproduce or Provide the EXPORT code**
+## What version of ForeverAuras are you using?
+v X.X.X
+
+## To Reproduce
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
+## Provide the EXPORT code
+```
+!WA
+```
+
+## Expected behavior
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
+## Screenshots
 If applicable, add screenshots to help explain your problem.
 
-**Additional context**
+## Additional context
 Add any other context about the problem here.
