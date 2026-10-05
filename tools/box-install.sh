@@ -87,7 +87,7 @@ fi
 # Copy to a staging dir on the box, then rsync each folder into AddOns: everything but .toc first (with --delete, so
 # files retired at this sha go), .toc files last, so a /reload mid-copy never loads a half-updated addon.
 BOXSTAGE='.cache/foreverauras-stage'
-(cd "$STAGE" && COPYFILE_DISABLE=1 tar -czf - $FOLDERS) | \
+(cd "$STAGE" && COPYFILE_DISABLE=1 tar --no-xattrs --no-mac-metadata -czf - $FOLDERS) | \
   $SSH "$HOST" "rm -rf $BOXSTAGE && mkdir -p $BOXSTAGE && tar -xzf - -C $BOXSTAGE"
 $SSH "$HOST" "bash -s -- $(q "$WOW/Interface/AddOns") $FOLDERS" <<'EOF'
 set -euo pipefail
