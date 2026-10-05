@@ -1,0 +1,26 @@
+FORK.md
+  s_3bed21884fd132::t_dd3e7023b8ec26 1-35
+tools/box-install.sh
+  s_3bed21884fd132::t_4cb829edbbcd7b 1-117
+  s_3bed21884fd132::t_cc6fd4d551ffa6 118
+justfile
+  s_3bed21884fd132::t_666b97cfb66460 1-16
+tools/libs.lock
+  s_3bed21884fd132::t_0f4014814755c6 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "8a4d0397bb2e4f920569f2a1774b13093385eea3",
+  "prompts": {},
+  "sessions": {
+    "s_3bed21884fd132": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1dbb105b-8de6-4180-b882-6bb25817a669",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
