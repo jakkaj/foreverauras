@@ -1,0 +1,19 @@
+tools/box-install.sh
+  s_3bed21884fd132::t_6a95bea7fc7cea 90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "3a7958f712383849a643fbfece43760d6e6a761f",
+  "prompts": {},
+  "sessions": {
+    "s_3bed21884fd132": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1dbb105b-8de6-4180-b882-6bb25817a669",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
