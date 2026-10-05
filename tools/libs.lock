@@ -1,0 +1,4 @@
+# ForeverAuras/Libs is not in git (.gitignore); the upstream release zip carries it. box-install.sh takes ONLY
+# ForeverAuras/Libs from this pinned zip and checks its sha256 before use. Bump both lines together.
+tag=0.50.3
+sha256=d17f4b0d8fed029ecc3f32d68a809c94f549a8e0df65fbfa43b3b9893e9200b1
